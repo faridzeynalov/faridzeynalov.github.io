@@ -32,6 +32,11 @@ const MAP = {
   excelsior: ["excelsior.az", "desktop", false],
   gashalti: ["gashalti.az", "desktop", true],
   quk: ["quk.edu.az", "desktop", true],
+  "shamakhi-palace": ["shamakhipalace.az", "hero", true],
+  "ramada-plaza-ganja": ["www.ramadaplazagence.com", "hero", true],
+  "central-point": ["centralpoint.az", "hero", true],
+  "aghdam-city-hotel": ["aghdamcityhotel.az", "hero", true],
+  "yevlakh-city-hotel": ["yevlakhcityhotel.az", "hero", true],
 };
 
 for (const [slug, [domain, cover, withSection]] of Object.entries(MAP)) {

@@ -5,7 +5,7 @@ Three pages — Home, Portfolio and a project detail template — built as a ful
 Next.js export for GitHub Pages.
 
 - **Home** `/` — hero with a live project showcase, selected work, skills, experience, about, contact
-- **Portfolio** `/portfolio/` — 24 projects from the CV, filterable by industry (`?industry=hospitality`)
+- **Portfolio** `/portfolio/` — 29 production websites, filterable by industry (`?industry=hospitality`)
 - **Project detail** `/portfolio/[slug]/` — one statically generated page per project
 
 ## Tech stack

@@ -6,6 +6,10 @@ import p24kCover from "@/assets/projects/24k/cover.webp";
 import p24kThumb from "@/assets/projects/24k/thumb.webp";
 import p24kMobile from "@/assets/projects/24k/mobile.webp";
 import p24kSection from "@/assets/projects/24k/section.webp";
+import pAghdamCityHotelCover from "@/assets/projects/aghdam-city-hotel/cover.webp";
+import pAghdamCityHotelThumb from "@/assets/projects/aghdam-city-hotel/thumb.webp";
+import pAghdamCityHotelMobile from "@/assets/projects/aghdam-city-hotel/mobile.webp";
+import pAghdamCityHotelSection from "@/assets/projects/aghdam-city-hotel/section.webp";
 import pArsenalFireCover from "@/assets/projects/arsenal-fire/cover.webp";
 import pArsenalFireThumb from "@/assets/projects/arsenal-fire/thumb.webp";
 import pArsenalFireMobile from "@/assets/projects/arsenal-fire/mobile.webp";
@@ -14,6 +18,10 @@ import pBadamdarCover from "@/assets/projects/badamdar/cover.webp";
 import pBadamdarThumb from "@/assets/projects/badamdar/thumb.webp";
 import pBadamdarMobile from "@/assets/projects/badamdar/mobile.webp";
 import pBadamdarSection from "@/assets/projects/badamdar/section.webp";
+import pCentralPointCover from "@/assets/projects/central-point/cover.webp";
+import pCentralPointThumb from "@/assets/projects/central-point/thumb.webp";
+import pCentralPointMobile from "@/assets/projects/central-point/mobile.webp";
+import pCentralPointSection from "@/assets/projects/central-point/section.webp";
 import pElevenParkCover from "@/assets/projects/eleven-park/cover.webp";
 import pElevenParkThumb from "@/assets/projects/eleven-park/thumb.webp";
 import pElevenParkMobile from "@/assets/projects/eleven-park/mobile.webp";
@@ -62,10 +70,18 @@ import pQukCover from "@/assets/projects/quk/cover.webp";
 import pQukThumb from "@/assets/projects/quk/thumb.webp";
 import pQukMobile from "@/assets/projects/quk/mobile.webp";
 import pQukSection from "@/assets/projects/quk/section.webp";
+import pRamadaPlazaGanjaCover from "@/assets/projects/ramada-plaza-ganja/cover.webp";
+import pRamadaPlazaGanjaThumb from "@/assets/projects/ramada-plaza-ganja/thumb.webp";
+import pRamadaPlazaGanjaMobile from "@/assets/projects/ramada-plaza-ganja/mobile.webp";
+import pRamadaPlazaGanjaSection from "@/assets/projects/ramada-plaza-ganja/section.webp";
 import pSafenetCover from "@/assets/projects/safenet/cover.webp";
 import pSafenetThumb from "@/assets/projects/safenet/thumb.webp";
 import pSafenetMobile from "@/assets/projects/safenet/mobile.webp";
 import pSafenetSection from "@/assets/projects/safenet/section.webp";
+import pShamakhiPalaceCover from "@/assets/projects/shamakhi-palace/cover.webp";
+import pShamakhiPalaceThumb from "@/assets/projects/shamakhi-palace/thumb.webp";
+import pShamakhiPalaceMobile from "@/assets/projects/shamakhi-palace/mobile.webp";
+import pShamakhiPalaceSection from "@/assets/projects/shamakhi-palace/section.webp";
 import pSkyBreezeCover from "@/assets/projects/sky-breeze/cover.webp";
 import pSkyBreezeThumb from "@/assets/projects/sky-breeze/thumb.webp";
 import pSkyBreezeMobile from "@/assets/projects/sky-breeze/mobile.webp";
@@ -89,9 +105,19 @@ import pYeneeCover from "@/assets/projects/yenee/cover.webp";
 import pYeneeThumb from "@/assets/projects/yenee/thumb.webp";
 import pYeneeMobile from "@/assets/projects/yenee/mobile.webp";
 import pYeneeSection from "@/assets/projects/yenee/section.webp";
+import pYevlakhCityHotelCover from "@/assets/projects/yevlakh-city-hotel/cover.webp";
+import pYevlakhCityHotelThumb from "@/assets/projects/yevlakh-city-hotel/thumb.webp";
+import pYevlakhCityHotelMobile from "@/assets/projects/yevlakh-city-hotel/mobile.webp";
+import pYevlakhCityHotelSection from "@/assets/projects/yevlakh-city-hotel/section.webp";
 
 export const projectImages: Record<string, ProjectImages> = {
   "24k": { cover: p24kCover, thumb: p24kThumb, mobile: p24kMobile, section: p24kSection },
+  "aghdam-city-hotel": {
+    cover: pAghdamCityHotelCover,
+    thumb: pAghdamCityHotelThumb,
+    mobile: pAghdamCityHotelMobile,
+    section: pAghdamCityHotelSection,
+  },
   "arsenal-fire": {
     cover: pArsenalFireCover,
     thumb: pArsenalFireThumb,
@@ -103,6 +129,12 @@ export const projectImages: Record<string, ProjectImages> = {
     thumb: pBadamdarThumb,
     mobile: pBadamdarMobile,
     section: pBadamdarSection,
+  },
+  "central-point": {
+    cover: pCentralPointCover,
+    thumb: pCentralPointThumb,
+    mobile: pCentralPointMobile,
+    section: pCentralPointSection,
   },
   "eleven-park": {
     cover: pElevenParkCover,
@@ -155,11 +187,23 @@ export const projectImages: Record<string, ProjectImages> = {
     section: pPlastconSection,
   },
   quk: { cover: pQukCover, thumb: pQukThumb, mobile: pQukMobile, section: pQukSection },
+  "ramada-plaza-ganja": {
+    cover: pRamadaPlazaGanjaCover,
+    thumb: pRamadaPlazaGanjaThumb,
+    mobile: pRamadaPlazaGanjaMobile,
+    section: pRamadaPlazaGanjaSection,
+  },
   safenet: {
     cover: pSafenetCover,
     thumb: pSafenetThumb,
     mobile: pSafenetMobile,
     section: pSafenetSection,
+  },
+  "shamakhi-palace": {
+    cover: pShamakhiPalaceCover,
+    thumb: pShamakhiPalaceThumb,
+    mobile: pShamakhiPalaceMobile,
+    section: pShamakhiPalaceSection,
   },
   "sky-breeze": {
     cover: pSkyBreezeCover,
@@ -187,4 +231,10 @@ export const projectImages: Record<string, ProjectImages> = {
     section: pYashamalSection,
   },
   yenee: { cover: pYeneeCover, thumb: pYeneeThumb, mobile: pYeneeMobile, section: pYeneeSection },
+  "yevlakh-city-hotel": {
+    cover: pYevlakhCityHotelCover,
+    thumb: pYevlakhCityHotelThumb,
+    mobile: pYevlakhCityHotelMobile,
+    section: pYevlakhCityHotelSection,
+  },
 };

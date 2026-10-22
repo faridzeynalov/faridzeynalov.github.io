@@ -47,7 +47,7 @@ test.describe("portfolio", () => {
   test("filters projects by industry", async ({ page }) => {
     await page.goto("portfolio/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.locator("main article")).toHaveCount(24);
+    await expect(page.locator("main article")).toHaveCount(29);
 
     await page.getByRole("button", { name: /^E-commerce/ }).click();
     await expect(page).toHaveURL(/industry=e-commerce/);
@@ -59,7 +59,7 @@ test.describe("portfolio", () => {
     const hrefs = await page
       .locator("main article h2 a")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href")!));
-    expect(hrefs).toHaveLength(24);
+    expect(hrefs).toHaveLength(29);
 
     for (const href of hrefs) {
       const response = await page.request.get(href);

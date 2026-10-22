@@ -24,4 +24,9 @@ export const PROJECT_DOMAINS = [
   "galaalti.az",
   "excelsior.az",
   "gashalti.az",
+  "shamakhipalace.az",
+  "www.ramadaplazagence.com",
+  "centralpoint.az",
+  "aghdamcityhotel.az",
+  "yevlakhcityhotel.az",
 ];

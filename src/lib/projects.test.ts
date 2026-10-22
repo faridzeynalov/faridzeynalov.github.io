@@ -17,7 +17,9 @@ describe("project data", () => {
 
   it("links every project to its own domain over https", () => {
     for (const project of projects) {
-      expect(project.url).toBe(`https://${project.domain}/`);
+      expect([`https://${project.domain}/`, `https://www.${project.domain}/`]).toContain(
+        project.url,
+      );
     }
   });
 
@@ -27,8 +29,9 @@ describe("project data", () => {
     }
   });
 
-  it("includes every website from the CV except chinarhotel.az (removed)", () => {
-    expect(projects).toHaveLength(24);
+  it("lists every project (chinarhotel.az excluded while its live site is broken)", () => {
+    expect(projects).toHaveLength(29);
+    expect(projects.some((project) => project.domain === "chinarhotel.az")).toBe(false);
   });
 
   it("only features projects that have previews", () => {

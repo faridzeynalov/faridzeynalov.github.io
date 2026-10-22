@@ -16,7 +16,7 @@ const WEB_STACK = ["JavaScript", "HTML5", "CSS3"];
 const AZ_EN_RU = ["Azerbaijani", "English", "Russian"];
 
 const TABIA_GROUP = "Tabia Group Hotels";
-const TABIA_BOOKING_FEATURES = [
+const HOTEL_BOOKING_FEATURES = [
   "Hero booking bar with arrival/departure dates, rooms, guests and promo code",
   "Live local time and weather for the hotel's location in the hero",
   "Room and suite listings with image carousels",
@@ -55,7 +55,7 @@ const projectEntries: Omit<Project, "images">[] = [
     overview:
       "Garabagh Resort & SPA in Naftalan combines a hotel stay with the town's known Naftalan oil treatments. The site presents accommodation, treatment programmes, medical packages, the spa and dining, with booking available from the first screen.",
     liveFeatures: [
-      ...TABIA_BOOKING_FEATURES,
+      ...HOTEL_BOOKING_FEATURES,
       "Dedicated sections for Naftalan treatment and medical packages",
     ],
     stack: NEXT_STACK,
@@ -114,7 +114,7 @@ const projectEntries: Omit<Project, "images">[] = [
       "Five-star city hotel in Baku — rooms, events, wellness and dining with direct booking.",
     overview:
       "Excelsior Hotel & SPA is a five-star hotel in central Baku. The website covers accommodation, meetings and events, the Aura Wellness Center and restaurants, with a booking bar in the hero.",
-    liveFeatures: [...TABIA_BOOKING_FEATURES, "Meetings & events and wellness centre sections"],
+    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Meetings & events and wellness centre sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#c9a13b",
@@ -170,7 +170,7 @@ const projectEntries: Omit<Project, "images">[] = [
     summary: "Hotel and serviced residences in Baku with rooms, offices, events and dining.",
     overview:
       "Badamdar Hotel & Residences combines a hotel with residences and office space. The site presents rooms, residences and offices, meetings and events, spa and fitness, and restaurants.",
-    liveFeatures: [...TABIA_BOOKING_FEATURES, "Residences & offices section alongside hotel rooms"],
+    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Residences & offices section alongside hotel rooms"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#d4a35a",
@@ -278,7 +278,7 @@ const projectEntries: Omit<Project, "images">[] = [
     summary: "Naftalan health hotel with treatment programmes and online booking.",
     overview:
       "Gashaltı Health Hotel in Naftalan offers wellness stays built around treatment programmes. The site covers rooms, Naftalan treatment, medical packages, spa and restaurants.",
-    liveFeatures: [...TABIA_BOOKING_FEATURES, "Naftalan treatment and medical packages sections"],
+    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Naftalan treatment and medical packages sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#ee6a1f",
@@ -293,11 +293,90 @@ const projectEntries: Omit<Project, "images">[] = [
     summary: "Mountain wellness resort with a medical centre and healing-water treatments.",
     overview:
       "Galaalti Hotel & SPA is a mountain resort in Shabran known for its Naftsu healing water. The site presents rooms, meetings and events, the medical centre, medical packages and the spa.",
-    liveFeatures: [...TABIA_BOOKING_FEATURES, "Medical centre and medical packages sections"],
+    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Medical centre and medical packages sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#3e6a8a",
     note: "When captured, the live hero carried a “temporarily closed” notice, so the preview shows the rooms section instead.",
+  },
+  {
+    slug: "shamakhi-palace",
+    name: "Shamakhi Palace Sharadil",
+    domain: "shamakhipalace.az",
+    url: "https://shamakhipalace.az/",
+    industry: "hospitality",
+    summary: "Palace-style resort in Shamakhi with spa, dining, events and entertainment.",
+    overview:
+      "Shamakhi Palace Sharadil is a resort set in the countryside around Shamakhi. The site presents rooms, meetings and events, the spa and fitness centre, restaurants and entertainment, with booking available from the first screen.",
+    liveFeatures: [
+      ...HOTEL_BOOKING_FEATURES,
+      "Meetings & events, spa & fitness, restaurants and entertainment sections",
+    ],
+    stack: NEXT_STACK,
+    languages: AZ_EN_RU,
+    accent: "#d6303f",
+  },
+  {
+    slug: "ramada-plaza-ganja",
+    name: "Ramada Plaza Ganja",
+    domain: "ramadaplazagence.com",
+    url: "https://www.ramadaplazagence.com/",
+    industry: "hospitality",
+    summary: "City-centre hotel in Ganja with rooms, event venues, restaurants and a spa.",
+    overview:
+      "Ramada Plaza Ganja is a hotel in the centre of Ganja, part of the Ramada by Wyndham brand. The official website presents its rooms, meeting and event venues, restaurants and spa, and drives direct bookings.",
+    liveFeatures: [
+      ...HOTEL_BOOKING_FEATURES,
+      "Meetings & events, restaurants and spa & fitness sections",
+    ],
+    stack: NEXT_STACK,
+    languages: AZ_EN_RU,
+    accent: "#a3123a",
+  },
+  {
+    slug: "central-point",
+    name: "The Central Point Baku",
+    domain: "centralpoint.az",
+    url: "https://centralpoint.az/",
+    industry: "hospitality",
+    summary: "Four-star hotel in central Baku for leisure and business travellers.",
+    overview:
+      "The Central Point is a four-star hotel in the centre of Baku. The site introduces the hotel, its rooms and restaurants, and what's nearby, with booking from the hero.",
+    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Restaurants and “around us” neighbourhood sections"],
+    stack: NEXT_STACK,
+    languages: AZ_EN_RU,
+    accent: "#6b4e8a",
+  },
+  {
+    slug: "aghdam-city-hotel",
+    name: "Ağdam City Hotel",
+    domain: "aghdamcityhotel.az",
+    url: "https://aghdamcityhotel.az/",
+    industry: "hospitality",
+    summary: "City hotel in Ağdam for business and leisure stays, with spa and meeting rooms.",
+    overview:
+      "Ağdam City Hotel is a modern hotel in Ağdam for both business and leisure guests. The site presents rooms, meetings and events, and the spa and fitness centre, with booking from the first screen.",
+    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Meetings & events and spa & fitness sections"],
+    stack: NEXT_STACK,
+    languages: AZ_EN_RU,
+    accent: "#2b3b52",
+  },
+  {
+    slug: "yevlakh-city-hotel",
+    name: "Yevlakh City Hotel",
+    domain: "yevlakhcityhotel.az",
+    url: "https://yevlakhcityhotel.az/",
+    industry: "hospitality",
+    summary: "City hotel in Yevlakh with modern rooms, a restaurant, fitness and meeting space.",
+    overview:
+      "Yevlakh City Hotel offers modern rooms, a restaurant, fitness facilities and space for business meetings in Yevlakh. The site presents each of these and takes bookings from the hero.",
+    liveFeatures: [
+      ...HOTEL_BOOKING_FEATURES,
+      "Meetings & events, restaurants and fitness sections",
+    ],
+    stack: NEXT_STACK,
+    languages: AZ_EN_RU,
+    accent: "#6a4a3c",
   },
   {
     slug: "yenee",
