@@ -54,7 +54,14 @@ export const profile: Profile = {
     {
       title: "Frameworks & libraries",
       description: "Component-driven apps with predictable state and data fetching.",
-      items: ["React", "Next.js (App Router)", "Redux Toolkit", "RTK Query", "Tailwind CSS"],
+      items: [
+        "React",
+        "Next.js (App Router)",
+        "Redux Toolkit",
+        "RTK Query",
+        "Zustand",
+        "Tailwind CSS",
+      ],
     },
     {
       title: "Testing",
@@ -66,7 +73,9 @@ export const profile: Profile = {
       description: "How the work gets shipped and kept healthy.",
       items: [
         "Git",
+        "Docker",
         "REST API integration",
+        "GraphQL",
         "Responsive design",
         "SEO",
         "Performance optimization",
