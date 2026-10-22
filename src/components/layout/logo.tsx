@@ -1,20 +1,13 @@
 import Link from "next/link";
+import { LOGO_PATH, LOGO_VIEWBOX } from "@/components/layout/logo-path";
 import { profile } from "@/data/profile";
 import { cn } from "@/lib/utils";
 
-/** Typographic monogram: "FZ" drawn as strokes in a rounded tile. */
+/** The FZ monogram. Uses the current text colour, so it follows the theme. */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden className={cn("size-8", className)}>
-      <rect x="0.5" y="0.5" width="31" height="31" rx="9" className="fill-fg" />
-      <path
-        d="M9.5 10.5h7M9.5 10.5v11M9.5 16h5.5M18.5 10.5h5l-5 11h5"
-        className="stroke-bg"
-        strokeWidth="2.1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
+    <svg viewBox={LOGO_VIEWBOX} aria-hidden className={cn("h-7 w-auto fill-current", className)}>
+      <path d={LOGO_PATH} />
     </svg>
   );
 }

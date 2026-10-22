@@ -105,7 +105,7 @@ export function MobileNav({ active }: { active: string }) {
               className="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-70"
               aria-hidden
             />
-            <LogoMark className="absolute top-4 left-5" />
+            <LogoMark className="absolute top-[18px] left-5" />
             <nav aria-label="Mobile" className="relative">
               <m.ul
                 className="flex flex-col"

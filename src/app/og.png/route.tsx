@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { LOGO_PATH, LOGO_VIEWBOX } from "@/components/layout/logo-path";
 import { profile } from "@/data/profile";
 
 // Rendered once at build time into `out/og.png` — a real .png so static hosts send the right
@@ -23,23 +24,10 @@ export function GET() {
         fontFamily: "sans-serif",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <div
-          style={{
-            width: 64,
-            height: 64,
-            borderRadius: 18,
-            background: "#ededef",
-            color: "#0a0a0c",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 28,
-            fontWeight: 700,
-          }}
-        >
-          {profile.initials}
-        </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <svg width={74} height={64} viewBox={LOGO_VIEWBOX}>
+          <path d={LOGO_PATH} fill="#ededef" />
+        </svg>
         <div style={{ fontSize: 26, color: "#a6a6b0" }}>{profile.location}</div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
