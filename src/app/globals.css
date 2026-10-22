@@ -1,26 +1,249 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Class-based dark mode: the theme script in <head> sets `.dark` or `.light` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* -------------------------------------------------------------------------- */
+/* Design tokens                                                              */
+/* -------------------------------------------------------------------------- */
+
+/* Light palette. Dark (below) also applies to :root when no class is set, e.g. without JS. */
+.light {
+  --bg: #f7f6f3;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #efede8;
+  --bg-inset: #e8e6e0;
+  --fg: #111113;
+  --fg-muted: #4f4f57;
+  --fg-subtle: #6c6c75;
+  --border: rgb(17 17 19 / 0.09);
+  --border-strong: rgb(17 17 19 / 0.16);
+  --accent: #c2410c;
+  --accent-soft: rgb(194 65 12 / 0.1);
+  --accent-fg: #ffffff;
+  --ring: #c2410c;
+  --grid-line: rgb(17 17 19 / 0.055);
+  --shadow-color: 30 20 10;
+  --frame-bg: #ffffff;
+  --frame-bar: #f1efea;
+  --code-bg: #ffffff;
+  --code-keyword: #b42318;
+  --code-string: #2f7a3e;
+  --code-prop: #1f4fa8;
+  --code-comment: #8a8a93;
+  --code-punct: #4f4f57;
+  color-scheme: light;
+}
+
+:root:not(.light),
+.dark {
+  --bg: #0a0a0c;
+  --bg-elevated: #121215;
+  --bg-subtle: #17171b;
+  --bg-inset: #1e1e23;
+  --fg: #ededef;
+  --fg-muted: #a6a6b0;
+  --fg-subtle: #8b8b95;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.15);
+  --accent: #ff8a5b;
+  --accent-soft: rgb(255 138 91 / 0.12);
+  --accent-fg: #160a05;
+  --ring: #ff8a5b;
+  --grid-line: rgb(255 255 255 / 0.045);
+  --shadow-color: 0 0 0;
+  --frame-bg: #141418;
+  --frame-bar: #1b1b20;
+  --code-bg: #0f0f12;
+  --code-keyword: #ff8a5b;
+  --code-string: #9fd89a;
+  --code-prop: #8fb8ff;
+  --code-comment: #6f6f7a;
+  --code-punct: #a6a6b0;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-inset: var(--bg-inset);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-fg: var(--accent-fg);
+  --color-ring: var(--ring);
+  --color-frame: var(--frame-bg);
+  --color-frame-bar: var(--frame-bar);
+  --color-code: var(--code-bg);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 60s) linear infinite;
+  --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Above-the-fold entrances run in CSS so they start before hydration (better LCP, works without JS). */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--enter-y, 14px));
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+@utility animate-enter {
+  animation: enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@utility animate-rise {
+  animation: rise 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(34 197 94 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(34 197 94 / 0);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Base                                                                       */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Utilities                                                                  */
+/* -------------------------------------------------------------------------- */
+
+@utility container-page {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+
+  @media (min-width: 640px) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Faint engineering grid, faded at the edges. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@utility mask-fade-y {
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+}
+
+@utility mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+@utility mask-radial {
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+}
+
+@utility shadow-soft {
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.04) inset,
+    0 1px 2px rgb(var(--shadow-color) / 0.06),
+    0 8px 24px -8px rgb(var(--shadow-color) / 0.12);
+}
+
+@utility shadow-float {
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.05) inset,
+    0 2px 4px rgb(var(--shadow-color) / 0.08),
+    0 24px 60px -20px rgb(var(--shadow-color) / 0.35);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility text-pretty {
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Theme switch — circular reveal via the View Transitions API.               */
+/* The animation itself is driven from ThemeToggle.                           */
+/* -------------------------------------------------------------------------- */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

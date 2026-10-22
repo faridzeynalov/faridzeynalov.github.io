@@ -1,0 +1,79 @@
+import { Download, MapPin } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
+import { Accent, SectionHeading } from "@/components/sections/section-heading";
+import { buttonVariants } from "@/components/ui/button";
+import { profile } from "@/data/profile";
+import { withBasePath } from "@/lib/site";
+
+export function About() {
+  return (
+    <section id="about" aria-labelledby="about-title" className="py-24 md:py-32">
+      <div className="container-page">
+        <SectionHeading
+          id="about-title"
+          index="04"
+          eyebrow="About"
+          title={
+            <>
+              A little <Accent>about me.</Accent>
+            </>
+          }
+        />
+
+        <div className="mt-14 grid gap-12 lg:grid-cols-12">
+          <Reveal className="space-y-5 text-lg leading-relaxed text-pretty text-fg-muted lg:col-span-7">
+            {profile.about.map((paragraph, index) => (
+              <p key={index} className={index === 0 ? "text-xl text-fg md:text-2xl" : undefined}>
+                {paragraph}
+              </p>
+            ))}
+            <div className="pt-4">
+              <a
+                href={withBasePath("/farid-zeynalov-cv.pdf")}
+                download
+                className={buttonVariants({ variant: "secondary" })}
+              >
+                <Download aria-hidden />
+                Download CV
+                <span className="font-mono text-xs text-fg-subtle">PDF</span>
+              </a>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.15} className="lg:col-span-5">
+            <dl className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-bg-elevated">
+              <Fact label="Based in">
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="size-4 text-accent" aria-hidden />
+                  {profile.location}
+                </span>
+              </Fact>
+              <Fact label="Currently">Front-End Developer at One Studio</Fact>
+              <Fact label="Focus">React, Next.js, TypeScript</Fact>
+              <Fact label="Education">MSc Computer Science, Azerbaijan Technical University</Fact>
+              <Fact label="Languages">
+                <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                  {profile.languages.map((language) => (
+                    <li key={language.name}>
+                      {language.name}{" "}
+                      <span className="text-sm text-fg-subtle">· {language.level}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Fact>
+            </dl>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="grid gap-1 px-6 py-4 sm:grid-cols-[7.5rem_1fr] sm:gap-4">
+      <dt className="pt-0.5 font-mono text-xs text-fg-subtle uppercase">{label}</dt>
+      <dd className="text-[15px] text-fg">{children}</dd>
+    </div>
+  );
+}
