@@ -238,6 +238,50 @@
   mix-blend-mode: normal;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Custom cursor + code trail (see CursorEffects). The class is only set for   */
+/* mouse users without reduced motion, so touch and keyboard users are unchanged. */
+/* -------------------------------------------------------------------------- */
+
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none;
+}
+
+/* Keep the text caret where people type. */
+html.has-custom-cursor :is(input, textarea, [contenteditable="true"]) {
+  cursor: text;
+}
+
+@keyframes code-trail {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(8px) rotate(var(--r)) scale(0.92);
+  }
+  18% {
+    opacity: var(--o);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(var(--drift)) rotate(var(--r)) scale(1);
+  }
+}
+
+.code-trail-snippet {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--fg-subtle);
+  animation: code-trail 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.code-trail-snippet[data-accent] {
+  color: var(--accent);
+}
+
 /* Printing (e.g. the CV page): always ink-on-paper, regardless of the active theme. */
 @media print {
   :root {
