@@ -3,48 +3,10 @@
 import { useMotionValue, useSpring } from "motion/react";
 import * as m from "motion/react-m";
 import { useEffect, useRef, useState } from "react";
+import { CODE_SNIPPETS, createSnippetPicker } from "@/lib/code-snippets";
 import { cn } from "@/lib/utils";
 
-/** Front-end fragments scattered behind the content as the cursor moves. */
-const SNIPPETS = [
-  "<div />",
-  "</>",
-  "useState()",
-  "useEffect",
-  "useMemo",
-  "=>",
-  "{ }",
-  "const",
-  "async",
-  "await",
-  "props",
-  ".map()",
-  "className",
-  "export default",
-  "import",
-  "@media",
-  "display: grid",
-  "flex",
-  ":hover",
-  "z-index",
-  "fetch()",
-  "<Link />",
-  "next/image",
-  ".tsx",
-  "rem",
-  "transition",
-  "position: sticky",
-  "useRef",
-  "?.",
-  "...rest",
-  "Promise",
-  "interface",
-  "type Props",
-  "<>",
-  "aria-label",
-  "key={id}",
-];
-
+const SNIPPET_MIN_GAP = 30; // a term reappears only after at least this many others
 const SPAWN_DISTANCE = 64; // px of pointer travel between snippets
 const MAX_SNIPPETS = 28;
 const INTERACTIVE = "a, button, [role='button'], summary, label, select";
@@ -91,6 +53,7 @@ function CursorLayers() {
     let lastX: number | null = null;
     let lastY: number | null = null;
     let travelled = 0;
+    const nextSnippet = createSnippetPicker(CODE_SNIPPETS, SNIPPET_MIN_GAP);
 
     const spawn = (px: number, py: number) => {
       const layer = trailRef.current;
@@ -99,7 +62,7 @@ function CursorLayers() {
 
       const el = document.createElement("span");
       el.className = "code-trail-snippet";
-      el.textContent = SNIPPETS[Math.floor(Math.random() * SNIPPETS.length)];
+      el.textContent = nextSnippet();
       el.style.left = `${px + (Math.random() - 0.5) * 140}px`;
       el.style.top = `${py + (Math.random() - 0.5) * 90}px`;
       el.style.setProperty("--r", `${(Math.random() - 0.5) * 16}deg`);
