@@ -45,6 +45,7 @@ export function useActiveNav(): string {
   }, [isHome]);
 
   if (pathname.startsWith("/portfolio")) return "/portfolio/";
+  if (pathname.startsWith("/cv")) return "/cv/";
   if (isHome && section) return `/#${section}`;
   if (isHome) return "/";
   return "";

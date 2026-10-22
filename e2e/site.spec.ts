@@ -77,6 +77,34 @@ test.describe("portfolio", () => {
   });
 });
 
+test("CV page shows the CV content and links to the PDF", async ({ page }) => {
+  await page.goto("cv/");
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Farid Zeynalov");
+  for (const name of [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills",
+    "Languages",
+    "Certificates",
+  ]) {
+    await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
+  }
+  await expect(page.getByText("Azerbaijan Technical University").first()).toBeVisible();
+  await expect(page.getByText("IELTS 7.0")).toBeVisible();
+
+  const pdf = page.getByRole("link", { name: "Download PDF" });
+  const response = await page.request.get((await pdf.getAttribute("href"))!);
+  expect(response.headers()["content-type"]).toContain("application/pdf");
+
+  await page
+    .getByRole("list", { name: "Projects" })
+    .getByRole("link", { name: "quk.edu.az" })
+    .click();
+  await expect(page).toHaveURL(/\/portfolio\/quk\/$/);
+});
+
 test("unknown routes show the custom 404 page", async ({ page }) => {
   const response = await page.goto("this-page-does-not-exist/");
   expect(response?.status()).toBe(404);

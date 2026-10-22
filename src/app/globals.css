@@ -238,6 +238,32 @@
   mix-blend-mode: normal;
 }
 
+/* Printing (e.g. the CV page): always ink-on-paper, regardless of the active theme. */
+@media print {
+  :root {
+    --bg: #ffffff !important;
+    --bg-elevated: #ffffff !important;
+    --bg-subtle: #f4f4f5 !important;
+    --bg-inset: #e4e4e7 !important;
+    --fg: #111113 !important;
+    --fg-muted: #3f3f46 !important;
+    --fg-subtle: #52525b !important;
+    --border: #e4e4e7 !important;
+    --border-strong: #d4d4d8 !important;
+    --accent: #c2410c !important;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

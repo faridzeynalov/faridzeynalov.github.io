@@ -9,7 +9,7 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-border">
+    <footer className="relative overflow-hidden border-t border-border print:hidden">
       <div className="container-page grid gap-12 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-4">
           <LogoMark />

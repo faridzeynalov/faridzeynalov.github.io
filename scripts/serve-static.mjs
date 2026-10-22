@@ -22,6 +22,7 @@ const TYPES = {
   ".xml": "application/xml",
   ".woff2": "font/woff2",
   ".webmanifest": "application/manifest+json",
+  ".pdf": "application/pdf",
 };
 
 http

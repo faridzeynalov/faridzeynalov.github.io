@@ -23,7 +23,7 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed inset-x-0 top-0 z-50 print:hidden">
       <div
         className={cn(
           "absolute inset-0 border-b transition-[background-color,border-color] duration-300",

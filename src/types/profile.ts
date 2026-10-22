@@ -47,6 +47,8 @@ export interface Profile {
   sitesShipped: string;
   industries: string[];
   summary: string;
+  /** Headline and summary exactly as they appear on the CV. */
+  cv: { title: string; summary: string };
   about: string[];
   social: SocialLink[];
   skills: SkillGroup[];
