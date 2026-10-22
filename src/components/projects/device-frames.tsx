@@ -54,18 +54,17 @@ export function BrowserFrame({ domain, children, className, compact = false }: B
 /** Phone bezel around a mobile screenshot. */
 export function PhoneFrame({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div
-      className={cn(
-        "relative rounded-[1.6rem] border border-border-strong bg-frame p-1.5 shadow-float",
-        className,
-      )}
-    >
-      <div className="relative overflow-hidden rounded-[1.2rem]">
-        {children}
-        <span
-          className="absolute top-1.5 left-1/2 h-3 w-12 -translate-x-1/2 rounded-full bg-black/85"
-          aria-hidden
-        />
+    // The outer element is the size container; the bezel, corners and notch inside are sized in
+    // container units, so small phones on mobile layouts keep the same proportions as large ones.
+    <div className={cn("@container relative", className)}>
+      <div className="rounded-[14cqw] border border-border-strong bg-frame p-[3.2cqw] shadow-float">
+        <div className="relative overflow-hidden rounded-[11cqw]">
+          {children}
+          <span
+            className="absolute top-[2.6cqw] left-1/2 h-[5.5cqw] w-[24cqw] -translate-x-1/2 rounded-full bg-black/85"
+            aria-hidden
+          />
+        </div>
       </div>
     </div>
   );
