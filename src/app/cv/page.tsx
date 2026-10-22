@@ -147,7 +147,7 @@ export default function CvPage() {
                           <li key={project.slug}>
                             <Link
                               href={`/portfolio/${project.slug}/`}
-                              className="inline-flex rounded-md border border-border bg-bg-subtle/60 px-2 py-1 font-mono text-[11.5px] text-fg-muted print:bg-transparent print:text-fg transition-colors hover:border-border-strong hover:text-fg"
+                              className="inline-flex rounded-md border border-border bg-bg-subtle/60 px-2 py-1 font-mono text-[11.5px] text-fg-muted transition-colors hover:border-border-strong hover:text-fg print:bg-transparent print:text-fg"
                             >
                               {project.domain}
                             </Link>
