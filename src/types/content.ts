@@ -21,7 +21,7 @@ export interface AiCapability {
 export interface AiProfile {
   intro: string;
   capabilities: AiCapability[];
-  /** AI tools and libraries. Review this list — it isn't from the CV. */
+  /** AI tools and libraries used day to day. */
   tools: string[];
   /** Compact list for the CV page sidebar. */
   skills: string[];

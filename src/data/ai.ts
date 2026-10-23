@@ -1,8 +1,8 @@
 import type { AiProfile } from "@/types/content";
 
 /**
- * AI skills shown on the home page and the CV page. Added on request — not from the CV.
- * Check that the tools listed match what you actually use.
+ * AI skills shown on the home page and the CV page. Not on the CV; the tools list was
+ * confirmed by Farid (October 2026).
  */
 export const ai: AiProfile = {
   intro:
