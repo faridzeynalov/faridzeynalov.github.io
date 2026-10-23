@@ -1,6 +1,14 @@
 "use client";
 
-import { Check, Code2, LayoutTemplate, Moon, Sun, type LucideIcon } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  Code2,
+  LayoutTemplate,
+  Moon,
+  Sun,
+  type LucideIcon,
+} from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useTranslations } from "next-intl";
@@ -112,22 +120,23 @@ export function AppearanceMenu({ className }: { className?: string }) {
         aria-controls={menuId}
         aria-label={label}
         title={label}
-        className="relative inline-flex size-9 items-center justify-center overflow-hidden rounded-pill border border-border text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
+        className="inline-flex h-9 items-center gap-2 rounded-pill border border-border pr-2.5 pl-3 text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
       >
-        {/* Same convention as the old toggle: Sun in dark mode, Moon in light mode. Both icons
-            render and CSS picks one from the <html> class, so there's no hydration flash. */}
-        <Sun
+        {/* Both choices at a glance: the style (Classic / Developer) and the mode. Every icon
+            renders and CSS picks from the <html> class and style, so there's no hydration flash. */}
+        <span className="relative size-4" aria-hidden>
+          <LayoutTemplate className="absolute inset-0 size-4 text-accent dev:hidden" />
+          <Code2 className="absolute inset-0 hidden size-4 text-accent dev:block" />
+        </span>
+        <span className="h-4 w-px bg-border-strong" aria-hidden />
+        {/* Same convention as the old toggle: Sun in dark mode, Moon in light mode. */}
+        <span className="relative size-4 overflow-hidden" aria-hidden>
+          <Sun className="absolute inset-0 size-4 translate-y-5 rotate-90 opacity-0 transition-all duration-500 ease-out-expo dark:translate-y-0 dark:rotate-0 dark:opacity-100" />
+          <Moon className="absolute inset-0 size-4 transition-all duration-500 ease-out-expo dark:-translate-y-5 dark:-rotate-90 dark:opacity-0" />
+        </span>
+        <ChevronDown
           aria-hidden
-          className="absolute size-4 translate-y-5 rotate-90 opacity-0 transition-all duration-500 ease-out-expo dark:translate-y-0 dark:rotate-0 dark:opacity-100"
-        />
-        <Moon
-          aria-hidden
-          className="absolute size-4 transition-all duration-500 ease-out-expo dark:-translate-y-5 dark:-rotate-90 dark:opacity-0"
-        />
-        {/* Developer style badge */}
-        <span
-          aria-hidden
-          className="absolute right-[3px] bottom-[3px] hidden size-2 rounded-full bg-accent ring-2 ring-bg dev:block"
+          className={cn("size-3 transition-transform duration-200", open && "rotate-180")}
         />
       </button>
 
@@ -135,7 +144,7 @@ export function AppearanceMenu({ className }: { className?: string }) {
         {open && (
           <m.div
             id={menuId}
-            className="absolute right-0 z-[70] mt-2 w-60 overflow-hidden rounded-xl border border-border-strong bg-bg-elevated p-1.5 shadow-float"
+            className="absolute right-0 z-[70] mt-2 w-72 max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-xl border border-border-strong bg-bg-elevated p-1.5 shadow-float"
             initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
