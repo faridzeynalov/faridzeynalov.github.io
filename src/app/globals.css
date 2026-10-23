@@ -210,10 +210,6 @@
 }
 
 /*
- * Parallax tied to the element's position in the viewport, run by the browser off the main
- * thread. Browsers without scroll-driven animations simply show it static.
- */
-/*
  * About story: letters start hidden (blurred, lowered) and ScrollLitText brings each one in as
  * the paragraph scrolls. With reduced motion the text is simply shown.
  */
@@ -228,24 +224,6 @@
     opacity: 1 !important;
     filter: none !important;
     translate: none !important;
-  }
-}
-
-@keyframes scroll-parallax {
-  from {
-    translate: 0 40px;
-  }
-  to {
-    translate: 0 -40px;
-  }
-}
-
-@utility scroll-parallax {
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: scroll-parallax linear both;
-      animation-timeline: view();
-    }
   }
 }
 

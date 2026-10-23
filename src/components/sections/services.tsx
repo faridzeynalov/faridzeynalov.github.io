@@ -20,6 +20,58 @@ import { serviceIcons } from "@/components/services/service-icons";
 import type { Service } from "@/types/content";
 
 const ease = [0.16, 1, 0.3, 1] as const;
+/** How far (px) the card numbers drift up/down across a scroll through the viewport. */
+const PARALLAX_RANGE = 44;
+
+/**
+ * Parallax for the big card numbers ([data-parallax]): they move down → up as their card
+ * crosses the viewport. One passive scroll listener, batched to an animation frame, and only
+ * the cards currently on screen are measured — works in every browser (CSS scroll-driven
+ * animations don't yet), and stays cheap on phones. Off with reduced motion.
+ */
+function useNumberParallax(listRef: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const numbers = Array.from(list.querySelectorAll<HTMLElement>("[data-parallax]"));
+    const onScreen = new Set<HTMLElement>();
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const viewport = window.innerHeight;
+      for (const number of onScreen) {
+        const card = number.parentElement!.getBoundingClientRect();
+        // -1 when the card's centre is at the viewport bottom, +1 at the top.
+        const center = card.top + card.height / 2;
+        const t = Math.max(-1, Math.min(1, 1 - (2 * center) / viewport));
+        number.style.transform = `translate3d(0, ${(-t * PARALLAX_RANGE).toFixed(1)}px, 0)`;
+      }
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const number = entry.target.querySelector<HTMLElement>("[data-parallax]");
+        if (!number) continue;
+        if (entry.isIntersecting) onScreen.add(number);
+        else onScreen.delete(number);
+      }
+      schedule();
+    });
+    numbers.forEach((number) => observer.observe(number.parentElement!));
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(frame);
+    };
+  }, [listRef]);
+}
 
 /**
  * Services: a sticky index on the left tracks the card in view, a progress line fills
@@ -36,6 +88,7 @@ export function Services({ services }: { services: Service[] }) {
     offset: ["start 65%", "end 55%"],
   });
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
+  useNumberParallax(listRef);
 
   return (
     <section id="services" aria-labelledby="services-title" className="relative py-24 md:py-32">
@@ -206,9 +259,15 @@ function ServiceCard({
           )}
           aria-hidden
         />
-        {/* Subtle parallax on the large number: a CSS scroll-driven animation (no JS) */}
+        {/* Large outlined number (accent on the active card) that drifts as the page scrolls;
+            moved by useNumberParallax. Below the Developer style's title bar. */}
         <span
-          className="pointer-events-none absolute -top-4 right-4 scroll-parallax font-mono text-[7rem] leading-none font-semibold text-fg/[0.04] select-none md:text-[9rem]"
+          data-parallax
+          className={cn(
+            "pointer-events-none absolute top-3 right-5 font-mono text-[7rem] leading-none font-semibold text-transparent transition-[-webkit-text-stroke-color] duration-500 will-change-transform select-none [-webkit-text-stroke:1.5px_color-mix(in_oklab,var(--fg)_18%,transparent)] md:text-[9rem] dev:top-11",
+            active &&
+              "[-webkit-text-stroke-color:color-mix(in_oklab,var(--accent)_70%,transparent)]",
+          )}
           aria-hidden
         >
           {String(index + 1).padStart(2, "0")}
