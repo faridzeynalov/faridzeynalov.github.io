@@ -1,20 +1,21 @@
 "use client";
 
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ChevronRight, CircleCheck, Ellipsis, GitBranch, Menu, X } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ExplorerTree } from "@/components/layout/explorer-tree";
 import { LogoMark } from "@/components/layout/logo";
-import { profile } from "@/data/profile";
-import { navItems } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import type { TreeNode } from "@/types/nav";
 
-const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
+const ease = [0.16, 1, 0.3, 1] as const;
 
-export function MobileNav({ active }: { active: string }) {
+/** Mobile menu styled as a VS Code Explorer: sections are folders, pages and links are files. */
+export function MobileNav({ tree }: { tree: TreeNode[] }) {
   const [open, setOpen] = useState(false);
+  const [rootOpen, setRootOpen] = useState(true);
   const pathname = usePathname();
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -30,7 +31,7 @@ export function MobileNav({ active }: { active: string }) {
     if (!open) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    panelRef.current?.querySelector<HTMLElement>("a")?.focus();
+    panelRef.current?.querySelector<HTMLElement>("[aria-current='page'], a, button")?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -95,68 +96,78 @@ export function MobileNav({ active }: { active: string }) {
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="fixed inset-0 z-[55] flex flex-col bg-bg px-5 pt-24 pb-10"
-            initial={{ clipPath: "inset(0 0 100% 0)" }}
-            animate={{ clipPath: "inset(0 0 0% 0)" }}
-            exit={{ clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[55] flex flex-col bg-bg-elevated pt-16"
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            animate={{ clipPath: "inset(0 0% 0 0)" }}
+            exit={{ clipPath: "inset(0 100% 0 0)" }}
+            transition={{ duration: 0.5, ease }}
           >
-            <div
-              className="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-70"
-              aria-hidden
-            />
             <LogoMark className="absolute top-[18px] left-5" />
-            <nav aria-label="Mobile" className="relative">
-              <m.ul
-                className="flex flex-col"
-                initial="hidden"
-                animate="show"
-                variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } } }}
+
+            {/* Sidebar title bar */}
+            <div className="flex h-10 shrink-0 items-center justify-between border-y border-border px-5 font-mono text-[11px] tracking-wider text-fg-subtle uppercase">
+              Explorer
+              <Ellipsis className="size-4" aria-hidden />
+            </div>
+
+            {/* Workspace root */}
+            <nav aria-label="Mobile" className="flex min-h-0 flex-1 flex-col">
+              <button
+                type="button"
+                onClick={() => setRootOpen((value) => !value)}
+                aria-expanded={rootOpen}
+                aria-controls="explorer-root"
+                className="flex h-9 shrink-0 items-center gap-1 px-3 text-left font-mono text-[11.5px] font-semibold tracking-wider text-fg uppercase"
               >
-                {navItems.map((item, index) => (
-                  <m.li
-                    key={item.href}
-                    variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="border-b border-border"
+                <ChevronRight
+                  className={cn(
+                    "size-4 transition-transform duration-200",
+                    rootOpen && "rotate-90",
+                  )}
+                  aria-hidden
+                />
+                farid-zeynalov
+              </button>
+              <AnimatePresence initial={false}>
+                {rootOpen && (
+                  <m.div
+                    id="explorer-root"
+                    key="root"
+                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Link
-                      href={item.href}
-                      onClick={() => setOpen(false)}
-                      aria-current={active === item.href ? "page" : undefined}
-                      className={cn(
-                        "flex items-baseline justify-between py-5 text-4xl font-medium tracking-tight",
-                        active === item.href ? "text-fg" : "text-fg-muted",
-                      )}
-                    >
-                      {item.label}
-                      <span aria-hidden className="font-mono text-xs text-fg-subtle">
-                        0{index + 1}
-                      </span>
-                    </Link>
-                  </m.li>
-                ))}
-              </m.ul>
+                    <ExplorerTree
+                      nodes={tree}
+                      pathname={pathname}
+                      onNavigate={() => setOpen(false)}
+                    />
+                  </m.div>
+                )}
+              </AnimatePresence>
             </nav>
+
+            {/* Status bar */}
             <m.div
-              className="relative mt-auto space-y-3 text-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 0.4 } }}
+              className="flex h-7 shrink-0 items-center justify-between bg-accent px-3 font-mono text-[11px] text-accent-fg"
+              initial={{ y: 28 }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.4, delay: 0.25, ease }}
+              aria-hidden
             >
-              <p className="font-mono text-xs text-fg-subtle uppercase">Get in touch</p>
-              <a href={`mailto:${profile.email}`} className="block text-lg text-fg">
-                {profile.email}
-              </a>
-              {linkedIn && (
-                <a
-                  href={linkedIn.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-fg-muted"
-                >
-                  LinkedIn <ArrowUpRight className="size-3.5" aria-hidden />
-                </a>
-              )}
+              <span className="flex items-center gap-3">
+                <span className="flex items-center gap-1">
+                  <GitBranch className="size-3.5" />
+                  main
+                </span>
+                <span className="flex items-center gap-1">
+                  <CircleCheck className="size-3.5" />
+                  open to work
+                </span>
+              </span>
+              <span>TSX · UTF-8</span>
             </m.div>
           </m.div>
         )}

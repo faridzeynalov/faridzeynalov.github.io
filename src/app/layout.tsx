@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { profile } from "@/data/profile";
+import { buildNavTree } from "@/lib/nav-tree";
 import { siteUrl } from "@/lib/site";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
@@ -92,7 +93,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <MotionProvider>
           <RouteProgress />
-          <SiteHeader />
+          <SiteHeader tree={buildNavTree()} />
           <main id="main">{children}</main>
           <SiteFooter />
           <CursorEffects />

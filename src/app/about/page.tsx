@@ -62,7 +62,7 @@ export default function AboutPage() {
       />
 
       {/* Story — lights up as you read */}
-      <section aria-label="Story" className="pb-24 md:pb-32">
+      <section id="story" aria-label="Story" className="scroll-mt-24 pb-24 md:pb-32">
         <div className="container-page">
           <ScrollLitText
             text={profile.about.join(" ")}
@@ -90,7 +90,11 @@ export default function AboutPage() {
       </section>
 
       {/* Principles */}
-      <section aria-labelledby="principles-title" className="py-24 md:py-32">
+      <section
+        id="principles"
+        aria-labelledby="principles-title"
+        className="scroll-mt-16 py-24 md:py-32"
+      >
         <div className="container-page">
           <SectionHeading
             id="principles-title"
@@ -124,7 +128,7 @@ export default function AboutPage() {
       </section>
 
       {/* Journey */}
-      <section aria-labelledby="journey-title" className="pb-24 md:pb-32">
+      <section id="journey" aria-labelledby="journey-title" className="scroll-mt-24 pb-24 md:pb-32">
         <div className="container-page">
           <SectionHeading
             id="journey-title"

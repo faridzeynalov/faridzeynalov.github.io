@@ -10,8 +10,9 @@ import { useActiveNav } from "@/components/layout/use-active-nav";
 import { buttonVariants } from "@/components/ui/button";
 import { navItems } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import type { TreeNode } from "@/types/nav";
 
-export function SiteHeader() {
+export function SiteHeader({ tree }: { tree: TreeNode[] }) {
   const active = useActiveNav();
   const [scrolled, setScrolled] = useState(false);
 
@@ -74,7 +75,7 @@ export function SiteHeader() {
           >
             Let&rsquo;s talk
           </Link>
-          <MobileNav active={active} />
+          <MobileNav tree={tree} />
         </div>
       </div>
     </header>

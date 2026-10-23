@@ -238,10 +238,40 @@ test("mobile menu opens, traps focus and closes with Escape", async ({ page, isM
   await page.getByRole("button", { name: "Open menu" }).click();
   const menu = page.getByRole("dialog", { name: "Menu" });
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole("link", { name: "Portfolio" })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "home.tsx" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   await page.keyboard.press("Escape");
   await expect(menu).toBeHidden();
   await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
+});
+
+test("mobile explorer folders expand and their files navigate", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "Mobile navigation only");
+  await page.goto("./");
+  await page.getByRole("button", { name: "Open menu" }).click();
+  const menu = page.getByRole("dialog", { name: "Menu" });
+
+  const services = menu.getByRole("button", { name: /^services/ });
+  await expect(services).toHaveAttribute("aria-expanded", "false");
+  await services.click();
+  await expect(services).toHaveAttribute("aria-expanded", "true");
+  await menu.getByRole("link", { name: "ai.tsx" }).click();
+  await expect(page).toHaveURL(/\/services\/#ai$/);
+  await expect(menu).toBeHidden();
+
+  // On a page inside a folder, that folder opens by itself with the page selected.
+  await page.goto("portfolio/panorama/");
+  await page.getByRole("button", { name: "Open menu" }).click();
+  await expect(menu.getByRole("button", { name: /^portfolio/ })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+  await expect(menu.getByRole("link", { name: "panorama.tsx" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
 });
 
 test("content is visible with reduced motion", async ({ browser }) => {

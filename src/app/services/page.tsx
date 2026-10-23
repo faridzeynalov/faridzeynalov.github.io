@@ -45,7 +45,7 @@ export default function ServicesPage() {
 
       <ServicesShowcase />
 
-      <section aria-labelledby="process-title" className="py-24 md:py-32">
+      <section id="process" aria-labelledby="process-title" className="scroll-mt-16 py-24 md:py-32">
         <div className="container-page">
           <SectionHeading
             id="process-title"
