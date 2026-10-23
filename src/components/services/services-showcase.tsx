@@ -8,10 +8,11 @@ import {
   useTransform,
 } from "motion/react";
 import * as m from "motion/react-m";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { serviceIcons } from "@/components/services/service-icons";
-import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
+import type { Service } from "@/types/content";
 
 const HORIZONTAL_QUERY = "(min-width: 1024px) and (prefers-reduced-motion: no-preference)";
 
@@ -20,7 +21,8 @@ const HORIZONTAL_QUERY = "(min-width: 1024px) and (prefers-reduced-motion: no-pr
  * scrolls vertically (sticky stage + native scroll, nothing is hijacked). On small screens
  * or with reduced motion the same panels simply stack.
  */
-export function ServicesShowcase() {
+export function ServicesShowcase({ services }: { services: Service[] }) {
+  const t = useTranslations("ServicesPage");
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [horizontal, setHorizontal] = useState(false);
@@ -88,7 +90,7 @@ export function ServicesShowcase() {
   return (
     <section
       ref={sectionRef}
-      aria-label="Services"
+      aria-label={t("showcase")}
       className="relative"
       style={horizontal ? { height: `calc(100dvh + ${distance}px)` } : undefined}
     >
@@ -109,7 +111,7 @@ export function ServicesShowcase() {
                 style={{ scaleX: smooth }}
               />
             </span>
-            <span className="font-mono text-xs text-fg-subtle uppercase">Scroll</span>
+            <span className="font-mono text-xs text-fg-subtle uppercase">{t("scroll")}</span>
           </div>
         )}
 
@@ -141,7 +143,7 @@ export function ServicesShowcase() {
               >
                 <div
                   className={cn(
-                    "pointer-events-none absolute -top-40 -right-40 size-96 rounded-full bg-accent/15 blur-3xl transition-opacity duration-700",
+                    "pointer-events-none absolute -top-56 -right-56 size-[32rem] transition-opacity duration-700 [--glow-strength:15%] glow",
                     horizontal && current === index ? "opacity-100" : "opacity-0",
                   )}
                   aria-hidden

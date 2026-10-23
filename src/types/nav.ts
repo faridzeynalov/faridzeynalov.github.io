@@ -1,6 +1,7 @@
 export type TreeFileIcon =
-  "react" | "markdown" | "pdf" | "mail" | "phone" | "link" | "hash" | "filter";
-export type TreeFolderIcon = "portfolio" | "services" | "cv" | "about" | "contact" | "plain";
+  "react" | "markdown" | "pdf" | "mail" | "phone" | "link" | "hash" | "filter" | "locale";
+export type TreeFolderIcon =
+  "portfolio" | "services" | "cv" | "about" | "contact" | "locales" | "plain";
 
 export interface TreeFile {
   kind: "file";
@@ -11,6 +12,8 @@ export interface TreeFile {
   hint?: string;
   external?: boolean;
   download?: boolean;
+  /** Opens the current page in this language instead of navigating to `href`. */
+  switchLocale?: "en" | "az" | "ru";
 }
 
 export interface TreeFolder {

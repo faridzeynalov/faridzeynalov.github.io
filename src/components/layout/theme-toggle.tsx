@@ -1,6 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useSyncExternalStore, type MouseEvent } from "react";
 import {
   FOLLOW_SYSTEM_THEME,
@@ -23,6 +24,7 @@ function useTheme(): Theme | null {
 }
 
 export function ThemeToggle({ className }: { className?: string }) {
+  const t = useTranslations("Theme");
   const theme = useTheme();
 
   // Follow OS theme changes until the visitor makes an explicit choice.
@@ -66,10 +68,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       .catch(() => {});
   }
 
-  const label =
-    theme === null
-      ? "Toggle color theme"
-      : `Switch to ${theme === "dark" ? "light" : "dark"} theme`;
+  const label = theme === null ? t("toggle") : t(theme === "dark" ? "toLight" : "toDark");
 
   return (
     <button

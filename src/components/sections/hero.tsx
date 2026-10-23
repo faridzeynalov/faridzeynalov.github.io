@@ -1,21 +1,26 @@
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { HeroIntro } from "@/components/sections/hero-intro";
 import { HeroShowcase, type ShowcaseItem } from "@/components/sections/hero-showcase";
 import { buttonVariants } from "@/components/ui/button";
-import { profile } from "@/data/profile";
-import { getIndustryLabel } from "@/lib/industries";
-import { getFeaturedProjects } from "@/lib/projects";
+import { getProfile } from "@/data/profile";
+import { Link } from "@/i18n/navigation";
+import { useAppLocale } from "@/i18n/use-app-locale";
+import { getFeaturedProjects, getIndustryLabel } from "@/lib/projects";
 
 export function Hero() {
-  const showcase: ShowcaseItem[] = getFeaturedProjects().flatMap((project) =>
+  const locale = useAppLocale();
+  const t = useTranslations("Hero");
+  const profile = getProfile(locale);
+
+  const showcase: ShowcaseItem[] = getFeaturedProjects(locale).flatMap((project) =>
     project.images
       ? [
           {
             slug: project.slug,
             name: project.name,
             domain: project.domain,
-            industry: getIndustryLabel(project.industry),
+            industry: getIndustryLabel(project.industry, locale),
             stack: project.stack,
             cover: project.images.cover,
             mobile: project.images.mobile,
@@ -25,9 +30,9 @@ export function Hero() {
   );
 
   const stats = [
-    { value: profile.yearsOfExperience, label: "years in production" },
-    { value: profile.sitesShipped, label: "websites shipped" },
-    { value: String(profile.industries.length), label: "industries" },
+    { value: profile.yearsOfExperience, label: t("statYears") },
+    { value: profile.sitesShipped, label: t("statSites") },
+    { value: String(profile.industries.length), label: t("statIndustries") },
   ];
 
   return (
@@ -38,31 +43,27 @@ export function Hero() {
       {/* Backdrop: grid + soft accent glow */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
         <div className="absolute inset-0 bg-grid mask-radial" />
-        <div className="absolute -top-40 left-1/2 h-[36rem] w-[60rem] -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]" />
+        <div className="absolute -top-72 left-1/2 h-[54rem] w-[78rem] -translate-x-1/2 [--glow-strength:10%] glow" />
       </div>
 
       <div className="container-page grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
         <HeroIntro
           name={profile.name}
-          intro={
-            <>
-              For the past {profile.yearsOfExperience} years at One Studio I&rsquo;ve been building
-              production websites with React, Next.js and TypeScript — {profile.sitesShipped} of
-              them live, for hotels, residential developers, clinics, retailers and industrial
-              companies.
-            </>
-          }
+          badge={t("badge")}
+          jobTitle={t("jobTitle")}
+          tagline={t("tagline")}
+          intro={t("intro", { years: profile.yearsOfExperience, sites: profile.sitesShipped })}
           actions={
             <>
-              <Link href="/portfolio/" className={buttonVariants({ size: "lg" })}>
-                View my work
+              <Link href="/portfolio" className={buttonVariants({ size: "lg" })}>
+                {t("viewWork")}
                 <ArrowRight aria-hidden />
               </Link>
               <Link
-                href="/contact/"
+                href="/contact"
                 className={buttonVariants({ variant: "secondary", size: "lg" })}
               >
-                Contact me
+                {t("contactMe")}
               </Link>
             </>
           }

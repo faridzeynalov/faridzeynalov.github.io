@@ -1,12 +1,14 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/types/project";
 
 /** Previous / next project navigation. */
 export function ProjectPager({ previous, next }: { previous: Project; next: Project }) {
+  const t = useTranslations("Project");
   return (
-    <nav aria-label="More projects" className="grid gap-3 sm:grid-cols-2">
+    <nav aria-label={t("moreProjects")} className="grid gap-3 sm:grid-cols-2">
       <PagerLink project={previous} direction="previous" />
       <PagerLink project={next} direction="next" />
     </nav>
@@ -14,12 +16,13 @@ export function ProjectPager({ previous, next }: { previous: Project; next: Proj
 }
 
 function PagerLink({ project, direction }: { project: Project; direction: "previous" | "next" }) {
+  const t = useTranslations("Project");
   const isNext = direction === "next";
   const Icon = isNext ? ArrowRight : ArrowLeft;
 
   return (
     <Link
-      href={`/portfolio/${project.slug}/`}
+      href={`/portfolio/${project.slug}`}
       rel={isNext ? "next" : "prev"}
       className={cn(
         "group relative flex flex-col gap-2 overflow-hidden rounded-2xl border border-border bg-bg-elevated p-6 transition-colors duration-300 hover:border-border-strong",
@@ -37,7 +40,7 @@ function PagerLink({ project, direction }: { project: Project; direction: "previ
         {!isNext && (
           <Icon className="size-3.5 transition-transform group-hover:-translate-x-1" aria-hidden />
         )}
-        {isNext ? "Next project" : "Previous project"}
+        {isNext ? t("nextProject") : t("previousProject")}
         {isNext && (
           <Icon className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden />
         )}

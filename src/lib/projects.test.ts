@@ -5,8 +5,9 @@ import {
   getFeaturedProjects,
   getProjectBySlug,
 } from "@/lib/projects";
+import { routing } from "@/i18n/routing";
 
-const projects = getAllProjects();
+const projects = getAllProjects("en");
 
 describe("project data", () => {
   it("has unique, URL-safe slugs", () => {
@@ -35,7 +36,7 @@ describe("project data", () => {
   });
 
   it("only features projects that have previews", () => {
-    const featured = getFeaturedProjects();
+    const featured = getFeaturedProjects("en");
     expect(featured.length).toBeGreaterThan(0);
     for (const project of featured) expect(project.images).toBeDefined();
   });
@@ -43,15 +44,36 @@ describe("project data", () => {
 
 describe("project queries", () => {
   it("finds a project by slug", () => {
-    expect(getProjectBySlug("panorama")?.domain).toBe("panorama.az");
-    expect(getProjectBySlug("does-not-exist")).toBeUndefined();
+    expect(getProjectBySlug("panorama", "en")?.domain).toBe("panorama.az");
+    expect(getProjectBySlug("does-not-exist", "en")).toBeUndefined();
   });
 
   it("wraps previous/next navigation around the list", () => {
     const first = projects[0];
     const last = projects[projects.length - 1];
-    expect(getAdjacentProjects(first.slug)?.previous.slug).toBe(last.slug);
-    expect(getAdjacentProjects(last.slug)?.next.slug).toBe(first.slug);
-    expect(getAdjacentProjects("missing")).toBeNull();
+    expect(getAdjacentProjects(first.slug, "en")?.previous.slug).toBe(last.slug);
+    expect(getAdjacentProjects(last.slug, "en")?.next.slug).toBe(first.slug);
+    expect(getAdjacentProjects("missing", "en")).toBeNull();
+  });
+});
+
+describe("translations", () => {
+  it("has the same projects, in the same order, in every language", () => {
+    for (const locale of routing.locales) {
+      expect(getAllProjects(locale).map((project) => project.slug)).toEqual(
+        projects.map((project) => project.slug),
+      );
+    }
+  });
+
+  it("translates every project's text", () => {
+    for (const locale of routing.locales.filter((other) => other !== "en")) {
+      const translated = getAllProjects(locale);
+      translated.forEach((project, index) => {
+        expect(project.summary).toBeTruthy();
+        expect(project.overview).not.toBe(projects[index].overview);
+        expect(project.liveFeatures).toHaveLength(projects[index].liveFeatures.length);
+      });
+    }
   });
 });

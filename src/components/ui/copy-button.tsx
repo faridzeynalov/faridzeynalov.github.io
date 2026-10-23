@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +12,7 @@ interface CopyButtonProps {
 }
 
 export function CopyButton({ value, label, className }: CopyButtonProps) {
+  const t = useTranslations("Common");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export function CopyButton({ value, label, className }: CopyButtonProps) {
         "inline-flex size-9 items-center justify-center rounded-full border border-border text-fg-muted transition-colors hover:border-border-strong hover:text-fg",
         className,
       )}
-      aria-label={copied ? "Copied to clipboard" : label}
+      aria-label={copied ? t("copiedToClipboard") : label}
     >
       <span className="relative size-4">
         <Copy
@@ -55,7 +57,7 @@ export function CopyButton({ value, label, className }: CopyButtonProps) {
         />
       </span>
       <span role="status" className="sr-only">
-        {copied ? "Copied" : ""}
+        {copied ? t("copied") : ""}
       </span>
     </button>
   );

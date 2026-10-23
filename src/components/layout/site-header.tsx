@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import * as m from "motion/react-m";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Logo } from "@/components/layout/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -13,6 +15,7 @@ import { cn } from "@/lib/utils";
 import type { TreeNode } from "@/types/nav";
 
 export function SiteHeader({ tree }: { tree: TreeNode[] }) {
+  const t = useTranslations("Nav");
   const active = useActiveNav();
   const [scrolled, setScrolled] = useState(false);
 
@@ -29,7 +32,9 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
         className={cn(
           "absolute inset-0 border-b transition-[background-color,border-color] duration-300",
           scrolled
-            ? "border-border bg-bg/75 backdrop-blur-xl backdrop-saturate-150"
+            ? // Phones get a solid bar: a blurred backdrop on a fixed header is re-rendered on
+              // every scroll frame, which is what makes mobile scrolling stutter.
+              "border-border bg-bg/95 md:bg-bg/75 md:backdrop-blur-lg"
             : "border-transparent bg-transparent",
         )}
         aria-hidden
@@ -37,7 +42,7 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
       <div className="relative container-page flex h-16 items-center justify-between gap-4">
         <Logo />
 
-        <nav aria-label="Main" className="hidden md:block">
+        <nav aria-label={t("main")} className="hidden md:block">
           <ul className="flex items-center gap-1 rounded-full border border-border bg-bg-elevated/50 p-1 backdrop-blur">
             {navItems.map((item) => {
               const isActive = active === item.href;
@@ -59,7 +64,7 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
                       isActive ? "text-fg" : "text-fg-muted hover:text-fg",
                     )}
                   >
-                    {item.label}
+                    {t(item.key)}
                   </Link>
                 </li>
               );
@@ -68,12 +73,13 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <ThemeToggle />
           <Link
-            href="/contact/"
+            href="/contact"
             className={cn(buttonVariants({ size: "sm" }), "hidden lg:inline-flex")}
           >
-            Let&rsquo;s talk
+            {t("letsTalk")}
           </Link>
           <MobileNav tree={tree} />
         </div>

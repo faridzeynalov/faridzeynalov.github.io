@@ -1,22 +1,30 @@
 import { ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { BrowserFrame } from "@/components/projects/device-frames";
 import { UnavailablePreview } from "@/components/projects/unavailable-preview";
 import { Badge } from "@/components/ui/badge";
-import { getIndustryLabel } from "@/lib/industries";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
   project: Project;
+  /** Industry name in the page language. */
+  industryLabel: string;
   className?: string;
   headingLevel?: "h2" | "h3";
 }
 
-export function ProjectCard({ project, className, headingLevel = "h3" }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  industryLabel,
+  className,
+  headingLevel = "h3",
+}: ProjectCardProps) {
+  const t = useTranslations("ProjectCard");
   const Heading = headingLevel;
-  const href = `/portfolio/${project.slug}/`;
+  const href = `/portfolio/${project.slug}`;
 
   return (
     <article
@@ -42,7 +50,7 @@ export function ProjectCard({ project, className, headingLevel = "h3" }: Project
           >
             <Image
               src={project.images.thumb}
-              alt={`Homepage of ${project.domain}`}
+              alt={t("homepageOf", { domain: project.domain })}
               sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 90vw"
               className="h-auto w-full"
               placeholder="blur"
@@ -56,7 +64,7 @@ export function ProjectCard({ project, className, headingLevel = "h3" }: Project
       <div className="flex flex-1 flex-col gap-3 p-3 pt-4">
         <div className="flex items-center justify-between gap-3 font-mono text-[11px] text-fg-subtle uppercase">
           <span className="truncate">
-            {getIndustryLabel(project.industry)}
+            {industryLabel}
             {project.group ? ` · ${project.group}` : ""}
           </span>
           <ArrowUpRight
@@ -77,7 +85,7 @@ export function ProjectCard({ project, className, headingLevel = "h3" }: Project
         </div>
         <p className="text-sm text-pretty text-fg-muted">{project.summary}</p>
         {project.stack.length > 0 && (
-          <ul className="mt-auto flex flex-wrap gap-1.5 pt-1" aria-label="Technologies">
+          <ul className="mt-auto flex flex-wrap gap-1.5 pt-1" aria-label={t("technologies")}>
             {project.stack.slice(0, 3).map((item) => (
               <li key={item}>
                 <Badge>{item}</Badge>

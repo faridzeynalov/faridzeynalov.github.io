@@ -1,29 +1,28 @@
 "use client";
 
-import { animate, useInView, useReducedMotion } from "motion/react";
+import { animate, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
+import { useScrollReveal } from "@/components/motion/scroll-reveal";
 
 /**
- * Counts from 0 to `value` the first time it scrolls into view.
- * The static HTML already contains the final number (for no-JS and crawlers).
+ * Counts from 0 to `value` when it scrolls into view (again after scrolling back up, on the
+ * home page). The static HTML already contains the final number (for no-JS and crawlers).
  */
 export function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
+  const shown = useScrollReveal(ref, { margin: "0px 0px -10% 0px" });
   const reduceMotion = useReducedMotion();
-
-  // Reset to 0 before it's seen, so the count-up starts from zero.
-  useEffect(() => {
-    if (!reduceMotion && ref.current && !inView) ref.current.textContent = `0${suffix}`;
-    // Only on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const el = ref.current;
-    if (!inView || !el) return;
+    if (!el) return;
     if (reduceMotion) {
       el.textContent = `${value}${suffix}`;
+      return;
+    }
+    // Not yet seen (or reset below the viewport): wait at zero.
+    if (!shown) {
+      el.textContent = `0${suffix}`;
       return;
     }
     const controls = animate(0, value, {
@@ -34,7 +33,7 @@ export function CountUp({ value, suffix = "" }: { value: number; suffix?: string
       },
     });
     return () => controls.stop();
-  }, [inView, reduceMotion, value, suffix]);
+  }, [shown, reduceMotion, value, suffix]);
 
   return (
     <span ref={ref} className="tabular-nums">

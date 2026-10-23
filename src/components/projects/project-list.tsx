@@ -11,16 +11,21 @@ import {
 } from "motion/react";
 import * as m from "motion/react-m";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useEffect, useState, type PointerEvent } from "react";
-import { getIndustryLabel } from "@/lib/industries";
-import type { Project } from "@/types/project";
+import type { Industry, Project } from "@/types/project";
 
 /**
  * Portfolio page signature: an editorial list where the hovered project's screenshot follows
  * the cursor and tilts with its speed. Touch devices get inline thumbnails instead.
  */
-export function ProjectList({ projects }: { projects: Project[] }) {
+export function ProjectList({
+  projects,
+  industryLabels,
+}: {
+  projects: Project[];
+  industryLabels: Record<Industry, string>;
+}) {
   const reduceMotion = useReducedMotion();
   const [finePointer, setFinePointer] = useState(false);
   const [hovered, setHovered] = useState<Project | null>(null);
@@ -58,7 +63,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
         {projects.map((project, index) => (
           <li key={project.slug}>
             <Link
-              href={`/portfolio/${project.slug}/`}
+              href={`/portfolio/${project.slug}`}
               onPointerEnter={() => setHovered(project)}
               className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 border-b border-border py-5 transition-colors duration-300 hover:bg-bg-subtle/40 md:grid-cols-[3.5rem_1.6fr_1fr_1fr_auto] md:py-7"
             >
@@ -74,7 +79,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
                 </span>
               </span>
               <span className="hidden text-sm text-fg-muted md:block">
-                {getIndustryLabel(project.industry)}
+                {industryLabels[project.industry]}
               </span>
               <span className="hidden truncate font-mono text-xs text-fg-subtle md:block">
                 {project.domain}

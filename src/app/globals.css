@@ -83,13 +83,13 @@
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
-  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-serif:
+    var(--font-instrument-serif-schwa), var(--font-instrument-serif), ui-serif, Georgia, serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 
   --animate-marquee: marquee var(--marquee-duration, 60s) linear infinite;
-  --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
 }
 
 @keyframes marquee {
@@ -122,13 +122,58 @@
   animation-delay: var(--delay, 0ms);
 }
 
-@keyframes pulse-dot {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgb(34 197 94 / 0.45);
+/*
+ * Parallax tied to the element's position in the viewport, run by the browser off the main
+ * thread. Browsers without scroll-driven animations simply show it static.
+ */
+@keyframes scroll-parallax {
+  from {
+    translate: 0 40px;
   }
-  50% {
-    box-shadow: 0 0 0 6px rgb(34 197 94 / 0);
+  to {
+    translate: 0 -40px;
+  }
+}
+
+@utility scroll-parallax {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: scroll-parallax linear both;
+      animation-timeline: view();
+    }
+  }
+}
+
+/* "Available" dot: a ring that grows and fades. transform + opacity only, so it never repaints. */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50%,
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@utility pulse-dot {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: pulse-ring 2.4s ease-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      animation: none;
+      opacity: 0;
+    }
   }
 }
 
@@ -199,6 +244,18 @@
 
 @utility mask-fade-x {
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/*
+ * Soft accent glow. A radial gradient instead of a large `blur()` filter: it looks the same
+ * but costs nothing to scroll past, while big filtered layers are slow to re-raster on phones.
+ */
+@utility glow {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--glow-color, var(--accent)) var(--glow-strength, 15%), transparent),
+    transparent
+  );
 }
 
 @utility mask-radial {
@@ -282,37 +339,54 @@ html.has-custom-cursor :is(input, textarea, [contenteditable="true"]) {
   color: var(--accent);
 }
 
-/* AI panel: a soft accent highlight that travels around the border. */
+/*
+ * AI panel: a soft accent highlight that travels around the border. A rotating conic gradient
+ * behind a 1px inset panel: only `transform` animates, so it never repaints while scrolling.
+ */
 .ai-border {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(var(--bg-elevated), var(--bg-elevated)) padding-box,
-    linear-gradient(
-        120deg,
-        var(--border-strong) 0%,
-        var(--accent) 20%,
-        var(--border-strong) 40%,
-        var(--border-strong) 60%,
-        var(--accent) 80%,
-        var(--border-strong) 100%
-      )
-      border-box;
-  background-size:
-    100% 100%,
-    300% 300%;
-  animation: ai-border 10s linear infinite;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--border-strong);
 }
 
-@keyframes ai-border {
-  from {
-    background-position:
-      0 0,
-      0% 50%;
-  }
+.ai-border::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  top: 50%;
+  left: 50%;
+  width: 250%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: conic-gradient(
+    transparent 0deg 40deg,
+    var(--accent) 80deg,
+    transparent 120deg 220deg,
+    var(--accent) 260deg,
+    transparent 300deg
+  );
+  animation: ai-border-spin 10s linear infinite;
+}
+
+.ai-border::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 1px;
+  border-radius: calc(1rem - 1px);
+  background: var(--bg-elevated);
+}
+
+@keyframes ai-border-spin {
   to {
-    background-position:
-      0 0,
-      300% 50%;
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-border::before {
+    animation: none;
   }
 }
 

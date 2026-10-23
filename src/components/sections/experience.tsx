@@ -1,19 +1,23 @@
 import { ArrowUpRight, Briefcase, GraduationCap } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
-import { profile } from "@/data/profile";
+import { useTranslations } from "next-intl";
+import { getProfile } from "@/data/profile";
+import { useAppLocale } from "@/i18n/use-app-locale";
 
 export function Experience() {
+  const t = useTranslations("Experience");
+  const profile = getProfile(useAppLocale());
   return (
     <section aria-labelledby="experience-title" className="py-24 md:py-32">
       <div className="container-page">
         <SectionHeading
           id="experience-title"
           index="05"
-          eyebrow="Experience"
+          eyebrow={t("eyebrow")}
           title={
             <>
-              Where I&rsquo;ve <Accent>been building.</Accent>
+              {t("title")} <Accent>{t("accent")}</Accent>
             </>
           }
         />
@@ -86,7 +90,7 @@ export function Experience() {
             <Reveal delay={0.1}>
               <h3 className="mb-6 flex items-center gap-2 font-mono text-xs text-fg-subtle uppercase">
                 <GraduationCap className="size-4" aria-hidden />
-                Education
+                {t("education")}
               </h3>
               <ol className="relative space-y-8 border-l border-border pl-6">
                 {profile.education.map((entry) => (
@@ -106,7 +110,7 @@ export function Experience() {
               </ol>
 
               <h3 className="mt-12 mb-4 font-mono text-xs text-fg-subtle uppercase">
-                Certificates
+                {t("certificates")}
               </h3>
               <ul className="space-y-2">
                 {profile.certificates.map((certificate) => (

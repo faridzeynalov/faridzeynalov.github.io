@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 import { LOGO_PATH, LOGO_VIEWBOX } from "@/components/layout/logo-path";
-import { profile } from "@/data/profile";
+import { getProfile } from "@/data/profile";
+
+// The shared preview image is in English, the default language.
+const profile = getProfile("en");
 
 // Rendered once at build time into `out/og.png` — a real .png so static hosts send the right
 // content type to social crawlers.

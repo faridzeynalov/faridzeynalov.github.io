@@ -1,13 +1,15 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useInView, useScroll, useSpring, useTransform } from "motion/react";
+import { useInView, useScroll, useSpring } from "motion/react";
 import * as m from "motion/react-m";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
+import { Reveal } from "@/components/motion/reveal";
+import { useScrollReveal } from "@/components/motion/scroll-reveal";
 import { Accent } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
-import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
 import { serviceIcons } from "@/components/services/service-icons";
 import type { Service } from "@/types/content";
@@ -18,7 +20,9 @@ const ease = [0.16, 1, 0.3, 1] as const;
  * Services: a sticky index on the left tracks the card in view, a progress line fills
  * as the list scrolls past, and each card reveals with its deliverables staggering in.
  */
-export function Services() {
+export function Services({ services }: { services: Service[] }) {
+  const t = useTranslations("ServicesSection");
+  const tc = useTranslations("Common");
   const listRef = useRef<HTMLOListElement>(null);
   const [active, setActive] = useState(0);
 
@@ -38,30 +42,24 @@ export function Services() {
         {/* Sticky intro + index */}
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-28">
-            <m.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-              transition={{ duration: 0.8, ease }}
-            >
+            <Reveal>
               <p className="mb-4 flex items-center gap-3 font-mono text-xs text-fg-subtle uppercase">
                 <span className="text-accent">02</span>
                 <span className="h-px w-8 bg-border-strong" aria-hidden />
-                Services
+                {t("eyebrow")}
               </p>
               <h2
                 id="services-title"
                 className="text-[clamp(2rem,4.6vw,3.25rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance"
               >
-                What I can <Accent>build for you.</Accent>
+                {t("title")} <Accent>{t("accent")}</Accent>
               </h2>
               <p className="mt-4 max-w-md text-base text-pretty text-fg-muted md:text-lg">
-                From the first layout to a fast, findable product in production — and the care it
-                needs after launch. Pick one piece or the whole journey.
+                {t("description")}
               </p>
-            </m.div>
+            </Reveal>
 
-            <nav aria-label="Services" className="mt-10 hidden lg:block">
+            <nav aria-label={t("eyebrow")} className="mt-10 hidden lg:block">
               <ol className="space-y-1">
                 {services.map((service, index) => (
                   <li key={service.id}>
@@ -99,24 +97,18 @@ export function Services() {
               </ol>
             </nav>
 
-            <m.div
-              className="mt-10"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2, ease }}
-            >
-              <Link href="/contact/" className={buttonVariants({ size: "lg" })}>
-                Start a project
+            <Reveal className="mt-10" y={12} delay={0.2}>
+              <Link href="/contact" className={buttonVariants({ size: "lg" })}>
+                {tc("startProject")}
                 <ArrowRight aria-hidden />
               </Link>
               <Link
-                href="/services/"
+                href="/services"
                 className={buttonVariants({ variant: "ghost", size: "lg", className: "ml-2" })}
               >
-                All services
+                {t("allServices")}
               </Link>
-            </m.div>
+            </Reveal>
           </div>
         </div>
 
@@ -160,6 +152,7 @@ function ServiceCard({
   active: boolean;
   onActive: (index: number) => void;
 }) {
+  const t = useTranslations("ServicesSection");
   const ref = useRef<HTMLLIElement>(null);
   // "Active" when the card crosses the middle band of the viewport.
   const inBand = useInView(ref, { margin: "-45% 0px -45% 0px" });
@@ -167,9 +160,8 @@ function ServiceCard({
     if (inBand) onActive(index);
   }, [inBand, onActive, index]);
 
-  // Subtle parallax on the large background number.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const numberY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  // Plays as the card scrolls in; the icon and deliverables follow through variants.
+  const shown = useScrollReveal(ref, { amount: 0.3 });
 
   const Icon = serviceIcons[service.icon];
 
@@ -178,10 +170,12 @@ function ServiceCard({
       ref={ref}
       id={`service-${service.id}`}
       className="relative scroll-mt-28 sm:pl-14"
-      initial={{ opacity: 0, y: 56, scale: 0.97, filter: "blur(6px)" }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.9, ease }}
+      initial="hidden"
+      animate={shown ? "show" : "hidden"}
+      variants={{
+        hidden: { opacity: 0, y: 56, scale: 0.97, transition: { duration: 0.3 } },
+        show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.9, ease } },
+      }}
     >
       {/* Rail node */}
       <span
@@ -205,26 +199,31 @@ function ServiceCard({
         {/* Accent wash when active */}
         <div
           className={cn(
-            "pointer-events-none absolute -top-32 -right-32 size-72 rounded-full bg-accent/15 blur-3xl transition-opacity duration-700",
+            "pointer-events-none absolute -top-44 -right-44 size-[26rem] transition-opacity duration-700 [--glow-strength:15%] glow",
             active ? "opacity-100" : "opacity-0",
           )}
           aria-hidden
         />
-        <m.span
-          className="pointer-events-none absolute -top-4 right-4 font-mono text-[7rem] leading-none font-semibold text-fg/[0.04] select-none md:text-[9rem]"
-          style={{ y: numberY }}
+        {/* Subtle parallax on the large number: a CSS scroll-driven animation (no JS) */}
+        <span
+          className="pointer-events-none absolute -top-4 right-4 scroll-parallax font-mono text-[7rem] leading-none font-semibold text-fg/[0.04] select-none md:text-[9rem]"
           aria-hidden
         >
           {String(index + 1).padStart(2, "0")}
-        </m.span>
+        </span>
 
         <div className="relative flex items-start gap-4">
           <m.span
             className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-bg-subtle text-accent"
-            initial={{ rotate: -25, scale: 0.6, opacity: 0 }}
-            whileInView={{ rotate: 0, scale: 1, opacity: 1 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.15 }}
+            variants={{
+              hidden: { rotate: -25, scale: 0.6, opacity: 0 },
+              show: {
+                rotate: 0,
+                scale: 1,
+                opacity: 1,
+                transition: { type: "spring", stiffness: 260, damping: 18, delay: 0.15 },
+              },
+            }}
           >
             <Icon className="size-5" aria-hidden />
           </m.span>
@@ -242,11 +241,11 @@ function ServiceCard({
 
         <m.ul
           className="relative mt-6 grid gap-2.5 sm:grid-cols-2"
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.4 }}
-          variants={{ show: { transition: { staggerChildren: 0.07, delayChildren: 0.25 } } }}
-          aria-label={`${service.title} deliverables`}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.07, delayChildren: 0.25 } },
+          }}
+          aria-label={t("deliverables", { title: service.title })}
         >
           {service.deliverables.map((item) => (
             <m.li

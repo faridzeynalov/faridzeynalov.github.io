@@ -1,27 +1,45 @@
 import { ArrowUpRight, Download, Link2, Mail, MapPin, Phone } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PrintButton } from "@/components/cv/print-button";
 import { DrawLine, ReadingProgress } from "@/components/cv/reading-progress";
 import { Enter } from "@/components/motion/enter";
 import { buttonVariants } from "@/components/ui/button";
-import { ai } from "@/data/ai";
-import { profile } from "@/data/profile";
+import { getAi } from "@/data/ai";
+import { getProfile } from "@/data/profile";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { getAllProjects } from "@/lib/projects";
 import { withBasePath } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "CV",
-  description: `CV of ${profile.name}, ${profile.cv.title} in ${profile.location}.`,
-  alternates: { canonical: "/cv/" },
-  openGraph: { url: "/cv/" },
-};
+export async function generateMetadata({ params }: PageProps<"/[locale]/cv">): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  const profile = getProfile(locale);
+  return {
+    title: t("cvTitle"),
+    description: t("cvDescription", {
+      name: profile.name,
+      title: profile.cv.title,
+      location: profile.location,
+    }),
+    alternates: localizedAlternates(locale, "/cv"),
+    openGraph: { url: localizedPath(locale, "/cv") },
+  };
+}
 
 const CV_PDF = "/farid-zeynalov-cv.pdf";
 
-export default function CvPage() {
-  const projects = getAllProjects();
+export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
+  const locale = (await params).locale as Locale;
+  setRequestLocale(locale);
+  const t = await getTranslations("CvPage");
+  const tc = await getTranslations("Common");
+  const profile = getProfile(locale);
+  const ai = getAi(locale);
+  const projects = getAllProjects(locale);
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
 
   const contacts = [
@@ -45,13 +63,13 @@ export default function CvPage() {
         {/* Toolbar */}
         <Enter className="mb-6 flex flex-wrap items-center justify-between gap-4 print:hidden">
           <p className="font-mono text-xs text-fg-subtle uppercase">
-            <span className="text-accent">/</span> cv
+            <span className="text-accent">/</span> {t("eyebrow")}
           </p>
           <div className="flex flex-wrap gap-2">
             <PrintButton />
             <a href={withBasePath(CV_PDF)} download className={buttonVariants()}>
               <Download aria-hidden />
-              Download PDF
+              {tc("downloadPdf")}
             </a>
           </div>
         </Enter>
@@ -96,13 +114,13 @@ export default function CvPage() {
             <div className="grid md:grid-cols-[1fr_17rem] print:grid-cols-[1fr_14rem]">
               {/* Main column */}
               <div className="space-y-12 px-6 py-10 sm:px-10 md:px-12 print:space-y-8 print:px-0 print:pr-8">
-                <CvSection title="Summary">
+                <CvSection title={t("summary")}>
                   <p className="text-[15px] leading-relaxed text-pretty text-fg-muted">
                     {profile.cv.summary}
                   </p>
                 </CvSection>
 
-                <CvSection title="Experience">
+                <CvSection title={t("experience")}>
                   {profile.experience.map((job) => (
                     <div key={job.company}>
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -144,12 +162,12 @@ export default function CvPage() {
                         ))}
                       </ul>
 
-                      <h4 className="mt-6 text-sm font-medium">Projects</h4>
-                      <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Projects">
+                      <h4 className="mt-6 text-sm font-medium">{t("projects")}</h4>
+                      <ul className="mt-3 flex flex-wrap gap-1.5" aria-label={t("projects")}>
                         {projects.map((project) => (
                           <li key={project.slug}>
                             <Link
-                              href={`/portfolio/${project.slug}/`}
+                              href={`/portfolio/${project.slug}`}
                               className="inline-flex rounded-md border border-border bg-bg-subtle/60 px-2 py-1 font-mono text-[11.5px] text-fg-muted transition-colors hover:border-border-strong hover:text-fg print:bg-transparent print:text-fg"
                             >
                               {project.domain}
@@ -161,7 +179,7 @@ export default function CvPage() {
                   ))}
                 </CvSection>
 
-                <CvSection title="Education">
+                <CvSection title={t("education")}>
                   <ul className="space-y-6">
                     {profile.education.map((entry) => (
                       <li key={entry.degree}>
@@ -181,7 +199,7 @@ export default function CvPage() {
 
               {/* Sidebar */}
               <aside className="space-y-10 border-t border-border bg-bg-subtle/40 px-6 py-10 sm:px-10 md:border-t-0 md:border-l md:px-8 print:border-0 print:bg-transparent print:px-0">
-                <CvSection title="Skills" compact>
+                <CvSection title={t("skills")} compact>
                   <div className="space-y-5">
                     {profile.skills.map((group) => (
                       <div key={group.title}>
@@ -201,7 +219,7 @@ export default function CvPage() {
                   </div>
                 </CvSection>
 
-                <CvSection title="AI" compact>
+                <CvSection title={t("ai")} compact>
                   <ul className="flex flex-wrap gap-1.5">
                     {[...ai.skills, ...ai.tools].map((item) => (
                       <li
@@ -214,7 +232,7 @@ export default function CvPage() {
                   </ul>
                 </CvSection>
 
-                <CvSection title="Languages" compact>
+                <CvSection title={t("languages")} compact>
                   <dl className="space-y-1.5 text-sm">
                     {profile.languages.map((language) => (
                       <div key={language.name} className="flex justify-between gap-4">
@@ -225,7 +243,7 @@ export default function CvPage() {
                   </dl>
                 </CvSection>
 
-                <CvSection title="Certificates" compact>
+                <CvSection title={t("certificates")} compact>
                   <ul className="space-y-1.5 text-sm">
                     {profile.certificates.map((certificate) => (
                       <li key={certificate.name} className="flex justify-between gap-4">
@@ -241,12 +259,12 @@ export default function CvPage() {
         </Enter>
 
         <p className="mt-6 text-center text-sm text-fg-subtle print:hidden">
-          Prefer the visual version?{" "}
+          {t("visual")}{" "}
           <Link
-            href="/portfolio/"
+            href="/portfolio"
             className="inline-flex items-center gap-1 text-fg-muted transition-colors hover:text-fg"
           >
-            Browse the portfolio <ArrowUpRight className="size-3.5" aria-hidden />
+            {t("browse")} <ArrowUpRight className="size-3.5" aria-hidden />
           </Link>
         </p>
       </div>

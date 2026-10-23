@@ -1,6 +1,6 @@
 import { ArrowUpRight, Download, GraduationCap, MapPin } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ScrollLitText } from "@/components/about/scroll-lit-text";
 import { PageHeader } from "@/components/layout/page-header";
 import { CountUp } from "@/components/motion/count-up";
@@ -8,51 +8,57 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { ContactCta } from "@/components/sections/contact-cta";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
-import { profile } from "@/data/profile";
+import { getContent } from "@/content";
+import { getProfile } from "@/data/profile";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { withBasePath } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: `About ${profile.name} — ${profile.role} in ${profile.location}.`,
-  alternates: { canonical: "/about/" },
-  openGraph: { url: "/about/" },
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/about">): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  const profile = getProfile(locale);
+  return {
+    title: t("aboutTitle"),
+    description: t("aboutDescription", {
+      name: profile.name,
+      role: profile.role,
+      location: profile.location,
+    }),
+    alternates: localizedAlternates(locale, "/about"),
+    openGraph: { url: localizedPath(locale, "/about") },
+  };
+}
 
-/** Principles drawn from the CV's summary and experience. */
-const principles = [
-  {
-    title: "Clean, reusable code",
-    text: "Component-based architecture that teams can read, reuse and extend — replacing one-off markup with systems that scale across projects.",
-  },
-  {
-    title: "Fast and findable by default",
-    text: "Performance and SEO are part of the build, not an afterthought: code splitting, lazy loading, optimised images and solid metadata.",
-  },
-  {
-    title: "Close collaboration",
-    text: "Working directly with designers, backend engineers and clients to turn business requirements into products that ship.",
-  },
-];
-
-export default function AboutPage() {
+export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
+  const locale = (await params).locale as Locale;
+  setRequestLocale(locale);
+  const t = await getTranslations("AboutPage");
+  const tc = await getTranslations("Common");
+  const profile = getProfile(locale);
+  /** Principles drawn from the CV's summary and experience. */
+  const principles = getContent(locale).principles;
   const job = profile.experience[0];
   const stats = [
     {
       value: Number.parseInt(profile.yearsOfExperience, 10),
       suffix: "+",
-      label: "years in production",
+      label: t("statYears"),
     },
-    { value: Number.parseInt(profile.sitesShipped, 10), suffix: "+", label: "websites shipped" },
-    { value: profile.industries.length, suffix: "", label: "industries" },
-    { value: profile.languages.length, suffix: "", label: "spoken languages" },
+    { value: Number.parseInt(profile.sitesShipped, 10), suffix: "+", label: t("statSites") },
+    { value: profile.industries.length, suffix: "", label: t("statIndustries") },
+    { value: profile.languages.length, suffix: "", label: t("statLanguages") },
   ];
 
   return (
     <>
       <PageHeader
-        eyebrow="about"
-        title="About me"
-        accent="in a few words."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        accent={t("accent")}
         description={
           <span className="inline-flex items-center gap-2">
             <MapPin className="size-5 text-accent" aria-hidden />
@@ -62,7 +68,7 @@ export default function AboutPage() {
       />
 
       {/* Story — lights up as you read */}
-      <section id="story" aria-label="Story" className="scroll-mt-24 pb-24 md:pb-32">
+      <section id="story" aria-label={t("story")} className="scroll-mt-24 pb-24 md:pb-32">
         <div className="container-page">
           <ScrollLitText
             text={profile.about.join(" ")}
@@ -72,7 +78,7 @@ export default function AboutPage() {
       </section>
 
       {/* Numbers */}
-      <section aria-label="In numbers" className="border-y border-border bg-bg-subtle/30">
+      <section aria-label={t("numbers")} className="border-y border-border bg-bg-subtle/30">
         <Stagger
           as="ul"
           className="container-page grid grid-cols-2 divide-border md:grid-cols-4 md:divide-x"
@@ -99,10 +105,10 @@ export default function AboutPage() {
           <SectionHeading
             id="principles-title"
             index="01"
-            eyebrow="How I work"
+            eyebrow={t("principlesEyebrow")}
             title={
               <>
-                What I care <Accent>about.</Accent>
+                {t("principlesTitle")} <Accent>{t("principlesAccent")}</Accent>
               </>
             }
           />
@@ -133,10 +139,10 @@ export default function AboutPage() {
           <SectionHeading
             id="journey-title"
             index="02"
-            eyebrow="Journey"
+            eyebrow={t("journeyEyebrow")}
             title={
               <>
-                Where I&rsquo;ve <Accent>learned and built.</Accent>
+                {t("journeyTitle")} <Accent>{t("journeyAccent")}</Accent>
               </>
             }
           />
@@ -200,10 +206,10 @@ export default function AboutPage() {
               className={buttonVariants({ variant: "secondary" })}
             >
               <Download aria-hidden />
-              Download CV
+              {tc("downloadCv")}
             </a>
-            <Link href="/cv/" className={buttonVariants({ variant: "ghost" })}>
-              View full CV
+            <Link href="/cv" className={buttonVariants({ variant: "ghost" })}>
+              {t("viewCv")}
             </Link>
           </Reveal>
         </div>
@@ -214,7 +220,7 @@ export default function AboutPage() {
         <div className="container-page">
           <Reveal>
             <h2 id="languages-title" className="font-mono text-xs text-fg-subtle uppercase">
-              Languages & certificates
+              {t("languagesTitle")}
             </h2>
           </Reveal>
           <Stagger as="ul" className="mt-6 flex flex-wrap gap-3" stagger={0.06}>

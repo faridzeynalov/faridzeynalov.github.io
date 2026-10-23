@@ -1,13 +1,17 @@
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useAppLocale } from "@/i18n/use-app-locale";
+import { Link } from "@/i18n/navigation";
 import { FeaturedProject } from "@/components/projects/featured-project";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { getAllProjects, getFeaturedProjects } from "@/lib/projects";
 
 export function SelectedWork() {
-  const featured = getFeaturedProjects();
-  const total = getAllProjects().length;
+  const locale = useAppLocale();
+  const t = useTranslations("SelectedWork");
+  const featured = getFeaturedProjects(locale);
+  const total = getAllProjects(locale).length;
 
   return (
     <section aria-labelledby="work-title" className="py-24 md:py-32">
@@ -15,22 +19,22 @@ export function SelectedWork() {
         <SectionHeading
           id="work-title"
           index="01"
-          eyebrow="Selected work"
+          eyebrow={t("eyebrow")}
           title={
             <>
-              Real sites, <Accent>shipped and live.</Accent>
+              {t("title")} <Accent>{t("accent")}</Accent>
             </>
           }
-          description="A few of the production websites I've worked on at One Studio — from luxury residences to resort booking and online retail."
+          description={t("description")}
           action={
             <Link
-              href="/portfolio/"
+              href="/portfolio"
               className={buttonVariants({
                 variant: "secondary",
                 className: "self-start md:self-auto",
               })}
             >
-              All {total} projects
+              {t("allProjects", { count: total })}
               <ArrowRight aria-hidden />
             </Link>
           }

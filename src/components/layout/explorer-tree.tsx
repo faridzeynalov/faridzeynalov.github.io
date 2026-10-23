@@ -4,7 +4,9 @@ import {
   Atom,
   ChevronRight,
   FileText,
+  Braces,
   Filter,
+  FolderCode,
   FolderArchive,
   FolderCog,
   FolderHeart,
@@ -20,8 +22,12 @@ import {
 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import Link from "next/link";
+import { useLocale } from "next-intl";
+import NextLink from "next/link";
 import { useState } from "react";
+import { Link, usePathname } from "@/i18n/navigation";
+import { LOCALE_STORAGE_KEY } from "@/i18n/routing";
+import { localizedPath } from "@/lib/i18n-metadata";
 import { cn } from "@/lib/utils";
 import type { TreeFile, TreeFileIcon, TreeFolder, TreeFolderIcon, TreeNode } from "@/types/nav";
 
@@ -33,6 +39,7 @@ const folderIcons: Record<TreeFolderIcon, { closed: LucideIcon; open: LucideIcon
     cv: { closed: FolderArchive, open: FolderArchive, color: "#ef5350" },
     about: { closed: FolderHeart, open: FolderHeart, color: "#66bb6a" },
     contact: { closed: FolderInput, open: FolderInput, color: "#ffa726" },
+    locales: { closed: FolderCode, open: FolderCode, color: "#26a69a" },
     plain: { closed: Folder, open: FolderOpen, color: "#c09553" },
   };
 
@@ -45,6 +52,7 @@ const fileIcons: Record<TreeFileIcon, { icon: LucideIcon; color: string }> = {
   link: { icon: Link2, color: "#29b6f6" },
   hash: { icon: Hash, color: "#a78bfa" },
   filter: { icon: Filter, color: "#ffca28" },
+  locale: { icon: Braces, color: "#fbc02d" },
 };
 
 const INDENT = 14; // px per level, like VS Code's default tree indent
@@ -249,6 +257,9 @@ function FileRow({
   active: boolean;
   onNavigate: () => void;
 }) {
+  const locale = useLocale();
+  const pathname = usePathname();
+  if (file.switchLocale) active = file.switchLocale === locale;
   const { icon: Icon, color } = fileIcons[file.icon];
   const className = cn(
     "relative flex h-9 items-center gap-1.5 rounded-[4px] pr-3 font-mono text-[13.5px] transition-colors focus-visible:outline-offset-[-2px]",
@@ -270,6 +281,37 @@ function FileRow({
       )}
     </>
   );
+
+  if (file.switchLocale) {
+    const target = file.switchLocale;
+    // The current language isn't a link: opening it again would only reload the page.
+    if (target === locale) {
+      return (
+        <span className={cn(className, "cursor-default")} style={style} aria-current="true">
+          {content}
+        </span>
+      );
+    }
+    // A plain link to the clean URL: next-intl's locale switch would link English as /en/….
+    return (
+      <NextLink
+        href={localizedPath(target, pathname)}
+        hrefLang={target}
+        className={className}
+        style={style}
+        onClick={() => {
+          try {
+            window.localStorage.setItem(LOCALE_STORAGE_KEY, target);
+          } catch {
+            // Storage may be blocked; the URL still carries the language.
+          }
+          onNavigate();
+        }}
+      >
+        {content}
+      </NextLink>
+    );
+  }
 
   if (file.external || file.download) {
     return (

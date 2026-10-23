@@ -3,7 +3,8 @@
 import { ChevronRight, CircleCheck, Ellipsis, GitBranch, Menu, X } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ExplorerTree } from "@/components/layout/explorer-tree";
 import { LogoMark } from "@/components/layout/logo";
@@ -14,6 +15,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 /** Mobile menu styled as a VS Code Explorer: sections are folders, pages and links are files. */
 export function MobileNav({ tree }: { tree: TreeNode[] }) {
+  const t = useTranslations("Nav");
+  const te = useTranslations("Explorer");
   const [open, setOpen] = useState(false);
   const [rootOpen, setRootOpen] = useState(true);
   const pathname = usePathname();
@@ -71,7 +74,7 @@ export function MobileNav({ tree }: { tree: TreeNode[] }) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls="mobile-menu"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? t("closeMenu") : t("openMenu")}
         className="relative z-[60] inline-flex size-9 items-center justify-center rounded-full border border-border bg-bg text-fg"
       >
         <AnimatePresence initial={false} mode="wait">
@@ -95,7 +98,7 @@ export function MobileNav({ tree }: { tree: TreeNode[] }) {
             id="mobile-menu"
             role="dialog"
             aria-modal="true"
-            aria-label="Menu"
+            aria-label={t("menu")}
             className="fixed inset-0 z-[55] flex flex-col bg-bg-elevated pt-16"
             initial={{ clipPath: "inset(0 100% 0 0)" }}
             animate={{ clipPath: "inset(0 0% 0 0)" }}
@@ -106,12 +109,12 @@ export function MobileNav({ tree }: { tree: TreeNode[] }) {
 
             {/* Sidebar title bar */}
             <div className="flex h-10 shrink-0 items-center justify-between border-y border-border px-5 font-mono text-[11px] tracking-wider text-fg-subtle uppercase">
-              Explorer
+              {te("title")}
               <Ellipsis className="size-4" aria-hidden />
             </div>
 
             {/* Workspace root */}
-            <nav aria-label="Mobile" className="flex min-h-0 flex-1 flex-col">
+            <nav aria-label={t("mobile")} className="flex min-h-0 flex-1 flex-col">
               <button
                 type="button"
                 onClick={() => setRootOpen((value) => !value)}
@@ -164,7 +167,7 @@ export function MobileNav({ tree }: { tree: TreeNode[] }) {
                 </span>
                 <span className="flex items-center gap-1">
                   <CircleCheck className="size-3.5" />
-                  open to work
+                  {te("openToWork")}
                 </span>
               </span>
               <span>TSX · UTF-8</span>

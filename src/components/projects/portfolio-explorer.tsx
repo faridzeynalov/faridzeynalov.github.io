@@ -3,6 +3,7 @@
 import { LayoutGrid, List, SearchX } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectList } from "@/components/projects/project-list";
@@ -21,10 +22,21 @@ const VIEW_PARAM = "view";
  * Filterable project grid. The active filter is mirrored to `?industry=` so filtered
  * views can be shared — read on the client because the page is statically exported.
  */
-export function PortfolioExplorer({ projects }: { projects: Project[] }) {
+export function PortfolioExplorer({
+  projects,
+  industryLabels,
+}: {
+  projects: Project[];
+  industryLabels: Record<Industry, string>;
+}) {
+  const t = useTranslations("Portfolio");
+  const locale = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
   const [view, setView] = useState<View>("grid");
-  const filters = useMemo(() => getIndustryFilters(projects), [projects]);
+  const filters = useMemo(
+    () => getIndustryFilters(projects, industryLabels, locale),
+    [projects, industryLabels, locale],
+  );
 
   useEffect(() => {
     const syncFromUrl = () => {
@@ -57,7 +69,7 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
 
   const visible = filter === "all" ? projects : projects.filter((p) => p.industry === filter);
   const options: { id: Filter; label: string; count: number }[] = [
-    { id: "all", label: "All", count: projects.length },
+    { id: "all", label: t("all"), count: projects.length },
     ...filters,
   ];
 
@@ -66,7 +78,7 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div
           role="group"
-          aria-label="Filter projects by industry"
+          aria-label={t("filterLabel")}
           className="-mx-5 flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:flex-wrap sm:px-0"
         >
           {options.map((option) => {
@@ -108,7 +120,7 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
 
         <div
           role="group"
-          aria-label="Layout"
+          aria-label={t("layout")}
           className="flex shrink-0 gap-1 self-start rounded-full border border-border p-1"
         >
           {(["grid", "list"] as const).map((option) => (
@@ -117,8 +129,8 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
               type="button"
               onClick={() => selectView(option)}
               aria-pressed={view === option}
-              aria-label={option === "grid" ? "Grid view" : "List view"}
-              title={option === "grid" ? "Grid view" : "List view"}
+              aria-label={option === "grid" ? t("gridView") : t("listView")}
+              title={option === "grid" ? t("gridView") : t("listView")}
               className={cn(
                 "inline-flex size-8 items-center justify-center rounded-full transition-colors",
                 view === option ? "bg-fg text-bg" : "text-fg-muted hover:text-fg",
@@ -135,21 +147,21 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
       </div>
 
       <p role="status" className="sr-only">
-        Showing {visible.length} {visible.length === 1 ? "project" : "projects"}
+        {t("showing", { count: visible.length })}
       </p>
 
       {visible.length === 0 ? (
         <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border-strong px-6 py-20 text-center">
           <SearchX className="size-8 text-fg-subtle" aria-hidden />
-          <p className="mt-4 text-lg font-medium">No projects in this category yet</p>
-          <p className="mt-1 text-sm text-fg-muted">Try another industry, or see everything.</p>
+          <p className="mt-4 text-lg font-medium">{t("emptyTitle")}</p>
+          <p className="mt-1 text-sm text-fg-muted">{t("emptyText")}</p>
           <Button variant="secondary" className="mt-6" onClick={() => select("all")}>
-            Show all projects
+            {t("showAll")}
           </Button>
         </div>
       ) : view === "list" ? (
         <div className="mt-10">
-          <ProjectList projects={visible} />
+          <ProjectList projects={visible} industryLabels={industryLabels} />
         </div>
       ) : (
         <m.ul layout className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -167,7 +179,11 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
-                <ProjectCard project={project} headingLevel="h2" />
+                <ProjectCard
+                  project={project}
+                  industryLabel={industryLabels[project.industry]}
+                  headingLevel="h2"
+                />
               </m.li>
             ))}
           </AnimatePresence>

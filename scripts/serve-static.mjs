@@ -1,5 +1,5 @@
 // Minimal static server for the `out/` export that mimics GitHub Pages:
-// serves `<path>/index.html` for directories, `404.html` for misses, and honours a base path.
+// serves `<path>.html` for extensionless paths, `<path>/index.html` for directories, `404.html` for misses, and honours a base path.
 // Usage: node scripts/serve-static.mjs [port]
 import http from "node:http";
 import fs from "node:fs";
@@ -34,13 +34,16 @@ http
     }
     let file = path.join(root, urlPath);
     if (!file.startsWith(root)) return send404(res);
-    if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
+    const isFile = (p) => fs.existsSync(p) && fs.statSync(p).isFile();
+    if (!isFile(file) && !urlPath.endsWith("/") && isFile(`${file}.html`)) file = `${file}.html`;
+    else if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
       if (!urlPath.endsWith("/")) {
         res.writeHead(301, { Location: `${basePath}${urlPath}/` });
         return res.end();
       }
       file = path.join(file, "index.html");
     }
+    if (!isFile(file)) return send404(res);
     if (!fs.existsSync(file)) return send404(res);
     res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] ?? "application/octet-stream" });
     fs.createReadStream(file).pipe(res);

@@ -3,21 +3,32 @@ import { Enter, RiseLine } from "@/components/motion/enter";
 
 interface HeroIntroProps {
   name: string;
+  badge: string;
+  jobTitle: string;
+  tagline: string;
   intro: ReactNode;
   actions: ReactNode;
   stats: { value: string; label: string }[];
 }
 
 /** Hero copy with a masked line-by-line reveal (CSS, so it plays before hydration). */
-export function HeroIntro({ name, intro, actions, stats }: HeroIntroProps) {
+export function HeroIntro({
+  name,
+  badge,
+  jobTitle,
+  tagline,
+  intro,
+  actions,
+  stats,
+}: HeroIntroProps) {
   return (
     <div>
       <Enter
         as="p"
-        className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-bg-elevated/60 py-1 pr-3.5 pl-2.5 text-[13px] text-fg-muted backdrop-blur"
+        className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-bg-elevated/80 py-1 pr-3.5 pl-2.5 text-[13px] text-fg-muted"
       >
-        <span className="size-2 animate-pulse-dot rounded-full bg-emerald-500" aria-hidden />
-        Open to front-end roles &amp; freelance projects
+        <span className="pulse-dot size-2 rounded-full bg-emerald-500" aria-hidden />
+        {badge}
       </Enter>
 
       {/* Sized against the column width (container units) so each line stays on one line. */}
@@ -28,12 +39,10 @@ export function HeroIntro({ name, intro, actions, stats }: HeroIntroProps) {
         >
           <RiseLine delay={50}>{name}</RiseLine>
           <RiseLine delay={150} className="text-fg-muted">
-            Front-end developer
+            {jobTitle}
           </RiseLine>
           <RiseLine delay={250}>
-            <span className="font-serif font-normal tracking-[-0.01em] italic">
-              crafting polished UIs.
-            </span>
+            <span className="font-serif font-normal tracking-[-0.01em] italic">{tagline}</span>
           </RiseLine>
         </h1>
       </div>

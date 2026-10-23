@@ -1,4 +1,5 @@
 import { CloudOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { Project } from "@/types/project";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,7 @@ export function UnavailablePreview({
   project: Pick<Project, "domain" | "accent">;
   className?: string;
 }) {
+  const t = useTranslations("ProjectCard");
   return (
     <div
       className={cn(
@@ -20,7 +22,7 @@ export function UnavailablePreview({
         className,
       )}
       role="img"
-      aria-label={`No preview available for ${project.domain}`}
+      aria-label={t("noPreview", { domain: project.domain })}
     >
       <div className="absolute inset-0 bg-grid opacity-80" aria-hidden />
       <div
@@ -35,7 +37,7 @@ export function UnavailablePreview({
       </span>
       <span className="relative inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/70 px-2.5 py-0.5 font-mono text-[11px] text-fg-muted">
         <CloudOff className="size-3" aria-hidden />
-        Preview unavailable
+        {t("previewUnavailable")}
       </span>
     </div>
   );

@@ -1,11 +1,19 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
-import { AnimatePresence, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import {
+  AnimatePresence,
+  useInView,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  type PanInfo,
+} from "motion/react";
 import * as m from "motion/react-m";
+import { useTranslations } from "next-intl";
 import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
-import { useEffect, useState, type PointerEvent } from "react";
+import { Link } from "@/i18n/navigation";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { BrowserFrame, PhoneFrame } from "@/components/projects/device-frames";
 import { cn } from "@/lib/utils";
 
@@ -20,17 +28,25 @@ export interface ShowcaseItem {
 }
 
 const SLIDE_SECONDS = 5;
+/** A horizontal swipe changes slides past this distance (px) or flick speed (px/s). */
+const SWIPE_DISTANCE = 50;
+const SWIPE_VELOCITY = 400;
 
 /**
  * Hero visual: real screenshots of shipped projects cycling in a browser + phone,
  * with a code card describing the current project (data comes from src/data/projects.ts).
  */
 export function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
+  const t = useTranslations("Hero");
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [touch, setTouch] = useState(false);
   const reduceMotion = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+  // No autoplay (and no progress-bar animation) while the hero is scrolled out of view.
+  const visible = useInView(rootRef);
   const current = items[active];
-  const autoplay = !paused && !reduceMotion;
+  const autoplay = !paused && visible && !reduceMotion;
 
   // Pointer-driven tilt (fine pointers only).
   const rotateX = useSpring(useMotionValue(0), { stiffness: 120, damping: 20 });
@@ -57,20 +73,47 @@ export function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
+  // Swipe between projects on touch screens (vertical page scrolling still works).
+  useEffect(() => {
+    const media = window.matchMedia("(hover: none) and (pointer: coarse)");
+    const update = () => setTouch(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
   const next = () => setActive((index) => (index + 1) % items.length);
+  const previous = () => setActive((index) => (index - 1 + items.length) % items.length);
+
+  function onSwipeEnd(_: unknown, info: PanInfo) {
+    const { x: distance } = info.offset;
+    const { x: velocity } = info.velocity;
+    if (distance < -SWIPE_DISTANCE || velocity < -SWIPE_VELOCITY) next();
+    else if (distance > SWIPE_DISTANCE || velocity > SWIPE_VELOCITY) previous();
+  }
 
   return (
     <div
+      ref={rootRef}
       className="relative"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div
+      <m.div
         className="relative [perspective:1600px]"
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
+        drag={touch ? "x" : false}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.18}
+        dragMomentum={false}
+        onDragStart={() => setPaused(true)}
+        onDragEnd={(event, info) => {
+          setPaused(false);
+          onSwipeEnd(event, info);
+        }}
       >
         <m.div
           className="relative aspect-[10/9] w-full sm:aspect-[5/4]"
@@ -99,9 +142,10 @@ export function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
                 <Image
                   key={item.slug}
                   src={item.cover}
-                  alt={index === active ? `Homepage of ${item.domain}` : ""}
+                  alt={index === active ? t("homepageOf", { domain: item.domain }) : ""}
                   aria-hidden={index !== active}
                   priority={index === 0}
+                  draggable={false}
                   sizes="(min-width: 1024px) 560px, 92vw"
                   className={cn(
                     "absolute inset-0 h-full w-full object-cover object-top transition-[opacity,transform] duration-700 ease-out-expo",
@@ -114,7 +158,7 @@ export function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
 
           {/* Code card */}
           <div
-            className="absolute bottom-[3%] left-0 w-[66%] overflow-hidden rounded-xl border border-border-strong bg-code/95 shadow-float backdrop-blur-md sm:w-[58%]"
+            className="absolute bottom-[3%] left-0 w-[66%] overflow-hidden rounded-xl border border-border-strong bg-code shadow-float sm:w-[58%]"
             style={{ transform: "translateZ(40px)" }}
           >
             <div className="flex items-center gap-2 border-b border-border px-3 py-2 font-mono text-[10.5px] text-fg-subtle">
@@ -177,6 +221,7 @@ export function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
                   alt=""
                   aria-hidden
                   sizes="140px"
+                  draggable={false}
                   className={cn(
                     "absolute inset-0 h-full w-full object-cover object-top transition-opacity delay-100 duration-700",
                     index === active ? "opacity-100" : "opacity-0",
@@ -186,27 +231,28 @@ export function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
             </div>
           </PhoneFrame>
         </m.div>
-      </div>
+      </m.div>
 
       {/* Controls */}
       <div className="mt-6 flex items-center justify-between gap-4">
-        <div className="flex flex-1 gap-1.5" role="group" aria-label="Choose a featured project">
+        <div className="flex flex-1 gap-1.5" role="group" aria-label={t("chooseProject")}>
           {items.map((item, index) => (
             <button
               key={item.slug}
               type="button"
               onClick={() => setActive(index)}
-              aria-label={`Show ${item.name}`}
+              aria-label={t("showProject", { name: item.name })}
               aria-pressed={index === active}
               className="group relative h-6 flex-1"
             >
               <span className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 overflow-hidden rounded-full bg-border-strong transition-[height] group-hover:h-1">
                 {index === active && (
+                  // scaleX, not width: a transform runs on the compositor without repainting.
                   <m.span
                     key={`${item.slug}-${autoplay}`}
-                    className="absolute inset-y-0 left-0 rounded-full bg-fg"
-                    initial={{ width: autoplay ? "0%" : "100%" }}
-                    animate={{ width: "100%" }}
+                    className="absolute inset-0 origin-left rounded-full bg-fg"
+                    initial={{ scaleX: autoplay ? 0 : 1 }}
+                    animate={{ scaleX: 1 }}
                     transition={{ duration: autoplay ? SLIDE_SECONDS : 0, ease: "linear" }}
                     onAnimationComplete={() => autoplay && next()}
                   />
@@ -217,10 +263,10 @@ export function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
           ))}
         </div>
         <Link
-          href={`/portfolio/${current.slug}/`}
+          href={`/portfolio/${current.slug}`}
           className="inline-flex shrink-0 items-center gap-1 font-mono text-xs text-fg-muted transition-colors hover:text-fg"
         >
-          <span className="hidden sm:inline">View</span>
+          <span className="hidden sm:inline">{t("view")}</span>
           <span className="max-w-[9rem] truncate sm:max-w-[12rem]">{current.domain}</span>
           <ArrowUpRight className="size-3.5" aria-hidden />
         </Link>

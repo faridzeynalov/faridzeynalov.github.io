@@ -1,24 +1,38 @@
-import { projects } from "@/data/projects";
-import type { Project } from "@/types/project";
+import { getContent } from "@/content";
+import { getProjectList } from "@/data/projects";
+import type { Locale } from "@/i18n/routing";
+import type { Industry, Project } from "@/types/project";
 
-export function getAllProjects(): Project[] {
-  return projects;
+export function getAllProjects(locale: Locale): Project[] {
+  return getProjectList(locale);
 }
 
-export function getFeaturedProjects(): Project[] {
-  return projects.filter((project) => project.featured);
+export function getFeaturedProjects(locale: Locale): Project[] {
+  return getProjectList(locale).filter((project) => project.featured);
 }
 
-export function getProjectBySlug(slug: string): Project | undefined {
-  return projects.find((project) => project.slug === slug);
+export function getProjectBySlug(slug: string, locale: Locale): Project | undefined {
+  return getProjectList(locale).find((project) => project.slug === slug);
 }
 
 /** Previous/next projects, wrapping around the list. */
-export function getAdjacentProjects(slug: string): { previous: Project; next: Project } | null {
+export function getAdjacentProjects(
+  slug: string,
+  locale: Locale,
+): { previous: Project; next: Project } | null {
+  const projects = getProjectList(locale);
   const index = projects.findIndex((project) => project.slug === slug);
   if (index === -1 || projects.length < 2) return null;
   return {
     previous: projects[(index - 1 + projects.length) % projects.length],
     next: projects[(index + 1) % projects.length],
   };
+}
+
+export function getIndustryLabels(locale: Locale): Record<Industry, string> {
+  return getContent(locale).industries;
+}
+
+export function getIndustryLabel(industry: Industry, locale: Locale): string {
+  return getContent(locale).industries[industry];
 }

@@ -1,32 +1,46 @@
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { ContactCta } from "@/components/sections/contact-cta";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { ProcessPath } from "@/components/services/process-path";
 import { ServicesShowcase } from "@/components/services/services-showcase";
 import { buttonVariants } from "@/components/ui/button";
-import { services } from "@/data/services";
+import { getProcess, getServices } from "@/data/services";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 
-export const metadata: Metadata = {
-  title: "Services",
-  description:
-    "Front-end development, UI design, SEO & performance, AI integration, API-driven web apps and ongoing maintenance — by Farid Zeynalov.",
-  alternates: { canonical: "/services/" },
-  openGraph: { url: "/services/" },
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/services">): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return {
+    title: t("servicesTitle"),
+    description: t("servicesDescription"),
+    alternates: localizedAlternates(locale, "/services"),
+    openGraph: { url: localizedPath(locale, "/services") },
+  };
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage({ params }: PageProps<"/[locale]/services">) {
+  const locale = (await params).locale as Locale;
+  setRequestLocale(locale);
+  const t = await getTranslations("ServicesPage");
+  const tc = await getTranslations("Common");
+  const services = getServices(locale);
+
   return (
     <>
       <PageHeader
-        eyebrow="services"
-        title="Services"
-        accent="built to last."
-        description="From the first layout to a fast, findable product in production — and the care it needs after launch. Pick one piece, or the whole journey."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        accent={t("accent")}
+        description={t("description")}
       >
-        <ul className="mt-10 flex flex-wrap gap-2" aria-label="Jump to a service">
+        <ul className="mt-10 flex flex-wrap gap-2" aria-label={t("jump")}>
           {services.map((service, index) => (
             <li key={service.id}>
               <a
@@ -43,29 +57,29 @@ export default function ServicesPage() {
         </ul>
       </PageHeader>
 
-      <ServicesShowcase />
+      <ServicesShowcase services={services} />
 
       <section id="process" aria-labelledby="process-title" className="scroll-mt-16 py-24 md:py-32">
         <div className="container-page">
           <SectionHeading
             id="process-title"
             index="—"
-            eyebrow="How I work"
+            eyebrow={t("processEyebrow")}
             title={
               <>
-                Four steps, <Accent>no surprises.</Accent>
+                {t("processTitle")} <Accent>{t("processAccent")}</Accent>
               </>
             }
-            description="A clear rhythm from first call to launch, with something you can click at every stage."
+            description={t("processDescription")}
             action={
-              <Link href="/contact/" className={buttonVariants({ variant: "secondary" })}>
-                Start a project
+              <Link href="/contact" className={buttonVariants({ variant: "secondary" })}>
+                {tc("startProject")}
                 <ArrowRight aria-hidden />
               </Link>
             }
           />
           <div className="mt-16 md:mt-20">
-            <ProcessPath />
+            <ProcessPath steps={getProcess(locale)} />
           </div>
         </div>
       </section>

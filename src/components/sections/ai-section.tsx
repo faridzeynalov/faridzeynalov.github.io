@@ -1,7 +1,9 @@
 import { Bot, Braces, MessagesSquare, Plug, Sparkles, type LucideIcon } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
-import { ai } from "@/data/ai";
+import { useTranslations } from "next-intl";
+import { getAi } from "@/data/ai";
+import { useAppLocale } from "@/i18n/use-app-locale";
 import type { AiIcon } from "@/types/content";
 
 const icons: Record<AiIcon, LucideIcon> = {
@@ -12,16 +14,18 @@ const icons: Record<AiIcon, LucideIcon> = {
 };
 
 export function AiSection() {
+  const t = useTranslations("AiSection");
+  const ai = getAi(useAppLocale());
   return (
     <section id="ai" aria-labelledby="ai-title" className="relative py-24 md:py-32">
       <div className="container-page">
         <SectionHeading
           id="ai-title"
           index="04"
-          eyebrow="AI"
+          eyebrow={t("eyebrow")}
           title={
             <>
-              AI, built into <Accent>how I work.</Accent>
+              {t("title")} <Accent>{t("accent")}</Accent>
             </>
           }
           description={ai.intro}
@@ -32,29 +36,28 @@ export function AiSection() {
           <Reveal className="lg:col-span-5">
             <div className="ai-border relative flex h-full flex-col overflow-hidden rounded-2xl p-7 md:p-8">
               <div
-                className="pointer-events-none absolute -top-24 -left-24 size-64 rounded-full bg-accent/15 blur-3xl"
+                className="pointer-events-none absolute -top-36 -left-36 size-96 [--glow-strength:15%] glow"
                 aria-hidden
               />
               <span className="relative inline-flex size-12 items-center justify-center rounded-xl bg-accent text-accent-fg">
                 <Sparkles className="size-6" aria-hidden />
               </span>
               <p className="relative mt-6 text-2xl leading-snug font-semibold tracking-tight text-balance">
-                Faster prototypes, cleaner refactors, smarter products.
+                {t("panelTitle")}
               </p>
               <p className="relative mt-3 text-[15px] text-pretty text-fg-muted">
-                AI speeds up the routine parts of the work so more time goes into architecture,
-                details and quality.
+                {t("panelText")}
               </p>
 
               <h3 className="relative mt-auto pt-10 font-mono text-xs text-fg-subtle uppercase">
-                Tools I work with
+                {t("tools")}
               </h3>
               <Stagger as="ul" className="relative mt-4 flex flex-wrap gap-2" stagger={0.05}>
                 {ai.tools.map((tool) => (
                   <StaggerItem
                     as="li"
                     key={tool}
-                    className="rounded-lg border border-border bg-bg/60 px-3 py-1.5 font-mono text-[12.5px] text-fg backdrop-blur"
+                    className="rounded-lg border border-border bg-bg/80 px-3 py-1.5 font-mono text-[12.5px] text-fg"
                   >
                     {tool}
                   </StaggerItem>
@@ -73,7 +76,7 @@ export function AiSection() {
                   className="group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-6 transition-colors duration-500 hover:border-border-strong md:p-7"
                 >
                   <div
-                    className="pointer-events-none absolute -right-20 -bottom-20 size-48 rounded-full bg-accent/0 blur-3xl transition-colors duration-700 group-hover:bg-accent/15"
+                    className="pointer-events-none absolute -right-32 -bottom-32 size-72 opacity-0 transition-opacity duration-700 [--glow-strength:15%] glow group-hover:opacity-100"
                     aria-hidden
                   />
                   <span className="relative inline-flex size-10 items-center justify-center rounded-xl border border-border bg-bg-subtle text-fg-muted transition-colors group-hover:text-accent">

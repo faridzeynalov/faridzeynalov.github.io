@@ -1,10 +1,11 @@
 import type { Industry } from "@/types/project";
 
-export const industryLabels: Record<Industry, string> = {
-  hospitality: "Hospitality",
-  "real-estate": "Real estate",
-  healthcare: "Healthcare",
-  "e-commerce": "E-commerce",
-  corporate: "Corporate & industrial",
-  education: "Education",
-};
+/** Every industry id. Labels are translated in src/content/{en,az,ru}.ts. */
+export const industryIds: Industry[] = [
+  "hospitality",
+  "real-estate",
+  "healthcare",
+  "e-commerce",
+  "corporate",
+  "education",
+];

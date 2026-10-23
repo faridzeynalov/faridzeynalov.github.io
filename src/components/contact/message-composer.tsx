@@ -1,24 +1,20 @@
 "use client";
 
 import { Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { Magnetic } from "@/components/contact/magnetic";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const TOPICS = [
-  "Full-time role",
-  "Freelance project",
-  "Website redesign",
-  "AI feature",
-  "Just saying hi",
-] as const;
+const TOPICS = ["topicRole", "topicFreelance", "topicRedesign", "topicAi", "topicHi"] as const;
 
 /**
  * Builds a ready-to-send email and opens it in the visitor's mail app (mailto:).
  * Nothing is sent from this site — it's static, with no backend.
  */
 export function MessageComposer({ email }: { email: string }) {
+  const t = useTranslations("Composer");
   const [topic, setTopic] = useState<(typeof TOPICS)[number]>(TOPICS[1]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -27,8 +23,8 @@ export function MessageComposer({ email }: { email: string }) {
   const noteId = useId();
 
   function compose() {
-    const subject = `${topic}${name ? ` — ${name}` : ""}`;
-    const body = message || `Hi Farid,\n\n`;
+    const subject = `${t(topic)}${name ? ` — ${name}` : ""}`;
+    const body = message || `${t("greeting")}\n\n`;
     window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
@@ -42,9 +38,7 @@ export function MessageComposer({ email }: { email: string }) {
       className="rounded-3xl border border-border bg-bg-elevated p-6 md:p-10"
     >
       <fieldset>
-        <legend className="font-mono text-xs text-fg-subtle uppercase">
-          What&rsquo;s it about?
-        </legend>
+        <legend className="font-mono text-xs text-fg-subtle uppercase">{t("topic")}</legend>
         <div className="mt-4 flex flex-wrap gap-2">
           {TOPICS.map((option) => {
             const selected = option === topic;
@@ -66,7 +60,7 @@ export function MessageComposer({ email }: { email: string }) {
                   onChange={() => setTopic(option)}
                   className="sr-only"
                 />
-                {option}
+                {t(option)}
               </label>
             );
           })}
@@ -75,7 +69,7 @@ export function MessageComposer({ email }: { email: string }) {
 
       <div className="mt-8">
         <label htmlFor={nameId} className="font-mono text-xs text-fg-subtle uppercase">
-          Your name <span className="normal-case">(optional)</span>
+          {t("name")} <span className="normal-case">{t("optional")}</span>
         </label>
         <input
           id={nameId}
@@ -83,13 +77,13 @@ export function MessageComposer({ email }: { email: string }) {
           onChange={(event) => setName(event.target.value)}
           autoComplete="name"
           className="mt-2 w-full border-b border-border-strong bg-transparent py-3 text-lg outline-none placeholder:text-fg-subtle focus:border-accent"
-          placeholder="Jane Doe"
+          placeholder={t("namePlaceholder")}
         />
       </div>
 
       <div className="mt-8">
         <label htmlFor={messageId} className="font-mono text-xs text-fg-subtle uppercase">
-          Message
+          {t("message")}
         </label>
         <textarea
           id={messageId}
@@ -97,17 +91,17 @@ export function MessageComposer({ email }: { email: string }) {
           onChange={(event) => setMessage(event.target.value)}
           rows={5}
           className="mt-2 w-full resize-y border-b border-border-strong bg-transparent py-3 text-lg outline-none placeholder:text-fg-subtle focus:border-accent"
-          placeholder="A few lines about the role or project, timeline and anything else useful."
+          placeholder={t("messagePlaceholder")}
         />
       </div>
 
       <div className="mt-10 flex flex-wrap items-center justify-between gap-6">
         <p id={noteId} className="max-w-xs text-sm text-fg-subtle">
-          Opens your email app with this message ready to send. Nothing is sent from this site.
+          {t("note")}
         </p>
         <Magnetic>
           <Button type="submit" size="lg" className="h-14 px-8 text-base">
-            Write the email
+            {t("submit")}
             <Send aria-hidden />
           </Button>
         </Magnetic>

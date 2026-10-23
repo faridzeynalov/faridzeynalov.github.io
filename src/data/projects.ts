@@ -1,44 +1,28 @@
-import type { Project } from "@/types/project";
+import { getContent } from "@/content";
 import { projectImages } from "@/data/project-images";
+import type { Locale } from "@/i18n/routing";
+import type { Project, ProjectBase, SiteLanguage } from "@/types/project";
 
 /**
- * Every project listed in the CV (One Studio, 2022 – present).
+ * Every project (One Studio, 2022 – present): the facts that are the same in every language.
  *
- * - `overview`, `liveFeatures`, `languages` and `accent` describe the live websites as they
- *   were publicly visible when captured (October 2026). They describe the product,
- *   not personal contributions.
+ * - Summaries, overviews and live-site features are translated in src/content/{en,az,ru}.ts.
  * - `stack` is filled only where the framework could be detected from the site's public build.
- * - `contribution` is intentionally empty — add your own per-project notes here.
+ * - `languages` are the languages the live site itself is available in.
  */
 
 const NEXT_STACK = ["Next.js (App Router)", "React", "TypeScript"];
 const WEB_STACK = ["JavaScript", "HTML5", "CSS3"];
-const AZ_EN_RU = ["Azerbaijani", "English", "Russian"];
-
+const AZ_EN_RU: SiteLanguage[] = ["az", "en", "ru"];
 const TABIA_GROUP = "Tabia Group Hotels";
-const HOTEL_BOOKING_FEATURES = [
-  "Hero booking bar with arrival/departure dates, rooms, guests and promo code",
-  "Live local time and weather for the hotel's location in the hero",
-  "Room and suite listings with image carousels",
-  "Azerbaijani, English and Russian versions",
-];
 
-const projectEntries: Omit<Project, "images">[] = [
+const entries: ProjectBase[] = [
   {
     slug: "panorama",
     name: "Panorama by ELIE SAAB",
     domain: "panorama.az",
     url: "https://panorama.az/",
     industry: "real-estate",
-    summary: "A seaside residential concept that pairs high-fashion branding with coastal living.",
-    overview:
-      "Marketing site for Panorama by ELIE SAAB, a residential project positioned around sea views and the fashion house's design language. The site walks visitors through the residences and on-site infrastructure, and turns interest into enquiries and brochure downloads.",
-    liveFeatures: [
-      "Residences and infrastructure sections with full-bleed architectural imagery",
-      "Enquiry call-to-action in the header and a downloadable brochure",
-      "Light/dark switch in the header",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#2b3a5c",
@@ -51,13 +35,6 @@ const projectEntries: Omit<Project, "images">[] = [
     url: "https://garabaghotel.az/",
     industry: "hospitality",
     group: TABIA_GROUP,
-    summary: "Resort website for a Naftalan wellness hotel, built around treatments and booking.",
-    overview:
-      "Garabagh Resort & SPA in Naftalan combines a hotel stay with the town's known Naftalan oil treatments. The site presents accommodation, treatment programmes, medical packages, the spa and dining, with booking available from the first screen.",
-    liveFeatures: [
-      ...HOTEL_BOOKING_FEATURES,
-      "Dedicated sections for Naftalan treatment and medical packages",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#c4553a",
@@ -69,16 +46,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "24k.az",
     url: "https://24k.az/",
     industry: "e-commerce",
-    summary: "Online jewellery catalogue with categories, product listings and store locations.",
-    overview:
-      "24K.az is a jewellery retailer's online catalogue. Shoppers can browse sets, necklaces, earrings, bracelets, rings, brooches and gold bullion, see prices, and find the brand's physical stores.",
-    liveFeatures: [
-      "Category navigation for the full jewellery range",
-      "Product grid with prices and wishlist action",
-      "Catalogue search",
-      "Store and shopping-centre locations, blog and support pages",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#c9a15b",
@@ -90,16 +57,8 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "viengroup.com",
     url: "https://viengroup.com/",
     industry: "corporate",
-    summary: "Corporate site for a marine and industrial construction company.",
-    overview:
-      "VIEN Group is a construction company working in Azerbaijan and Saudi Arabia, covering naval design, steel structures, fabrication and power solutions. The site presents its services, project portfolio and partners to industrial clients.",
-    liveFeatures: [
-      "Editorial hero with serif typography over industrial photography",
-      "Services overview: marine industrial solutions, civil works, fabrication, power and repair",
-      "Projects, partners and blog sections",
-    ],
     stack: WEB_STACK,
-    languages: ["English", "Azerbaijani", "Russian"],
+    languages: ["en", "az", "ru"],
     accent: "#24365e",
     featured: true,
   },
@@ -110,11 +69,6 @@ const projectEntries: Omit<Project, "images">[] = [
     url: "https://excelsior.az/",
     industry: "hospitality",
     group: TABIA_GROUP,
-    summary:
-      "Five-star city hotel in Baku — rooms, events, wellness and dining with direct booking.",
-    overview:
-      "Excelsior Hotel & SPA is a five-star hotel in central Baku. The website covers accommodation, meetings and events, the Aura Wellness Center and restaurants, with a booking bar in the hero.",
-    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Meetings & events and wellness centre sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#c9a13b",
@@ -127,15 +81,6 @@ const projectEntries: Omit<Project, "images">[] = [
     url: "https://tabia.az/",
     industry: "hospitality",
     group: TABIA_GROUP,
-    summary: "Umbrella brand site for a hospitality group's hotels and resorts.",
-    overview:
-      "The corporate home of TABIA Group, which operates a portfolio of hotels and resorts across Azerbaijan. The site introduces the group's hospitality brands, upcoming projects and news, and links through to reservations.",
-    liveFeatures: [
-      "Full-screen editorial hero with wide display typography",
-      "Upcoming projects and news sections",
-      "Reservation entry point in the header",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#b8875a",
@@ -147,15 +92,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "yashamal.az",
     url: "https://yashamal.az/",
     industry: "real-estate",
-    summary: "Urban residential complex with interactive masterplan and floor plans.",
-    overview:
-      "YAŞAMAL is a city residential project by Azadlıq Residence. The website presents the residences, floor plans, masterplan and on-site amenities, and lets visitors download the catalogue or send an enquiry.",
-    liveFeatures: [
-      "Masterplan view with labelled blocks",
-      "Residences, floor plans and amenities sections",
-      "Catalogue download and enquiry form entry points",
-      "Light/dark switch and Azerbaijani, English and Russian versions",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#4f7a3a",
@@ -167,10 +103,6 @@ const projectEntries: Omit<Project, "images">[] = [
     url: "https://badamdarhotelandresidences.az/",
     industry: "hospitality",
     group: TABIA_GROUP,
-    summary: "Hotel and serviced residences in Baku with rooms, offices, events and dining.",
-    overview:
-      "Badamdar Hotel & Residences combines a hotel with residences and office space. The site presents rooms, residences and offices, meetings and events, spa and fitness, and restaurants.",
-    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Residences & offices section alongside hotel rooms"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#d4a35a",
@@ -181,14 +113,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "skybreeze.az",
     url: "https://skybreeze.az/",
     industry: "real-estate",
-    summary: "Premium mountain residences and villas at the Shahdag resort.",
-    overview:
-      "Sky Breeze is a residential development at the Shahdag mountain resort, offering apartments and villas both as homes and as investments. The site covers the project, location, architecture, investment case and gallery.",
-    liveFeatures: [
-      "Long-form storytelling sections: project, location, architecture, investment",
-      "Gallery and embedded audio/video content",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#6b7a4b",
@@ -199,15 +123,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "merkeziklinika.az",
     url: "https://merkeziklinika.az/",
     industry: "healthcare",
-    summary: "Hospital website with a full department directory, doctors and e-services.",
-    overview:
-      "Mərkəzi Klinika (Central Clinical Hospital) is a multi-specialty hospital in Baku. The site helps patients find the right department and doctor, learn about the hospital and its branches, and reach its online services.",
-    liveFeatures: [
-      "Medical departments directory in a mega-menu",
-      "Doctors, branches, media and e-services sections",
-      "Emergency hotline highlighted in the header",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#1b8f9c",
@@ -218,15 +133,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "lassa.az",
     url: "https://lassa.az/",
     industry: "e-commerce",
-    summary: "Official Lassa tyre site with a size-based tyre finder and product catalogue.",
-    overview:
-      "The official site of Lassa tyres in Azerbaijan, operated by the brand's local representative. Visitors can find tyres by size, browse categories and best-sellers, see prices and discounts, and locate sales points.",
-    liveFeatures: [
-      "Tyre finder by width, profile and rim diameter, with season filters",
-      "Product cards with prices, discounts and ratings",
-      "Category, best-seller and sales-point sections",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#e30613",
@@ -237,17 +143,8 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "kaan.az",
     url: "https://kaan.az/",
     industry: "e-commerce",
-    summary: "Online store for tyres, rims and batteries from an official multi-brand distributor.",
-    overview:
-      "Kaan.az is the online store of Kaan International, an official distributor of several tyre brands. It sells tyres, rims, batteries and inner tubes, with search by size or by vehicle and campaign promotions.",
-    liveFeatures: [
-      "Advanced search by size, rim, battery, inner tube or vehicle",
-      "Cart, wishlist and account entry points",
-      "Vehicle-type categories and discounted products",
-      "Promotional hero carousel",
-    ],
     stack: [],
-    languages: ["Azerbaijani", "English", "Russian"],
+    languages: AZ_EN_RU,
     accent: "#e4002b",
   },
   {
@@ -256,14 +153,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "elevenpark.az",
     url: "https://elevenpark.az/",
     industry: "real-estate",
-    summary: "Residential complex site with a block-by-block masterplan and apartment selection.",
-    overview:
-      "Eleven Park is a residential complex of high-rise blocks. The site introduces the development, shows a masterplan with numbered buildings, and guides buyers to choose an apartment or get in touch.",
-    liveFeatures: [
-      "Masterplan illustration with numbered buildings",
-      "“Choose an apartment” call-to-action in the header",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#b8865b",
@@ -275,10 +164,6 @@ const projectEntries: Omit<Project, "images">[] = [
     url: "https://gashalti.az/",
     industry: "hospitality",
     group: TABIA_GROUP,
-    summary: "Naftalan health hotel with treatment programmes and online booking.",
-    overview:
-      "Gashaltı Health Hotel in Naftalan offers wellness stays built around treatment programmes. The site covers rooms, Naftalan treatment, medical packages, spa and restaurants.",
-    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Naftalan treatment and medical packages sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#ee6a1f",
@@ -290,14 +175,9 @@ const projectEntries: Omit<Project, "images">[] = [
     url: "https://galaalti.az/",
     industry: "hospitality",
     group: TABIA_GROUP,
-    summary: "Mountain wellness resort with a medical centre and healing-water treatments.",
-    overview:
-      "Galaalti Hotel & SPA is a mountain resort in Shabran known for its Naftsu healing water. The site presents rooms, meetings and events, the medical centre, medical packages and the spa.",
-    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Medical centre and medical packages sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#3e6a8a",
-    note: "When captured, the live hero carried a “temporarily closed” notice, so the preview shows the rooms section instead.",
   },
   {
     slug: "shamakhi-palace",
@@ -305,13 +185,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "shamakhipalace.az",
     url: "https://shamakhipalace.az/",
     industry: "hospitality",
-    summary: "Palace-style resort in Shamakhi with spa, dining, events and entertainment.",
-    overview:
-      "Shamakhi Palace Sharadil is a resort set in the countryside around Shamakhi. The site presents rooms, meetings and events, the spa and fitness centre, restaurants and entertainment, with booking available from the first screen.",
-    liveFeatures: [
-      ...HOTEL_BOOKING_FEATURES,
-      "Meetings & events, spa & fitness, restaurants and entertainment sections",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#d6303f",
@@ -322,13 +195,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "ramadaplazagence.com",
     url: "https://www.ramadaplazagence.com/",
     industry: "hospitality",
-    summary: "City-centre hotel in Ganja with rooms, event venues, restaurants and a spa.",
-    overview:
-      "Ramada Plaza Ganja is a hotel in the centre of Ganja, part of the Ramada by Wyndham brand. The official website presents its rooms, meeting and event venues, restaurants and spa, and drives direct bookings.",
-    liveFeatures: [
-      ...HOTEL_BOOKING_FEATURES,
-      "Meetings & events, restaurants and spa & fitness sections",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#a3123a",
@@ -339,10 +205,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "centralpoint.az",
     url: "https://centralpoint.az/",
     industry: "hospitality",
-    summary: "Four-star hotel in central Baku for leisure and business travellers.",
-    overview:
-      "The Central Point is a four-star hotel in the centre of Baku. The site introduces the hotel, its rooms and restaurants, and what's nearby, with booking from the hero.",
-    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Restaurants and “around us” neighbourhood sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#6b4e8a",
@@ -353,10 +215,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "aghdamcityhotel.az",
     url: "https://aghdamcityhotel.az/",
     industry: "hospitality",
-    summary: "City hotel in Ağdam for business and leisure stays, with spa and meeting rooms.",
-    overview:
-      "Ağdam City Hotel is a modern hotel in Ağdam for both business and leisure guests. The site presents rooms, meetings and events, and the spa and fitness centre, with booking from the first screen.",
-    liveFeatures: [...HOTEL_BOOKING_FEATURES, "Meetings & events and spa & fitness sections"],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#2b3b52",
@@ -367,13 +225,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "yevlakhcityhotel.az",
     url: "https://yevlakhcityhotel.az/",
     industry: "hospitality",
-    summary: "City hotel in Yevlakh with modern rooms, a restaurant, fitness and meeting space.",
-    overview:
-      "Yevlakh City Hotel offers modern rooms, a restaurant, fitness facilities and space for business meetings in Yevlakh. The site presents each of these and takes bookings from the hero.",
-    liveFeatures: [
-      ...HOTEL_BOOKING_FEATURES,
-      "Meetings & events, restaurants and fitness sections",
-    ],
     stack: NEXT_STACK,
     languages: AZ_EN_RU,
     accent: "#6a4a3c",
@@ -384,15 +235,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "yenee.az",
     url: "https://yenee.az/",
     industry: "healthcare",
-    summary: "Wellness brand presenting health programmes, treatments and partner hotels.",
-    overview:
-      "YENEE is a wellness brand offering personalised health programmes. The site explains its philosophy, health programmes, treatments and partner hotels, and invites visitors to book a consultation or a stay.",
-    liveFeatures: [
-      "Playful, illustrated hero with pill-shaped typography accents",
-      "Philosophy, health programmes, treatments, hotels and blog sections",
-      "Consultation and reservation calls-to-action",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#1fb5d6",
@@ -403,15 +245,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "safenet.az",
     url: "https://safenet.az/",
     industry: "corporate",
-    summary: "Security and IT systems integrator — surveillance, access control, telephony.",
-    overview:
-      "Safenet provides security, IT and communications systems: video surveillance, access control, IP telephony, IT audit and X-ray inspection equipment. The site presents its services, products and completed projects.",
-    liveFeatures: [
-      "Project highlights carousel",
-      "Services and products mega-menus",
-      "Projects, partners and blog sections",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#1e6fb8",
@@ -422,15 +255,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "arsenalfire.az",
     url: "https://arsenalfire.az/",
     industry: "corporate",
-    summary: "Fire safety systems company — design, installation, monitoring and audit.",
-    overview:
-      "Arsenal Fire designs, installs and monitors fire safety systems, from automatic extinguishing and alarms to smoke extraction and fire hydrants. The site lists its services and products, and showcases reference projects.",
-    liveFeatures: [
-      "Reference projects carousel",
-      "Detailed services and products menus",
-      "Projects, partners and blog sections",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#c8102e",
@@ -441,15 +265,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "plastcon.az",
     url: "https://plastcon.az/",
     industry: "corporate",
-    summary: "Manufacturer of polymer pipes and fittings — products, production and standards.",
-    overview:
-      "Plastcon Group Polymer manufactures polymer pipes and fittings. The site introduces the company and presents its products, production, partners, projects and the standards it works to.",
-    liveFeatures: [
-      "Full-bleed industrial hero with product messaging",
-      "Product category carousel",
-      "Production, partners, projects and standards sections",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#f2541b",
@@ -460,15 +275,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "upsconstruction.az",
     url: "https://upsconstruction.az/",
     industry: "corporate",
-    summary: "Construction company for sandwich panels, metal structures and turnkey builds.",
-    overview:
-      "UPS Construction supplies and installs sandwich panels, metal structures, containers and polycarbonate sheets, and delivers roofing, facade and turnkey construction work. The site organises this range into products and services.",
-    liveFeatures: [
-      "Products and services mega-menu",
-      "Project photography and company introduction",
-      "Cookie consent banner and quick-contact buttons",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#1f3b73",
@@ -479,14 +285,6 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "granit.az",
     url: "https://granit.az/",
     industry: "corporate",
-    summary: "Quarrying and blasting company with an editorial, stone-textured identity.",
-    overview:
-      "Granit QP works in quarrying and blasting. The site uses large stone photography and serif display type to introduce the company and its services.",
-    liveFeatures: [
-      "Full-screen hero with display serif typography",
-      "Services section with photography",
-      "Azerbaijani, English and Russian versions",
-    ],
     stack: WEB_STACK,
     languages: AZ_EN_RU,
     accent: "#7a726b",
@@ -497,12 +295,8 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "corp.pashaproperty.az",
     url: "https://corp.pashaproperty.az/",
     industry: "real-estate",
-    summary: "Supplier application portal for a property management company.",
-    overview:
-      "A corporate portal for PASHA Property Management where suppliers apply to work with the company through a step-by-step questionnaire.",
-    liveFeatures: ["Step-by-step supplier application form", "Azerbaijani and English versions"],
     stack: NEXT_STACK,
-    languages: ["Azerbaijani", "English"],
+    languages: ["az", "en"],
     accent: "#6b2c7a",
   },
   {
@@ -511,18 +305,8 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "quk.edu.az",
     url: "https://quk.edu.az/",
     industry: "healthcare",
-    summary: "University clinic site with a department directory, doctors and online appointments.",
-    overview:
-      "The website of Qarabağ University Clinic, an academic medical centre combining university expertise with modern diagnostics. Patients can explore medical departments and doctors, learn about the clinic, and book an appointment or consultation online.",
-    liveFeatures: [
-      "Medical departments directory — gynaecology, paediatrics, psychiatry, radiology, laboratory and more",
-      "Doctors and clinic sections in the main navigation",
-      "Online appointment booking and a call-to-action phone button",
-      "Careers, blog and photo/video gallery pages",
-      "Azerbaijani and English versions",
-    ],
     stack: NEXT_STACK,
-    languages: ["Azerbaijani", "English"],
+    languages: ["az", "en"],
     accent: "#0b6b4f",
   },
   {
@@ -531,18 +315,21 @@ const projectEntries: Omit<Project, "images">[] = [
     domain: "palid.az",
     url: "https://palid.az/",
     industry: "corporate",
-    summary: "Corporate website.",
-    overview: "A corporate website listed among my One Studio projects.",
-    liveFeatures: [],
     stack: [],
     languages: [],
     accent: "#5b6472",
-    unavailableReason:
-      "The live site returned an SSL error (Cloudflare 525) when I tried to capture it in October 2026, so there's no preview.",
   },
 ];
 
-export const projects: Project[] = projectEntries.map((project) => ({
-  ...project,
-  images: projectImages[project.slug],
-}));
+/** All projects, with text in the requested language. */
+export function getProjectList(locale: Locale): Project[] {
+  const text = getContent(locale).projects;
+  return entries.map((entry) => ({
+    ...entry,
+    ...text[entry.slug],
+    images: projectImages[entry.slug],
+  }));
+}
+
+/** Project slugs in display order. */
+export const projectSlugs = entries.map((entry) => entry.slug);

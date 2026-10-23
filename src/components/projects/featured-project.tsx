@@ -1,11 +1,13 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ImageReveal } from "@/components/motion/image-reveal";
 import { Reveal } from "@/components/motion/reveal";
 import { BrowserFrame, PhoneFrame } from "@/components/projects/device-frames";
 import { Badge } from "@/components/ui/badge";
-import { getIndustryLabel } from "@/lib/industries";
+import { useAppLocale } from "@/i18n/use-app-locale";
+import { getIndustryLabel } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/types/project";
 
@@ -16,8 +18,11 @@ interface FeaturedProjectProps {
 
 /** Large editorial row used for the home page's selected work. */
 export function FeaturedProject({ project, index }: FeaturedProjectProps) {
+  const t = useTranslations("ProjectCard");
+  const tc = useTranslations("Common");
+  const locale = useAppLocale();
   const reversed = index % 2 === 1;
-  const href = `/portfolio/${project.slug}/`;
+  const href = `/portfolio/${project.slug}`;
 
   return (
     <article className="group grid items-center gap-8 lg:grid-cols-12 lg:gap-14">
@@ -67,7 +72,7 @@ export function FeaturedProject({ project, index }: FeaturedProjectProps) {
         <p className="flex items-center gap-3 font-mono text-xs text-fg-subtle uppercase">
           <span className="text-accent">{String(index + 1).padStart(2, "0")}</span>
           <span className="h-px w-6 bg-border-strong" aria-hidden />
-          {getIndustryLabel(project.industry)}
+          {getIndustryLabel(project.industry, locale)}
         </p>
         <h3 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-balance md:text-4xl">
           <Link href={href} className="transition-colors hover:text-accent">
@@ -77,7 +82,7 @@ export function FeaturedProject({ project, index }: FeaturedProjectProps) {
         <p className="mt-1 font-mono text-sm text-fg-subtle">{project.domain}</p>
         <p className="mt-5 text-base text-pretty text-fg-muted md:text-lg">{project.overview}</p>
 
-        <ul className="mt-6 flex flex-wrap gap-1.5" aria-label="Technologies and details">
+        <ul className="mt-6 flex flex-wrap gap-1.5" aria-label={t("technologiesAndDetails")}>
           {[...project.stack, ...(project.group ? [project.group] : [])].map((item) => (
             <li key={item}>
               <Badge>{item}</Badge>
@@ -88,7 +93,7 @@ export function FeaturedProject({ project, index }: FeaturedProjectProps) {
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium">
           <Link href={href} className="group/link inline-flex items-center gap-2 text-fg">
             <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-500 ease-out-expo group-hover/link:bg-[length:100%_1px]">
-              View project
+              {t("viewProject")}
             </span>
             <ArrowRight
               className="size-4 transition-transform group-hover/link:translate-x-1"
@@ -102,9 +107,11 @@ export function FeaturedProject({ project, index }: FeaturedProjectProps) {
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 text-fg-muted transition-colors hover:text-fg"
           >
-            Live site
+            {t("liveSite")}
             <ArrowUpRight className="size-3.5" aria-hidden />
-            <span className="sr-only">: {project.domain} (opens in a new tab)</span>
+            <span className="sr-only">
+              : {project.domain} {tc("opensNewTab")}
+            </span>
           </a>
         </div>
       </Reveal>

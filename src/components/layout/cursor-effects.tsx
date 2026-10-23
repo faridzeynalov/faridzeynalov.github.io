@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 const SNIPPET_MIN_GAP = 30; // a term reappears only after at least this many others
 const SPAWN_DISTANCE = 64; // px of mouse travel between snippets
 const TOUCH_SPAWN_DISTANCE = 48; // px of finger travel between snippets
-const SCROLL_SPAWN_DISTANCE = 140; // px of momentum scrolling between snippets
 const TAP_BURST = 3;
 const INTERACTIVE = "a, button, [role='button'], summary, label, select";
 
@@ -17,8 +16,8 @@ type Mode = "mouse" | "touch" | null;
 
 /**
  * Code snippets that drift up behind the page as you move, plus (for mice) a theme-aware
- * custom cursor. Touch screens get the snippet trail on tap, drag and scroll, with the
- * native behaviour otherwise unchanged. Everything is off with reduced motion.
+ * custom cursor. Touch screens get the snippet trail only where the finger touches and slides,
+ * never from the page scrolling by itself. Everything is off with reduced motion.
  */
 export function CursorEffects() {
   const [mode, setMode] = useState<Mode>(null);
@@ -81,25 +80,21 @@ function useSnippetSpawner(layerRef: RefObject<HTMLDivElement | null>, maxSnippe
 }
 
 /**
- * Touch: a small burst where the finger lands, a trail along the finger while dragging or
- * scrolling, and scattered snippets while the page glides on momentum after release.
+ * Touch: a small burst where the finger lands and a trail along the finger while it slides.
+ * Nothing spawns from scrolling itself (e.g. momentum after the finger lifts).
  */
 function TouchTrail() {
   const layerRef = useRef<HTMLDivElement>(null);
   const spawn = useSnippetSpawner(layerRef, 22);
 
   useEffect(() => {
-    let fingerDown = false;
     let lastX = 0;
     let lastY = 0;
     let travelled = 0;
-    let lastScrollY = window.scrollY;
-    let scrolled = 0;
 
     const onTouchStart = (event: TouchEvent) => {
       const touch = event.touches[0];
       if (!touch) return;
-      fingerDown = true;
       lastX = touch.clientX;
       lastY = touch.clientY;
       travelled = 0;
@@ -118,37 +113,11 @@ function TouchTrail() {
       }
     };
 
-    const onTouchEnd = (event: TouchEvent) => {
-      if (event.touches.length === 0) fingerDown = false;
-    };
-
-    // Momentum scrolling after the finger lifts: scatter snippets across the screen.
-    const onScroll = () => {
-      const delta = Math.abs(window.scrollY - lastScrollY);
-      lastScrollY = window.scrollY;
-      if (fingerDown) return; // the finger trail already covers active drags
-      scrolled += delta;
-      while (scrolled >= SCROLL_SPAWN_DISTANCE) {
-        scrolled -= SCROLL_SPAWN_DISTANCE;
-        spawn(
-          window.innerWidth * (0.15 + Math.random() * 0.7),
-          window.innerHeight * (0.2 + Math.random() * 0.6),
-          0.6,
-        );
-      }
-    };
-
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
-    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("touchcancel", onTouchEnd);
-      window.removeEventListener("scroll", onScroll);
     };
   }, [spawn]);
 

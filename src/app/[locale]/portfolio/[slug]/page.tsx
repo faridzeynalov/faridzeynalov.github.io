@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowUpRight, Check, Info } from "lucide-react";
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Enter } from "@/components/motion/enter";
 import { ImageReveal } from "@/components/motion/image-reveal";
@@ -12,62 +12,83 @@ import { UnavailablePreview } from "@/components/projects/unavailable-preview";
 import { ContactCta } from "@/components/sections/contact-cta";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { profile } from "@/data/profile";
-import { getIndustryLabel } from "@/lib/industries";
-import { getAdjacentProjects, getAllProjects, getProjectBySlug } from "@/lib/projects";
+import { getProfile } from "@/data/profile";
+import { projectSlugs } from "@/data/projects";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
+import { getAdjacentProjects, getIndustryLabel, getProjectBySlug } from "@/lib/projects";
 import { withoutBasePath } from "@/lib/site";
 
 // Only the projects in src/data/projects.ts exist — everything is generated at build time.
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getAllProjects().map((project) => ({ slug: project.slug }));
+  return projectSlugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
   params,
-}: PageProps<"/portfolio/[slug]">): Promise<Metadata> {
-  const { slug } = await params;
-  const project = getProjectBySlug(slug);
+}: PageProps<"/[locale]/portfolio/[slug]">): Promise<Metadata> {
+  const { slug, locale: rawLocale } = await params;
+  const locale = rawLocale as Locale;
+  const project = getProjectBySlug(slug, locale);
   if (!project) return {};
 
-  const title = `${project.name} — ${getIndustryLabel(project.industry)}`;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  const tp = await getTranslations({ locale, namespace: "Project" });
+  const tCard = await getTranslations({ locale, namespace: "ProjectCard" });
+  const title = t("projectTitle", {
+    name: project.name,
+    industry: getIndustryLabel(project.industry, locale),
+  });
   return {
     title,
     description: project.summary,
-    alternates: { canonical: `/portfolio/${project.slug}/` },
+    alternates: localizedAlternates(locale, `/portfolio/${project.slug}`),
     openGraph: {
       title,
       description: project.summary,
-      url: `/portfolio/${project.slug}/`,
+      url: localizedPath(locale, `/portfolio/${project.slug}`),
       images: project.images
         ? [
             {
               url: withoutBasePath(project.images.cover.src),
               width: project.images.cover.width,
               height: project.images.cover.height,
-              alt: `Homepage of ${project.domain}`,
+              alt: tCard("homepageOf", { domain: project.domain }),
             },
           ]
-        : [{ url: "/og.png", width: 1200, height: 630 }],
+        : [{ url: "/og.png", width: 1200, height: 630, alt: tp("preview") }],
     },
   };
 }
 
-export default async function ProjectPage({ params }: PageProps<"/portfolio/[slug]">) {
-  const { slug } = await params;
-  const project = getProjectBySlug(slug);
+export default async function ProjectPage({ params }: PageProps<"/[locale]/portfolio/[slug]">) {
+  const { slug, locale: rawLocale } = await params;
+  const locale = rawLocale as Locale;
+  setRequestLocale(locale);
+  const project = getProjectBySlug(slug, locale);
   if (!project) notFound();
 
-  const adjacent = getAdjacentProjects(project.slug);
-  const job = profile.experience[0];
+  const t = await getTranslations("Project");
+  const tc = await getTranslations("Common");
+  const tLang = await getTranslations("LanguageNames");
+  const adjacent = getAdjacentProjects(project.slug, locale);
+  const job = getProfile(locale).experience[0];
+  const industry = getIndustryLabel(project.industry, locale);
 
   const meta = [
-    { label: "Role", value: `${job.role}, ${job.company}` },
-    { label: "Industry", value: getIndustryLabel(project.industry) },
-    ...(project.group ? [{ label: "Portfolio", value: project.group }] : []),
+    { label: t("role"), value: t("roleValue", { role: job.role, company: job.company }) },
+    { label: t("industry"), value: industry },
+    ...(project.group ? [{ label: t("group"), value: project.group }] : []),
     ...(project.languages.length
-      ? [{ label: "Site languages", value: project.languages.join(", ") }]
+      ? [
+          {
+            label: t("siteLanguages"),
+            value: project.languages.map((code) => tLang(code)).join(", "),
+          },
+        ]
       : []),
   ];
 
@@ -78,22 +99,22 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
           <div className="absolute inset-0 bg-grid mask-radial" />
           <div
-            className="absolute -top-40 left-1/2 h-[30rem] w-[56rem] -translate-x-1/2 rounded-full opacity-25 blur-[120px]"
-            style={{ backgroundColor: project.accent }}
+            className="absolute -top-72 left-1/2 h-[48rem] w-[74rem] -translate-x-1/2 [--glow-strength:25%] glow"
+            style={{ "--glow-color": project.accent } as React.CSSProperties}
           />
         </div>
 
         <div className="container-page">
           <Enter>
             <Link
-              href="/portfolio/"
+              href="/portfolio"
               className="group inline-flex items-center gap-2 font-mono text-xs text-fg-muted uppercase transition-colors hover:text-fg"
             >
               <ArrowLeft
                 className="size-3.5 transition-transform group-hover:-translate-x-1"
                 aria-hidden
               />
-              All projects
+              {t("allProjects")}
             </Link>
           </Enter>
 
@@ -105,7 +126,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
                   style={{ backgroundColor: project.accent }}
                   aria-hidden
                 />
-                {getIndustryLabel(project.industry)}
+                {industry}
                 {project.group && <span>· {project.group}</span>}
               </p>
               <h1 className="mt-5 text-[clamp(2.5rem,6.5vw,5rem)] leading-[1] font-semibold tracking-[-0.045em] text-balance">
@@ -123,9 +144,9 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
                 rel="noreferrer"
                 className={buttonVariants({ size: "lg" })}
               >
-                Visit {project.domain}
+                {t("visit", { domain: project.domain })}
                 <ArrowUpRight aria-hidden />
-                <span className="sr-only">(opens in a new tab)</span>
+                <span className="sr-only">{tc("opensNewTab")}</span>
               </a>
             </Enter>
           </div>
@@ -133,7 +154,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
       </header>
 
       {/* Preview */}
-      <section aria-label="Preview" className="pb-16">
+      <section aria-label={t("preview")} className="pb-16">
         <div className="container-page">
           <Enter delay={240} className="[--enter-y:28px]">
             <div className="relative overflow-hidden rounded-[2rem] border border-border bg-bg-subtle px-[5%] pt-[5%] pb-[8%] sm:pb-[5%]">
@@ -153,7 +174,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
                   <BrowserFrame domain={project.domain} className="sm:mr-[12%]">
                     <Image
                       src={project.images.cover}
-                      alt={`Homepage of ${project.domain} on desktop`}
+                      alt={t("desktopAlt", { domain: project.domain })}
                       sizes="(min-width: 1216px) 960px, 80vw"
                       priority
                       placeholder="blur"
@@ -163,7 +184,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
                   <PhoneFrame className="absolute right-0 -bottom-[6%] w-[24%] min-w-[96px] sm:w-[19%]">
                     <Image
                       src={project.images.mobile}
-                      alt={`Homepage of ${project.domain} on mobile`}
+                      alt={t("mobileAlt", { domain: project.domain })}
                       sizes="(min-width: 1216px) 220px, 24vw"
                       placeholder="blur"
                       className="h-auto w-full"
@@ -178,15 +199,13 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
             </div>
           </Enter>
           {project.images && (
-            <p className="mt-4 font-mono text-xs text-fg-subtle">
-              Screenshots of the live site, captured October 2026.
-            </p>
+            <p className="mt-4 font-mono text-xs text-fg-subtle">{t("screenshotsNote")}</p>
           )}
         </div>
       </section>
 
       {/* Details */}
-      <section aria-label="Project details" className="py-16">
+      <section aria-label={t("details")} className="py-16">
         <div className="container-page grid gap-12 lg:grid-cols-12">
           <Reveal className="lg:col-span-4">
             <dl className="divide-y divide-border rounded-2xl border border-border bg-bg-elevated">
@@ -198,7 +217,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
               ))}
               {project.stack.length > 0 && (
                 <div className="px-5 py-4">
-                  <dt className="font-mono text-[11px] text-fg-subtle uppercase">Stack</dt>
+                  <dt className="font-mono text-[11px] text-fg-subtle uppercase">{t("stack")}</dt>
                   <dd className="mt-2">
                     <ul className="flex flex-wrap gap-1.5">
                       {project.stack.map((item) => (
@@ -207,9 +226,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-2 text-xs text-fg-subtle">
-                      Detected from the live site&rsquo;s public build.
-                    </p>
+                    <p className="mt-2 text-xs text-fg-subtle">{t("stackNote")}</p>
                   </dd>
                 </div>
               )}
@@ -225,7 +242,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
 
             {project.contribution && (
               <Reveal>
-                <h2 className="text-2xl font-semibold tracking-tight">My role</h2>
+                <h2 className="text-2xl font-semibold tracking-tight">{t("myRole")}</h2>
                 <p className="mt-4 text-lg text-pretty text-fg-muted">{project.contribution}</p>
               </Reveal>
             )}
@@ -233,9 +250,9 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
             {project.liveFeatures.length > 0 && (
               <div>
                 <Reveal>
-                  <h2 className="text-2xl font-semibold tracking-tight">On the live site</h2>
+                  <h2 className="text-2xl font-semibold tracking-tight">{t("onLiveSite")}</h2>
                   <p className="mt-2 text-fg-muted">
-                    What visitors can see and do on {project.domain} today.
+                    {t("onLiveSiteText", { domain: project.domain })}
                   </p>
                 </Reveal>
                 <Stagger as="ul" className="mt-6 grid gap-3 sm:grid-cols-2" stagger={0.06}>
@@ -268,14 +285,14 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
           <div className="container-page">
             <Reveal>
               <h2 id="gallery-title" className="text-2xl font-semibold tracking-tight">
-                Further down the page
+                {t("furtherDown")}
               </h2>
             </Reveal>
             <ImageReveal className="mt-8">
               <BrowserFrame domain={project.domain}>
                 <Image
                   src={project.images.section}
-                  alt={`A section further down the ${project.domain} homepage`}
+                  alt={t("sectionAlt", { domain: project.domain })}
                   sizes="(min-width: 1216px) 1152px, 92vw"
                   placeholder="blur"
                   className="h-auto w-full"
@@ -288,7 +305,7 @@ export default async function ProjectPage({ params }: PageProps<"/portfolio/[slu
 
       {/* Pager */}
       {adjacent && (
-        <section aria-label="Other projects" className="pt-16">
+        <section aria-label={t("otherProjects")} className="pt-16">
           <div className="container-page">
             <ProjectPager previous={adjacent.previous} next={adjacent.next} />
           </div>

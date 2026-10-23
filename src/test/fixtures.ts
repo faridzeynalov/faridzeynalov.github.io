@@ -18,7 +18,7 @@ export function makeProject(overrides: Partial<Project> = {}): Project {
     overview: "Overview",
     liveFeatures: [],
     stack: ["Next.js (App Router)", "React"],
-    languages: ["English"],
+    languages: ["en"],
     accent: "#123456",
     images: { cover: image("cover"), thumb: image("thumb"), mobile: image("mobile") },
     ...overrides,

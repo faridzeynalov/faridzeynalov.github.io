@@ -1,36 +1,48 @@
 import { ArrowUpRight, Download, Link2, Mail, MapPin, Phone } from "lucide-react";
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MessageComposer } from "@/components/contact/message-composer";
 import { LocalTime } from "@/components/layout/local-time";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { CopyButton } from "@/components/ui/copy-button";
-import { profile } from "@/data/profile";
+import { getProfile } from "@/data/profile";
+import type { Locale } from "@/i18n/routing";
+import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { withBasePath } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: `Get in touch with ${profile.name} about front-end roles and freelance projects.`,
-  alternates: { canonical: "/contact/" },
-  openGraph: { url: "/contact/" },
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/contact">): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return {
+    title: t("contactTitle"),
+    description: t("contactDescription", { name: getProfile(locale).name }),
+    alternates: localizedAlternates(locale, "/contact"),
+    openGraph: { url: localizedPath(locale, "/contact") },
+  };
+}
 
-const MARQUEE = "Let’s work together";
-
-export default function ContactPage() {
+export default async function ContactPage({ params }: PageProps<"/[locale]/contact">) {
+  const locale = (await params).locale as Locale;
+  setRequestLocale(locale);
+  const t = await getTranslations("ContactPage");
+  const tc = await getTranslations("Common");
+  const profile = getProfile(locale);
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
 
   return (
     <>
       <PageHeader
-        eyebrow="contact"
-        title="Say hello"
-        accent="— I read every message."
-        description="Open to front-end roles and freelance projects. Tell me what you're building; email is the fastest way to reach me."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        accent={t("accent")}
+        description={t("description")}
       >
         <p className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-bg-elevated/60 py-1.5 pr-4 pl-3 text-sm text-fg-muted backdrop-blur">
-          <span className="size-2 animate-pulse-dot rounded-full bg-emerald-500" aria-hidden />
-          Available for new opportunities
+          <span className="pulse-dot size-2 rounded-full bg-emerald-500" aria-hidden />
+          {t("available")}
         </p>
       </PageHeader>
 
@@ -53,13 +65,13 @@ export default function ContactPage() {
                   : "font-serif text-[clamp(3.5rem,10vw,9rem)] leading-none whitespace-nowrap text-transparent italic [-webkit-text-stroke:1.5px_var(--accent)]"
               }
             >
-              {MARQUEE} <span className="text-accent">✦</span>
+              {t("marquee")} <span className="text-accent">✦</span>
             </span>
           ))}
         </div>
       </div>
 
-      <section aria-label="Get in touch" className="py-20 md:py-28">
+      <section aria-label={t("getInTouch")} className="py-20 md:py-28">
         <div className="container-page grid gap-10 lg:grid-cols-12 lg:gap-14">
           <Reveal className="lg:col-span-7">
             <MessageComposer email={profile.email} />
@@ -75,18 +87,18 @@ export default function ContactPage() {
                     </IconTile>
                     <span className="min-w-0">
                       <span className="block font-mono text-[11px] text-fg-subtle uppercase">
-                        Email
+                        {t("email")}
                       </span>
                       <span className="block truncate text-[15px] text-fg">{profile.email}</span>
                     </span>
                   </a>
-                  <CopyButton value={profile.email} label="Copy email address" />
+                  <CopyButton value={profile.email} label={tc("copyEmail")} />
                 </div>
               </StaggerItem>
               <StaggerItem as="li">
                 <ContactRow
                   href={`tel:${profile.phoneHref}`}
-                  label="Phone"
+                  label={t("phone")}
                   value={profile.phone}
                   icon={<Phone aria-hidden />}
                 />
@@ -95,7 +107,7 @@ export default function ContactPage() {
                 <StaggerItem as="li">
                   <ContactRow
                     href={linkedIn.href}
-                    label="LinkedIn"
+                    label={t("linkedin")}
                     value={linkedIn.handle}
                     icon={<Link2 aria-hidden />}
                     external
@@ -109,7 +121,7 @@ export default function ContactPage() {
                   </IconTile>
                   <span>
                     <span className="block font-mono text-[11px] text-fg-subtle uppercase">
-                      Based in
+                      {t("basedIn")}
                     </span>
                     <span className="block text-[15px] text-fg">
                       {profile.location} · <LocalTime className="font-mono text-fg-muted" /> GMT+4
@@ -120,8 +132,8 @@ export default function ContactPage() {
               <StaggerItem as="li">
                 <ContactRow
                   href={withBasePath("/farid-zeynalov-cv.pdf")}
-                  label="CV"
-                  value="Download PDF"
+                  label={t("cv")}
+                  value={tc("downloadPdf")}
                   icon={<Download aria-hidden />}
                   download
                 />

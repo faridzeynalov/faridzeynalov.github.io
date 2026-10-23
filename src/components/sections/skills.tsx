@@ -1,25 +1,29 @@
 import { Braces, Layers, ShieldCheck, Wrench, type LucideIcon } from "lucide-react";
 import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
-import { profile } from "@/data/profile";
+import { useTranslations } from "next-intl";
+import { getProfile } from "@/data/profile";
+import { useAppLocale } from "@/i18n/use-app-locale";
 import { cn } from "@/lib/utils";
 
 const icons: LucideIcon[] = [Braces, Layers, ShieldCheck, Wrench];
 
 export function Skills() {
+  const t = useTranslations("Skills");
+  const profile = getProfile(useAppLocale());
   return (
     <section aria-labelledby="skills-title" className="relative py-24 md:py-32">
       <div className="container-page">
         <SectionHeading
           id="skills-title"
           index="03"
-          eyebrow="Skills & expertise"
+          eyebrow={t("eyebrow")}
           title={
             <>
-              The toolkit <Accent>I reach for daily.</Accent>
+              {t("title")} <Accent>{t("accent")}</Accent>
             </>
           }
-          description="Everything here is something I use in production — no filler, no percentages."
+          description={t("description")}
         />
 
         <Stagger className="mt-14 grid gap-3 md:grid-cols-6" stagger={0.1}>
@@ -35,7 +39,7 @@ export function Skills() {
                 )}
               >
                 <div
-                  className="pointer-events-none absolute -top-24 -right-24 size-56 rounded-full bg-accent/0 blur-3xl transition-colors duration-700 group-hover:bg-accent/15"
+                  className="pointer-events-none absolute -top-36 -right-36 size-80 opacity-0 transition-opacity duration-700 [--glow-strength:15%] glow group-hover:opacity-100"
                   aria-hidden
                 />
                 <div className="relative flex items-start justify-between gap-4">
@@ -43,7 +47,7 @@ export function Skills() {
                     <Icon className="size-[18px]" aria-hidden />
                   </span>
                   <span className="font-mono text-xs text-fg-subtle">
-                    {String(group.items.length).padStart(2, "0")} items
+                    {t("items", { count: group.items.length })}
                   </span>
                 </div>
                 <h3 className="relative mt-6 text-lg font-semibold tracking-tight">

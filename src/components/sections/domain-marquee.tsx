@@ -1,14 +1,17 @@
+import { useTranslations } from "next-intl";
+import { useAppLocale } from "@/i18n/use-app-locale";
 import { getAllProjects } from "@/lib/projects";
 
 /** Slow, pausable ticker of every shipped domain. Static and wrapped for reduced motion. */
 export function DomainMarquee() {
-  const domains = getAllProjects().map((project) => project.domain);
+  const t = useTranslations("Marquee");
+  const domains = getAllProjects(useAppLocale()).map((project) => project.domain);
 
   return (
-    <section aria-label="Websites shipped" className="border-y border-border bg-bg-subtle/40 py-5">
+    <section aria-label={t("ariaLabel")} className="border-y border-border bg-bg-subtle/40 py-5">
       <div className="container-page flex items-center gap-6">
         <p className="hidden shrink-0 font-mono text-xs text-fg-subtle uppercase md:block">
-          Shipped at One Studio
+          {t("label")}
         </p>
         <div className="group relative min-w-0 flex-1 overflow-hidden mask-fade-x">
           <ul

@@ -20,11 +20,12 @@ export function withBasePath(path: string) {
   return `${basePath}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/** Main menu. Labels come from the "Nav" messages (key = label key). */
 export const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Portfolio", href: "/portfolio/" },
-  { label: "Services", href: "/services/" },
-  { label: "CV", href: "/cv/" },
-  { label: "About", href: "/about/" },
-  { label: "Contact", href: "/contact/" },
+  { key: "home", href: "/" },
+  { key: "portfolio", href: "/portfolio" },
+  { key: "services", href: "/services" },
+  { key: "cv", href: "/cv" },
+  { key: "about", href: "/about" },
+  { key: "contact", href: "/contact" },
 ] as const;

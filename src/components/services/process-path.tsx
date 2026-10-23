@@ -3,14 +3,13 @@
 import { useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
 import * as m from "motion/react-m";
 import { useRef } from "react";
-import { process } from "@/data/services";
 import type { ProcessStep } from "@/types/content";
 
 /**
  * "How I work": a wavy path draws itself across the steps as the section scrolls past,
  * and each step lights up when the line reaches it.
  */
-export function ProcessPath() {
+export function ProcessPath({ steps }: { steps: ProcessStep[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 55%"] });
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
@@ -48,12 +47,12 @@ export function ProcessPath() {
       </div>
 
       <ol className="relative grid gap-10 lg:grid-cols-4 lg:gap-0">
-        {process.map((step, index) => (
+        {steps.map((step, index) => (
           <Step
             key={step.title}
             step={step}
             index={index}
-            total={process.length}
+            total={steps.length}
             progress={progress}
           />
         ))}

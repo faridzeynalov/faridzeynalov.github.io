@@ -25,7 +25,7 @@ export function PageHeader({
     <header className={cn("relative overflow-hidden pt-32 pb-16 md:pt-40 md:pb-20", className)}>
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
         <div className="absolute inset-0 bg-grid mask-radial" />
-        <div className="absolute -top-48 left-1/4 h-[30rem] w-[40rem] rounded-full bg-accent/10 blur-[120px]" />
+        <div className="absolute -top-80 left-[12%] h-[48rem] w-[58rem] [--glow-strength:10%] glow" />
       </div>
       <div className="container-page">
         <Enter as="p" className="mb-6 font-mono text-xs text-fg-subtle uppercase">

@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /**
  * Deployment base path.
@@ -14,8 +17,9 @@ const basePath =
 const nextConfig: NextConfig = {
   // Fully static output (`out/`) — GitHub Pages has no Node.js runtime.
   output: "export",
-  // `/portfolio` -> `/portfolio/index.html`, which GitHub Pages serves without rewrites.
-  trailingSlash: true,
+  // Clean URLs without a trailing slash: `/az/about` -> `az/about.html`, which GitHub Pages
+  // serves for the extensionless path.
+  trailingSlash: false,
   basePath,
   assetPrefix: basePath || undefined,
   images: {
@@ -36,4 +40,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

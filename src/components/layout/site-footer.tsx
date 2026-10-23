@@ -1,11 +1,17 @@
 import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { LocalTime } from "@/components/layout/local-time";
 import { LogoMark } from "@/components/layout/logo";
-import { profile } from "@/data/profile";
+import { useTranslations } from "next-intl";
+import { getProfile } from "@/data/profile";
+import { useAppLocale } from "@/i18n/use-app-locale";
 import { navItems } from "@/lib/site";
 
 export function SiteFooter() {
+  const t = useTranslations("Footer");
+  const tn = useTranslations("Nav");
+  const profile = getProfile(useAppLocale());
+  const city = profile.location.split(",")[0];
   const year = new Date().getFullYear();
 
   return (
@@ -14,22 +20,21 @@ export function SiteFooter() {
         <div className="space-y-4">
           <LogoMark />
           <p className="max-w-xs text-sm text-pretty text-fg-muted">
-            {profile.role} in {profile.location}. Building fast, accessible interfaces with React
-            and Next.js.
+            {t("tagline", { role: profile.role, location: profile.location })}
           </p>
           <p className="inline-flex items-center gap-2 font-mono text-xs text-fg-subtle">
             <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden />
-            Baku <LocalTime /> <span aria-hidden>·</span> GMT+4
+            {city} <LocalTime /> <span aria-hidden>·</span> GMT+4
           </p>
         </div>
 
-        <nav aria-label="Footer">
-          <p className="mb-4 font-mono text-xs text-fg-subtle uppercase">Pages</p>
+        <nav aria-label={tn("footer")}>
+          <p className="mb-4 font-mono text-xs text-fg-subtle uppercase">{t("pages")}</p>
           <ul className="space-y-2.5 text-sm">
             {navItems.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="text-fg-muted transition-colors hover:text-fg">
-                  {item.label}
+                  {tn(item.key)}
                 </Link>
               </li>
             ))}
@@ -37,7 +42,7 @@ export function SiteFooter() {
         </nav>
 
         <div>
-          <p className="mb-4 font-mono text-xs text-fg-subtle uppercase">Elsewhere</p>
+          <p className="mb-4 font-mono text-xs text-fg-subtle uppercase">{t("elsewhere")}</p>
           <ul className="space-y-2.5 text-sm">
             {profile.social.map((link) => {
               const external = link.href.startsWith("http");
@@ -48,7 +53,7 @@ export function SiteFooter() {
                     {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
                     className="group inline-flex items-center gap-1 text-fg-muted transition-colors hover:text-fg"
                   >
-                    {link.label}
+                    {t(link.label)}
                     {external && (
                       <ArrowUpRight
                         className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -67,7 +72,7 @@ export function SiteFooter() {
         <p>
           © {year} {profile.name}
         </p>
-        <p>Built with Next.js &amp; Tailwind CSS · statically exported</p>
+        <p>{t("builtWith")}</p>
       </div>
 
       {/* Oversized outlined wordmark — a quiet sign-off. */}
