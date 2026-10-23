@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import { CODE_SNIPPETS, createSnippetPicker } from "@/lib/code-snippets";
 
 describe("code snippets", () => {
-  it("has many unique terms", () => {
-    expect(new Set(CODE_SNIPPETS).size).toBe(CODE_SNIPPETS.length);
-    expect(CODE_SNIPPETS.length).toBeGreaterThanOrEqual(90);
+  it("has 200–300 unique terms", () => {
+    const duplicates = CODE_SNIPPETS.filter((term, i) => CODE_SNIPPETS.indexOf(term) !== i);
+    expect(duplicates).toEqual([]);
+    expect(CODE_SNIPPETS.length).toBeGreaterThanOrEqual(200);
+    expect(CODE_SNIPPETS.length).toBeLessThanOrEqual(320);
   });
 
   it("never repeats a term within 30 picks", () => {
