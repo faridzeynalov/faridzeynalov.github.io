@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
-/* Class-based dark mode: the theme script in <head> sets `.dark` or `.light` on <html>. */
-@custom-variant dark (&:where(.dark, .dark *));
+/*
+ * Class-based dark mode: the theme script in <head> sets `.dark` or `.light` on <html>. Like the
+ * colour tokens below, `dark:` means "not light", so the two can never disagree.
+ */
+@custom-variant dark (&:where(:root:not(.light), :root:not(.light) *));
 
 /* -------------------------------------------------------------------------- */
 /* Design tokens                                                              */

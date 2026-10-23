@@ -23,6 +23,15 @@ export function readStoredTheme(): Theme | null {
   }
 }
 
+/** The theme to show: saved choice → OS preference (if enabled) → dark. Same order as the script. */
+export function resolveTheme(): Theme {
+  const stored = readStoredTheme();
+  if (stored) return stored;
+  return FOLLOW_SYSTEM_THEME && window.matchMedia("(prefers-color-scheme: light)").matches
+    ? "light"
+    : "dark";
+}
+
 export function getDocumentTheme(): Theme {
   return document.documentElement.classList.contains("light") ? "light" : "dark";
 }

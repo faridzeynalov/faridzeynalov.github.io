@@ -223,6 +223,37 @@ test.describe("theme", () => {
     await context.close();
   });
 
+  test("keeps the theme and the matching icon when switching language", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "Desktop header switcher");
+    await page.goto("az");
+    const html = page.locator("html");
+    const toggle = page.locator("header button").filter({ has: page.locator("svg.lucide-moon") });
+    const moon = toggle.locator("svg.lucide-moon");
+    const switchTo = async (name: RegExp) => {
+      await page.getByRole("button", { name: /: / }).first().click();
+      await page.getByRole("link", { name }).click();
+    };
+
+    // Switching language re-creates <html> on the client; the theme class must come back.
+    await expect(html).toHaveClass(/\b(dark|light)\b/);
+    const start = (await html.getAttribute("class"))!.match(/\b(dark|light)\b/)![1];
+    await switchTo(/Русский/);
+    await expect(page).toHaveURL(/\/ru$/);
+    await expect(html).toHaveClass(new RegExp(`\\b${start}\\b`));
+
+    await toggle.click();
+    const chosen = start === "dark" ? "light" : "dark";
+    await expect(html).toHaveClass(new RegExp(`\\b${chosen}\\b`));
+    await switchTo(/English/);
+    await expect(page).toHaveURL(/:\d+\/$/);
+    await expect(html).toHaveClass(new RegExp(`\\b${chosen}\\b`));
+    // The icon shows the theme you'd switch to: Sun in dark mode, Moon in light mode.
+    await expect(moon).toHaveCSS("opacity", chosen === "light" ? "1" : "0");
+  });
+
   test("respects a light system preference when nothing is stored", async ({ browser }) => {
     const context = await browser.newContext({ colorScheme: "light" });
     const page = await context.newPage();
