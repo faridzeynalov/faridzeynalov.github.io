@@ -59,7 +59,7 @@ export function Hero() {
                 <ArrowRight aria-hidden />
               </Link>
               <Link
-                href="/#contact"
+                href="/contact/"
                 className={buttonVariants({ variant: "secondary", size: "lg" })}
               >
                 Contact me

@@ -10,6 +10,11 @@ export interface Service {
   icon: ServiceIcon;
 }
 
+export interface ProcessStep {
+  title: string;
+  description: string;
+}
+
 export type AiIcon = "bot" | "plug" | "messages" | "braces";
 
 export interface AiCapability {

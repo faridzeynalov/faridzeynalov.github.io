@@ -1,18 +1,21 @@
 "use client";
 
-import { SearchX } from "lucide-react";
+import { LayoutGrid, List, SearchX } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useEffect, useMemo, useState } from "react";
 import { ProjectCard } from "@/components/projects/project-card";
+import { ProjectList } from "@/components/projects/project-list";
 import { Button } from "@/components/ui/button";
 import { getIndustryFilters, isIndustry } from "@/lib/industries";
 import { cn } from "@/lib/utils";
 import type { Industry, Project } from "@/types/project";
 
 type Filter = Industry | "all";
+type View = "grid" | "list";
 
 const PARAM = "industry";
+const VIEW_PARAM = "view";
 
 /**
  * Filterable project grid. The active filter is mirrored to `?industry=` so filtered
@@ -20,17 +23,29 @@ const PARAM = "industry";
  */
 export function PortfolioExplorer({ projects }: { projects: Project[] }) {
   const [filter, setFilter] = useState<Filter>("all");
+  const [view, setView] = useState<View>("grid");
   const filters = useMemo(() => getIndustryFilters(projects), [projects]);
 
   useEffect(() => {
     const syncFromUrl = () => {
       const value = new URLSearchParams(window.location.search).get(PARAM);
       setFilter(isIndustry(value) ? value : "all");
+      setView(
+        new URLSearchParams(window.location.search).get(VIEW_PARAM) === "list" ? "list" : "grid",
+      );
     };
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
     return () => window.removeEventListener("popstate", syncFromUrl);
   }, []);
+
+  function selectView(next: View) {
+    setView(next);
+    const url = new URL(window.location.href);
+    if (next === "grid") url.searchParams.delete(VIEW_PARAM);
+    else url.searchParams.set(VIEW_PARAM, next);
+    window.history.replaceState(window.history.state, "", url);
+  }
 
   function select(next: Filter) {
     setFilter(next);
@@ -48,46 +63,75 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
 
   return (
     <div>
-      <div
-        role="group"
-        aria-label="Filter projects by industry"
-        className="-mx-5 flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:flex-wrap sm:px-0"
-      >
-        {options.map((option) => {
-          const active = option.id === filter;
-          return (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => select(option.id)}
-              aria-pressed={active}
-              className={cn(
-                "relative inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
-                active
-                  ? "border-transparent text-bg"
-                  : "border-border text-fg-muted hover:border-border-strong hover:text-fg",
-              )}
-            >
-              {active && (
-                <m.span
-                  layoutId="filter-pill"
-                  className="absolute inset-0 rounded-full bg-fg"
-                  transition={{ type: "spring", stiffness: 400, damping: 34 }}
-                  aria-hidden
-                />
-              )}
-              <span className="relative">{option.label}</span>
-              <span
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div
+          role="group"
+          aria-label="Filter projects by industry"
+          className="-mx-5 flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:flex-wrap sm:px-0"
+        >
+          {options.map((option) => {
+            const active = option.id === filter;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => select(option.id)}
+                aria-pressed={active}
                 className={cn(
-                  "relative font-mono text-[11px]",
-                  active ? "text-bg/70" : "text-fg-subtle",
+                  "relative inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
+                  active
+                    ? "border-transparent text-bg"
+                    : "border-border text-fg-muted hover:border-border-strong hover:text-fg",
                 )}
               >
-                {option.count}
-              </span>
+                {active && (
+                  <m.span
+                    layoutId="filter-pill"
+                    className="absolute inset-0 rounded-full bg-fg"
+                    transition={{ type: "spring", stiffness: 400, damping: 34 }}
+                    aria-hidden
+                  />
+                )}
+                <span className="relative">{option.label}</span>
+                <span
+                  className={cn(
+                    "relative font-mono text-[11px]",
+                    active ? "text-bg/70" : "text-fg-subtle",
+                  )}
+                >
+                  {option.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div
+          role="group"
+          aria-label="Layout"
+          className="flex shrink-0 gap-1 self-start rounded-full border border-border p-1"
+        >
+          {(["grid", "list"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => selectView(option)}
+              aria-pressed={view === option}
+              aria-label={option === "grid" ? "Grid view" : "List view"}
+              title={option === "grid" ? "Grid view" : "List view"}
+              className={cn(
+                "inline-flex size-8 items-center justify-center rounded-full transition-colors",
+                view === option ? "bg-fg text-bg" : "text-fg-muted hover:text-fg",
+              )}
+            >
+              {option === "grid" ? (
+                <LayoutGrid className="size-4" aria-hidden />
+              ) : (
+                <List className="size-4" aria-hidden />
+              )}
             </button>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
       <p role="status" className="sr-only">
@@ -102,6 +146,10 @@ export function PortfolioExplorer({ projects }: { projects: Project[] }) {
           <Button variant="secondary" className="mt-6" onClick={() => select("all")}>
             Show all projects
           </Button>
+        </div>
+      ) : view === "list" ? (
+        <div className="mt-10">
+          <ProjectList projects={visible} />
         </div>
       ) : (
         <m.ul layout className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

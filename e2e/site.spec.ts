@@ -85,6 +85,64 @@ test.describe("portfolio", () => {
   });
 });
 
+test.describe("dedicated pages", () => {
+  const pages = [
+    { label: "Services", path: "services/", heading: /Services/ },
+    { label: "About", path: "about/", heading: /About me/ },
+    { label: "Contact", path: "contact/", heading: /Say hello/ },
+  ];
+
+  for (const { label, path, heading } of pages) {
+    test(`${label} page renders and is the active menu item`, async ({ page, isMobile }) => {
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1 })).toContainText(heading);
+      if (!isMobile) {
+        await expect(
+          page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: label }),
+        ).toHaveAttribute("aria-current", "page");
+      }
+    });
+  }
+
+  test("menu links open the dedicated pages", async ({ page, isMobile }) => {
+    test.skip(isMobile, "Desktop menu");
+    await page.goto("./");
+    const nav = page.getByRole("navigation", { name: "Main" });
+    await nav.getByRole("link", { name: "Services" }).click();
+    await expect(page).toHaveURL(/\/services\/$/);
+    await nav.getByRole("link", { name: "About" }).click();
+    await expect(page).toHaveURL(/\/about\/$/);
+    await nav.getByRole("link", { name: "Contact" }).click();
+    await expect(page).toHaveURL(/\/contact\/$/);
+  });
+
+  test("services page lists every service and the process", async ({ page }) => {
+    await page.goto("services/");
+    for (const name of ["Front-end development", "AI integration", "Maintenance & optimisation"]) {
+      await expect(page.getByRole("heading", { level: 2, name })).toBeAttached();
+    }
+    await expect(page.getByRole("heading", { level: 3, name: "Launch & care" })).toBeAttached();
+  });
+
+  test("contact composer is labelled and explains it uses the mail app", async ({ page }) => {
+    await page.goto("contact/");
+    await expect(page.getByRole("radio", { name: "Freelance project" })).toBeChecked();
+    await page.getByRole("radio", { name: "Full-time role" }).check({ force: true });
+    await expect(page.getByRole("radio", { name: "Full-time role" })).toBeChecked();
+    await page.getByLabel("Message").fill("Hello!");
+    await expect(page.getByText("Nothing is sent from this site.")).toBeVisible();
+  });
+});
+
+test("portfolio list view shows every project", async ({ page }) => {
+  await page.goto("portfolio/");
+  await page.getByRole("button", { name: "List view" }).click();
+  await expect(page).toHaveURL(/view=list/);
+  await expect(page.locator("main ul h2")).toHaveCount(29);
+  await page.getByRole("button", { name: "Grid view" }).click();
+  await expect(page.locator("main article")).toHaveCount(29);
+});
+
 test("CV page shows the CV content and links to the PDF", async ({ page }) => {
   await page.goto("cv/");
 

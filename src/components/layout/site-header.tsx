@@ -69,7 +69,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Link
-            href="/#contact"
+            href="/contact/"
             className={cn(buttonVariants({ size: "sm" }), "hidden lg:inline-flex")}
           >
             Let&rsquo;s talk

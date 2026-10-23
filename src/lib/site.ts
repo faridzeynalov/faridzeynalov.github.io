@@ -23,8 +23,8 @@ export function withBasePath(path: string) {
 export const navItems = [
   { label: "Home", href: "/" },
   { label: "Portfolio", href: "/portfolio/" },
-  { label: "Services", href: "/#services" },
+  { label: "Services", href: "/services/" },
   { label: "CV", href: "/cv/" },
-  { label: "About", href: "/#about" },
-  { label: "Contact", href: "/#contact" },
+  { label: "About", href: "/about/" },
+  { label: "Contact", href: "/contact/" },
 ] as const;

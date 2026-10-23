@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  ArrowRight,
-  Code2,
-  Gauge,
-  Palette,
-  Plug,
-  Sparkles,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useInView, useScroll, useSpring, useTransform } from "motion/react";
 import * as m from "motion/react-m";
 import Link from "next/link";
@@ -18,16 +9,8 @@ import { Accent } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
-import type { Service, ServiceIcon } from "@/types/content";
-
-const icons: Record<ServiceIcon, LucideIcon> = {
-  code: Code2,
-  palette: Palette,
-  gauge: Gauge,
-  sparkles: Sparkles,
-  plug: Plug,
-  wrench: Wrench,
-};
+import { serviceIcons } from "@/components/services/service-icons";
+import type { Service } from "@/types/content";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -123,9 +106,15 @@ export function Services() {
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.2, ease }}
             >
-              <Link href="/#contact" className={buttonVariants({ size: "lg" })}>
+              <Link href="/contact/" className={buttonVariants({ size: "lg" })}>
                 Start a project
                 <ArrowRight aria-hidden />
+              </Link>
+              <Link
+                href="/services/"
+                className={buttonVariants({ variant: "ghost", size: "lg", className: "ml-2" })}
+              >
+                All services
               </Link>
             </m.div>
           </div>
@@ -182,7 +171,7 @@ function ServiceCard({
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const numberY = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
-  const Icon = icons[service.icon];
+  const Icon = serviceIcons[service.icon];
 
   return (
     <m.li

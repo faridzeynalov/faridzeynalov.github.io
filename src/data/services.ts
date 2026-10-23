@@ -1,4 +1,28 @@
-import type { Service } from "@/types/content";
+import type { ProcessStep, Service } from "@/types/content";
+
+/** How a project runs, shown on the Services page. */
+export const process: ProcessStep[] = [
+  {
+    title: "Discover",
+    description:
+      "We talk through goals, audience and constraints. I review existing designs, content and code, then agree on scope, priorities and timeline.",
+  },
+  {
+    title: "Design",
+    description:
+      "Layouts, components and every interactive state are defined — in your design files or mine — with responsive behaviour and accessibility considered up front.",
+  },
+  {
+    title: "Build",
+    description:
+      "Typed, component-based implementation with regular previews, so you see progress early and can steer before the details are locked in.",
+  },
+  {
+    title: "Launch & care",
+    description:
+      "Performance, SEO and cross-browser checks before launch — then improvements, fixes and new features as the product grows.",
+  },
+];
 
 /**
  * Services shown on the home page. Front-end, SEO/performance, API and maintenance work come

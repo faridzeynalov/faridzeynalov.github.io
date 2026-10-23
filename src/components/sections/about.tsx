@@ -1,4 +1,5 @@
-import { Download, MapPin } from "lucide-react";
+import { ArrowRight, Download, MapPin } from "lucide-react";
+import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
@@ -27,7 +28,7 @@ export function About() {
                 {paragraph}
               </p>
             ))}
-            <div className="pt-4">
+            <div className="flex flex-wrap gap-3 pt-4">
               <a
                 href={withBasePath("/farid-zeynalov-cv.pdf")}
                 download
@@ -37,6 +38,10 @@ export function About() {
                 Download CV
                 <span className="font-mono text-xs text-fg-subtle">PDF</span>
               </a>
+              <Link href="/about/" className={buttonVariants({ variant: "ghost" })}>
+                More about me
+                <ArrowRight aria-hidden />
+              </Link>
             </div>
           </Reveal>
 

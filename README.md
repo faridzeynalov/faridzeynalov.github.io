@@ -1,12 +1,21 @@
 # Farid Zeynalov — Portfolio
 
 Personal portfolio for **Farid Zeynalov**, Front-End Developer (React / Next.js) in Baku.
-Three pages — Home, Portfolio and a project detail template — built as a fully static
-Next.js export for GitHub Pages.
+Built as a fully static Next.js export for GitHub Pages. Every page in the menu has its own
+signature animation; all of them respect `prefers-reduced-motion` and fall back gracefully on touch.
 
-- **Home** `/` — hero with a live project showcase, selected work, skills, experience, about, contact
-- **Portfolio** `/portfolio/` — 29 production websites, filterable by industry (`?industry=hospitality`)
+- **Home** `/` — hero with a live project showcase, selected work, services, skills, AI, experience,
+  about, contact
+- **Portfolio** `/portfolio/` — 29 production websites, filterable by industry
+  (`?industry=hospitality`), with a list view (`?view=list`) where the hovered project's screenshot
+  follows the cursor
 - **Project detail** `/portfolio/[slug]/` — one statically generated page per project
+- **Services** `/services/` — services travel horizontally as you scroll (sticky stage, native
+  scroll), plus a "how I work" path that draws itself
+- **CV** `/cv/` — the CV as a page, with a reading-progress bar, print styles and the PDF download
+- **About** `/about/` — the story lights up word by word as you read; numbers count up on view
+- **Contact** `/contact/` — oversized marquee, a message composer that opens the visitor's mail app
+  (nothing is sent from the site) and a magnetic send button
 
 ## Tech stack
 

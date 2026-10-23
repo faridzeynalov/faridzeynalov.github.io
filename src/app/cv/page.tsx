@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PrintButton } from "@/components/cv/print-button";
+import { DrawLine, ReadingProgress } from "@/components/cv/reading-progress";
 import { Enter } from "@/components/motion/enter";
 import { buttonVariants } from "@/components/ui/button";
 import { ai } from "@/data/ai";
@@ -34,6 +35,7 @@ export default function CvPage() {
 
   return (
     <div className="relative pt-28 pb-24 md:pt-36 print:p-0">
+      <ReadingProgress />
       <div
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[36rem] bg-grid mask-radial print:hidden"
         aria-hidden
@@ -271,7 +273,11 @@ function CvSection({
         }
       >
         {title}
-        {!compact && <span className="h-px flex-1 bg-border" aria-hidden />}
+        {!compact && (
+          <span className="relative h-px flex-1 bg-border" aria-hidden>
+            <DrawLine className="absolute inset-0 block bg-accent print:hidden" />
+          </span>
+        )}
       </h2>
       {children}
     </section>
