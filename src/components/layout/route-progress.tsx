@@ -138,7 +138,7 @@ export function RouteProgress() {
 
   return (
     <m.div
-      className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-[3px] print:hidden dev:h-1"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-[3px] print:hidden"
       style={{ opacity }}
       aria-hidden
     >

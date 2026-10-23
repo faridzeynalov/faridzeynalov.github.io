@@ -507,10 +507,22 @@
   animation: caret-blink 1.06s steps(1) infinite;
 }
 
-/* Page progress: a segmented terminal loading bar instead of the gradient line. */
+/* Page progress: a green gradient (deep green → accent → mint) with a soft green glow. */
 :root[data-skin="dev"] .route-bar {
-  background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 13px);
-  box-shadow: none;
+  background: linear-gradient(90deg, var(--bar-from), var(--accent) 55%, var(--bar-to));
+  box-shadow:
+    0 0 10px var(--accent),
+    0 0 2px var(--bar-to);
+}
+
+:root[data-skin="dev"]:not(.light) {
+  --bar-from: #238636;
+  --bar-to: #aff5b4;
+}
+
+:root[data-skin="dev"].light {
+  --bar-from: #0f5323;
+  --bar-to: #2ea043;
 }
 
 @media (prefers-reduced-motion: reduce) {
