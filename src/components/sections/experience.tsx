@@ -9,7 +9,7 @@ export function Experience() {
       <div className="container-page">
         <SectionHeading
           id="experience-title"
-          index="03"
+          index="05"
           eyebrow="Experience"
           title={
             <>

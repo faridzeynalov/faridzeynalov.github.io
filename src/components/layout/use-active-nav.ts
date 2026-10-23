@@ -3,19 +3,19 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const SECTIONS = ["about", "contact"] as const;
+const SECTIONS = ["services", "about", "contact"] as const;
 type Section = (typeof SECTIONS)[number];
 
-/** The last section whose top has passed the middle of the viewport (or the last one at page end). */
+/** The section spanning the middle of the viewport (or the last one at page end). */
 function findCurrentSection(): Section | null {
   const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 4;
   if (atBottom) return SECTIONS[SECTIONS.length - 1];
-  let current: Section | null = null;
+  const middle = window.innerHeight * 0.5;
   for (const id of SECTIONS) {
-    const element = document.getElementById(id);
-    if (element && element.getBoundingClientRect().top < window.innerHeight * 0.5) current = id;
+    const rect = document.getElementById(id)?.getBoundingClientRect();
+    if (rect && rect.top < middle && rect.bottom > middle) return id;
   }
-  return current;
+  return null;
 }
 
 /**

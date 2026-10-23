@@ -70,7 +70,7 @@ export function SiteHeader() {
           <ThemeToggle />
           <Link
             href="/#contact"
-            className={cn(buttonVariants({ size: "sm" }), "hidden md:inline-flex")}
+            className={cn(buttonVariants({ size: "sm" }), "hidden lg:inline-flex")}
           >
             Let&rsquo;s talk
           </Link>

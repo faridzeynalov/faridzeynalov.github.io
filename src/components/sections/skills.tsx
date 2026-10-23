@@ -12,7 +12,7 @@ export function Skills() {
       <div className="container-page">
         <SectionHeading
           id="skills-title"
-          index="02"
+          index="03"
           eyebrow="Skills & expertise"
           title={
             <>

@@ -1,0 +1,279 @@
+"use client";
+
+import {
+  ArrowRight,
+  Code2,
+  Gauge,
+  Palette,
+  Plug,
+  Sparkles,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+import { useInView, useScroll, useSpring, useTransform } from "motion/react";
+import * as m from "motion/react-m";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { Accent } from "@/components/sections/section-heading";
+import { buttonVariants } from "@/components/ui/button";
+import { services } from "@/data/services";
+import { cn } from "@/lib/utils";
+import type { Service, ServiceIcon } from "@/types/content";
+
+const icons: Record<ServiceIcon, LucideIcon> = {
+  code: Code2,
+  palette: Palette,
+  gauge: Gauge,
+  sparkles: Sparkles,
+  plug: Plug,
+  wrench: Wrench,
+};
+
+const ease = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * Services: a sticky index on the left tracks the card in view, a progress line fills
+ * as the list scrolls past, and each card reveals with its deliverables staggering in.
+ */
+export function Services() {
+  const listRef = useRef<HTMLOListElement>(null);
+  const [active, setActive] = useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: listRef,
+    offset: ["start 65%", "end 55%"],
+  });
+  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
+
+  return (
+    <section id="services" aria-labelledby="services-title" className="relative py-24 md:py-32">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[40rem] bg-grid mask-radial opacity-60"
+        aria-hidden
+      />
+      <div className="container-page grid gap-14 lg:grid-cols-12 lg:gap-16">
+        {/* Sticky intro + index */}
+        <div className="lg:col-span-5">
+          <div className="lg:sticky lg:top-28">
+            <m.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px 0px -12% 0px" }}
+              transition={{ duration: 0.8, ease }}
+            >
+              <p className="mb-4 flex items-center gap-3 font-mono text-xs text-fg-subtle uppercase">
+                <span className="text-accent">02</span>
+                <span className="h-px w-8 bg-border-strong" aria-hidden />
+                Services
+              </p>
+              <h2
+                id="services-title"
+                className="text-[clamp(2rem,4.6vw,3.25rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance"
+              >
+                What I can <Accent>build for you.</Accent>
+              </h2>
+              <p className="mt-4 max-w-md text-base text-pretty text-fg-muted md:text-lg">
+                From the first layout to a fast, findable product in production — and the care it
+                needs after launch. Pick one piece or the whole journey.
+              </p>
+            </m.div>
+
+            <nav aria-label="Services" className="mt-10 hidden lg:block">
+              <ol className="space-y-1">
+                {services.map((service, index) => (
+                  <li key={service.id}>
+                    <a
+                      href={`#service-${service.id}`}
+                      className={cn(
+                        "group relative flex items-baseline gap-4 rounded-lg py-2 pr-3 pl-4 transition-colors duration-300",
+                        active === index ? "text-fg" : "text-fg-subtle hover:text-fg-muted",
+                      )}
+                      aria-current={active === index ? "true" : undefined}
+                    >
+                      {active === index && (
+                        <m.span
+                          layoutId="service-index"
+                          className="absolute inset-0 rounded-lg bg-bg-subtle"
+                          transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                          aria-hidden
+                        />
+                      )}
+                      <span
+                        className={cn(
+                          "relative font-mono text-xs tabular-nums transition-colors",
+                          active === index && "text-accent",
+                        )}
+                      >
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="relative font-medium">{service.title}</span>
+                      <span className="relative ml-auto hidden text-xs text-fg-subtle xl:inline">
+                        {service.tagline}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+
+            <m.div
+              className="mt-10"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.2, ease }}
+            >
+              <Link href="/#contact" className={buttonVariants({ size: "lg" })}>
+                Start a project
+                <ArrowRight aria-hidden />
+              </Link>
+            </m.div>
+          </div>
+        </div>
+
+        {/* Cards + scroll progress rail */}
+        <div className="relative lg:col-span-7">
+          <div
+            className="absolute top-2 bottom-2 left-[19px] hidden w-px bg-border sm:block"
+            aria-hidden
+          >
+            <m.div
+              className="h-full w-full origin-top bg-gradient-to-b from-accent via-accent to-accent/30"
+              style={{ scaleY: progress }}
+            />
+          </div>
+
+          <ol ref={listRef} className="space-y-6 sm:space-y-8">
+            {services.map((service, index) => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                index={index}
+                active={active === index}
+                onActive={setActive}
+              />
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ServiceCard({
+  service,
+  index,
+  active,
+  onActive,
+}: {
+  service: Service;
+  index: number;
+  active: boolean;
+  onActive: (index: number) => void;
+}) {
+  const ref = useRef<HTMLLIElement>(null);
+  // "Active" when the card crosses the middle band of the viewport.
+  const inBand = useInView(ref, { margin: "-45% 0px -45% 0px" });
+  useEffect(() => {
+    if (inBand) onActive(index);
+  }, [inBand, onActive, index]);
+
+  // Subtle parallax on the large background number.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const numberY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+
+  const Icon = icons[service.icon];
+
+  return (
+    <m.li
+      ref={ref}
+      id={`service-${service.id}`}
+      className="relative scroll-mt-28 sm:pl-14"
+      initial={{ opacity: 0, y: 56, scale: 0.97, filter: "blur(6px)" }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.9, ease }}
+    >
+      {/* Rail node */}
+      <span
+        className={cn(
+          "absolute top-8 left-[13px] hidden size-[13px] rounded-full border-2 transition-colors duration-500 sm:block",
+          active ? "border-accent bg-accent" : "border-border-strong bg-bg",
+        )}
+        aria-hidden
+      >
+        {active && (
+          <span className="absolute -inset-1.5 animate-ping rounded-full bg-accent/30 motion-reduce:hidden" />
+        )}
+      </span>
+
+      <article
+        className={cn(
+          "group relative overflow-hidden rounded-2xl border bg-bg-elevated p-6 transition-[border-color,box-shadow] duration-500 md:p-8",
+          active ? "border-border-strong shadow-float" : "border-border",
+        )}
+      >
+        {/* Accent wash when active */}
+        <div
+          className={cn(
+            "pointer-events-none absolute -top-32 -right-32 size-72 rounded-full bg-accent/15 blur-3xl transition-opacity duration-700",
+            active ? "opacity-100" : "opacity-0",
+          )}
+          aria-hidden
+        />
+        <m.span
+          className="pointer-events-none absolute -top-4 right-4 font-mono text-[7rem] leading-none font-semibold text-fg/[0.04] select-none md:text-[9rem]"
+          style={{ y: numberY }}
+          aria-hidden
+        >
+          {String(index + 1).padStart(2, "0")}
+        </m.span>
+
+        <div className="relative flex items-start gap-4">
+          <m.span
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-bg-subtle text-accent"
+            initial={{ rotate: -25, scale: 0.6, opacity: 0 }}
+            whileInView={{ rotate: 0, scale: 1, opacity: 1 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.15 }}
+          >
+            <Icon className="size-5" aria-hidden />
+          </m.span>
+          <div>
+            <p className="font-mono text-[11px] text-fg-subtle uppercase">{service.tagline}</p>
+            <h3 className="mt-1 text-xl font-semibold tracking-tight md:text-2xl">
+              {service.title}
+            </h3>
+          </div>
+        </div>
+
+        <p className="relative mt-5 text-[15px] leading-relaxed text-pretty text-fg-muted md:text-base">
+          {service.description}
+        </p>
+
+        <m.ul
+          className="relative mt-6 grid gap-2.5 sm:grid-cols-2"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={{ show: { transition: { staggerChildren: 0.07, delayChildren: 0.25 } } }}
+          aria-label={`${service.title} deliverables`}
+        >
+          {service.deliverables.map((item) => (
+            <m.li
+              key={item}
+              className="flex gap-2.5 rounded-lg border border-border bg-bg-subtle/50 px-3 py-2.5 text-sm text-pretty"
+              variants={{
+                hidden: { opacity: 0, x: -12 },
+                show: { opacity: 1, x: 0, transition: { duration: 0.5, ease } },
+              }}
+            >
+              <span className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-accent" aria-hidden />
+              {item}
+            </m.li>
+          ))}
+        </m.ul>
+      </article>
+    </m.li>
+  );
+}

@@ -282,6 +282,40 @@ html.has-custom-cursor :is(input, textarea, [contenteditable="true"]) {
   color: var(--accent);
 }
 
+/* AI panel: a soft accent highlight that travels around the border. */
+.ai-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--bg-elevated), var(--bg-elevated)) padding-box,
+    linear-gradient(
+        120deg,
+        var(--border-strong) 0%,
+        var(--accent) 20%,
+        var(--border-strong) 40%,
+        var(--border-strong) 60%,
+        var(--accent) 80%,
+        var(--border-strong) 100%
+      )
+      border-box;
+  background-size:
+    100% 100%,
+    300% 300%;
+  animation: ai-border 10s linear infinite;
+}
+
+@keyframes ai-border {
+  from {
+    background-position:
+      0 0,
+      0% 50%;
+  }
+  to {
+    background-position:
+      0 0,
+      300% 50%;
+  }
+}
+
 /* Printing (e.g. the CV page): always ink-on-paper, regardless of the active theme. */
 @media print {
   :root {

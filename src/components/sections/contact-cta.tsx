@@ -31,7 +31,7 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
           <div className="relative mx-auto max-w-3xl text-center">
             {!compact && (
               <p className="mb-6 font-mono text-xs text-fg-subtle uppercase">
-                <span className="text-accent">05</span> — Contact
+                <span className="text-accent">07</span> — Contact
               </p>
             )}
             <h2

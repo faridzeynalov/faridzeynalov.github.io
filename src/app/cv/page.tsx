@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { PrintButton } from "@/components/cv/print-button";
 import { Enter } from "@/components/motion/enter";
 import { buttonVariants } from "@/components/ui/button";
+import { ai } from "@/data/ai";
 import { profile } from "@/data/profile";
 import { getAllProjects } from "@/lib/projects";
 import { withBasePath } from "@/lib/site";
@@ -196,6 +197,19 @@ export default function CvPage() {
                       </div>
                     ))}
                   </div>
+                </CvSection>
+
+                <CvSection title="AI" compact>
+                  <ul className="flex flex-wrap gap-1.5">
+                    {[...ai.skills, ...ai.tools].map((item) => (
+                      <li
+                        key={item}
+                        className="rounded-md border border-border bg-bg-elevated px-2 py-0.5 text-[12.5px] text-fg-muted"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </CvSection>
 
                 <CvSection title="Languages" compact>

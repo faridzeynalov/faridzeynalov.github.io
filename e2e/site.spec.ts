@@ -19,7 +19,15 @@ test.describe("home", () => {
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Farid Zeynalov");
     await expect(page.getByRole("link", { name: "View my work" })).toBeVisible();
-    for (const name of [/Real sites/, /toolkit/, /been building/, /about me/, /Let.s talk/]) {
+    for (const name of [
+      /Real sites/,
+      /build for you/,
+      /toolkit/,
+      /how I work/,
+      /been building/,
+      /about me/,
+      /Let.s talk/,
+    ]) {
       await expect(page.getByRole("heading", { level: 2, name })).toBeAttached();
     }
     await expect(page.getByRole("link", { name: "zeynalovf7@gmail.com" }).first()).toHaveAttribute(

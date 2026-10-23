@@ -11,7 +11,7 @@ export function About() {
       <div className="container-page">
         <SectionHeading
           id="about-title"
-          index="04"
+          index="06"
           eyebrow="About"
           title={
             <>
