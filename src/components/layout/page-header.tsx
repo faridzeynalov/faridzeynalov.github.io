@@ -12,6 +12,20 @@ interface PageHeaderProps {
   className?: string;
 }
 
+/** "/ about". In the Developer style it reads as a shell prompt: "~/farid $ cd about". */
+export function PromptEyebrow({ children }: { children: ReactNode }) {
+  return (
+    <span className="font-mono text-xs text-fg-subtle uppercase dev:text-sm dev:normal-case">
+      <span className="text-accent dev:hidden">/</span>
+      <span className="hidden dev:inline" aria-hidden>
+        <span className="text-accent">~/farid</span> <span className="text-fg-muted">$</span>{" "}
+        cd{" "}
+      </span>
+      <span className="dev:text-fg">{children}</span>
+    </span>
+  );
+}
+
 /** Shared top-of-page header with the kinetic split-character title. */
 export function PageHeader({
   eyebrow,
@@ -28,8 +42,8 @@ export function PageHeader({
         <div className="absolute -top-80 left-[12%] h-[48rem] w-[58rem] [--glow-strength:10%] glow" />
       </div>
       <div className="container-page">
-        <Enter as="p" className="mb-6 font-mono text-xs text-fg-subtle uppercase">
-          <span className="text-accent">/</span> {eyebrow}
+        <Enter as="p" className="mb-6">
+          <PromptEyebrow>{eyebrow}</PromptEyebrow>
         </Enter>
         <KineticTitle text={title} accent={accent} />
         {description && (

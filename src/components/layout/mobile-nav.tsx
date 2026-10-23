@@ -91,7 +91,7 @@ export function MobileNav({ tree }: { tree: TreeNode[] }) {
         aria-expanded={open}
         aria-controls="mobile-menu"
         aria-label={open ? t("closeMenu") : t("openMenu")}
-        className="relative z-[60] inline-flex size-9 items-center justify-center rounded-full border border-border bg-bg text-fg"
+        className="relative z-[60] inline-flex size-9 items-center justify-center rounded-pill border border-border bg-bg text-fg"
       >
         <AnimatePresence initial={false} mode="wait">
           <m.span

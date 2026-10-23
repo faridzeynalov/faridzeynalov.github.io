@@ -52,7 +52,7 @@ export function KineticTitle({
   return (
     <h1
       className={cn(
-        "text-[clamp(3rem,9vw,7.5rem)] leading-[0.95] font-semibold tracking-[-0.05em]",
+        "text-[clamp(3rem,9vw,7.5rem)] leading-[0.95] font-semibold tracking-[-0.05em] dev:text-[clamp(2.5rem,7vw,5.75rem)] dev:leading-[1.05]",
         className,
       )}
     >
@@ -62,7 +62,7 @@ export function KineticTitle({
           text={accent}
           delay={accentDelay}
           stagger={16}
-          className="block font-serif font-normal tracking-[-0.02em] text-fg-muted italic"
+          className="accent-text block font-serif font-normal tracking-[-0.02em] text-fg-muted italic"
         />
       )}
     </h1>

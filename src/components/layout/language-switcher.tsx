@@ -57,7 +57,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         aria-expanded={open}
         aria-controls={menuId}
         aria-label={`${t("language")}: ${localeNames[locale].native}`}
-        className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 font-mono text-xs text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
+        className="inline-flex h-9 items-center gap-1.5 rounded-pill border border-border px-3 font-mono text-xs text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
       >
         <Languages className="size-3.5" aria-hidden />
         {localeNames[locale].short}

@@ -112,7 +112,7 @@ export function AppearanceMenu({ className }: { className?: string }) {
         aria-controls={menuId}
         aria-label={label}
         title={label}
-        className="relative inline-flex size-9 items-center justify-center overflow-hidden rounded-full border border-border text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
+        className="relative inline-flex size-9 items-center justify-center overflow-hidden rounded-pill border border-border text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
       >
         {/* Same convention as the old toggle: Sun in dark mode, Moon in light mode. Both icons
             render and CSS picks one from the <html> class, so there's no hydration flash. */}

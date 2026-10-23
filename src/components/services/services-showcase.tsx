@@ -131,8 +131,9 @@ export function ServicesShowcase({ services }: { services: Service[] }) {
               <m.article
                 key={service.id}
                 id={service.id}
+                data-file={`${service.id}.tsx`}
                 className={cn(
-                  "group relative flex scroll-mt-24 flex-col overflow-hidden rounded-3xl border border-border bg-bg-elevated p-7 transition-colors duration-500 hover:border-border-strong md:p-10",
+                  "group relative flex scroll-mt-24 flex-col overflow-hidden rounded-3xl border border-border bg-bg-elevated p-7 transition-colors duration-500 hover:border-border-strong md:p-10 dev:pt-15 dev:md:pt-18",
                   horizontal && "w-[min(64vw,780px)] shrink-0",
                   horizontal && current === index && "border-border-strong",
                 )}

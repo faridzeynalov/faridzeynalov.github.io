@@ -1,5 +1,6 @@
 import { ArrowUpRight, Mail, Phone } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
+import { Accent, SectionEyebrow } from "@/components/sections/section-heading";
 import { CopyButton } from "@/components/ui/copy-button";
 import { buttonVariants } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
@@ -25,7 +26,10 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
       className={cn(compact ? "py-20" : "py-24 md:py-32")}
     >
       <div className="container-page">
-        <Reveal className="relative overflow-hidden rounded-[2rem] border border-border bg-bg-elevated px-6 py-14 sm:px-12 md:py-20">
+        <Reveal
+          file="contact.sh"
+          className="relative overflow-hidden rounded-[2rem] border border-border bg-bg-elevated px-6 py-14 sm:px-12 md:py-20 dev:rounded-3xl"
+        >
           {/* Backdrop */}
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <div className="absolute inset-0 bg-grid mask-radial opacity-80" />
@@ -34,20 +38,17 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
 
           <div className="relative mx-auto max-w-3xl text-center">
             {!compact && (
-              <p className="mb-6 font-mono text-xs text-fg-subtle uppercase">
-                <span className="text-accent">07</span> — {t("eyebrow")}
-              </p>
+              <SectionEyebrow index="07" className="mb-6 justify-center">
+                {t("eyebrow")}
+              </SectionEyebrow>
             )}
             <h2
               id={compact ? "cta-title" : "contact-title"}
-              className="text-[clamp(2.1rem,5.5vw,4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance"
+              className="text-[clamp(2.1rem,5.5vw,4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance dev:text-[clamp(1.8rem,4.4vw,3.2rem)] dev:leading-[1.12]"
             >
               {title ?? (
                 <>
-                  {t("title")}{" "}
-                  <span className="font-serif font-normal tracking-normal text-fg-muted italic">
-                    {t("accent")}
-                  </span>
+                  {t("title")} <Accent>{t("accent")}</Accent>
                 </>
               )}
             </h2>
@@ -55,7 +56,7 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
               {t("text")}
             </p>
 
-            <div className="mt-10 inline-flex max-w-full items-center gap-2 rounded-full border border-border-strong bg-bg/85 p-1.5 pl-5">
+            <div className="mt-10 inline-flex max-w-full items-center gap-2 rounded-pill border border-border-strong bg-bg/85 p-1.5 pl-5">
               <a
                 href={`mailto:${profile.email}`}
                 className="truncate font-mono text-sm text-fg transition-colors hover:text-accent sm:text-base"

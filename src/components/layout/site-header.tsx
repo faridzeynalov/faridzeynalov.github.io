@@ -43,7 +43,7 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
         <Logo />
 
         <nav aria-label={t("main")} className="hidden md:block">
-          <ul className="flex items-center gap-1 rounded-full border border-border bg-bg-elevated/50 p-1 backdrop-blur">
+          <ul className="flex items-center gap-1 rounded-pill border border-border bg-bg-elevated/50 p-1 backdrop-blur">
             {navItems.map((item) => {
               const isActive = active === item.href;
               return (
@@ -51,7 +51,7 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
                   {isActive && (
                     <m.span
                       layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full bg-bg-inset"
+                      className="absolute inset-0 rounded-pill bg-bg-inset"
                       transition={{ type: "spring", stiffness: 380, damping: 32 }}
                       aria-hidden
                     />
@@ -60,7 +60,7 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "relative block rounded-full px-4 py-1.5 text-[13.5px] transition-colors",
+                      "relative block rounded-pill px-4 py-1.5 text-[13.5px] transition-colors",
                       isActive ? "text-fg" : "text-fg-muted hover:text-fg",
                     )}
                   >

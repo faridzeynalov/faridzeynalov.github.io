@@ -35,7 +35,7 @@ export function CopyButton({ value, label, className }: CopyButtonProps) {
       type="button"
       onClick={copy}
       className={cn(
-        "inline-flex size-9 items-center justify-center rounded-full border border-border text-fg-muted transition-colors hover:border-border-strong hover:text-fg",
+        "inline-flex size-9 items-center justify-center rounded-pill border border-border text-fg-muted transition-colors hover:border-border-strong hover:text-fg",
         className,
       )}
       aria-label={copied ? t("copiedToClipboard") : label}

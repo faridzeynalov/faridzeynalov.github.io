@@ -14,6 +14,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { withBasePath } from "@/lib/site";
+import { toFileName } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -116,7 +117,8 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
             {principles.map((principle, index) => (
               <StaggerItem
                 key={principle.title}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-7 transition-colors hover:border-border-strong"
+                file={toFileName(getContent("en").principles[index].title, "md")}
+                className="group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-7 transition-colors hover:border-border-strong dev:pt-15"
               >
                 <span className="font-mono text-xs text-accent">0{index + 1}</span>
                 <h3 className="mt-6 text-xl font-semibold tracking-tight">{principle.title}</h3>
@@ -228,7 +230,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
               <StaggerItem
                 as="li"
                 key={language.name}
-                className="rounded-full border border-border bg-bg-elevated px-5 py-2.5 text-[15px]"
+                className="rounded-pill border border-border bg-bg-elevated px-5 py-2.5 text-[15px]"
               >
                 {language.name} <span className="text-fg-subtle">· {language.level}</span>
               </StaggerItem>
@@ -237,7 +239,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
               <StaggerItem
                 as="li"
                 key={certificate.name}
-                className="rounded-full border border-accent/40 bg-accent-soft px-5 py-2.5 text-[15px]"
+                className="rounded-pill border border-accent/40 bg-accent-soft px-5 py-2.5 text-[15px]"
               >
                 {certificate.name} <span className="text-fg-subtle">· {certificate.period}</span>
               </StaggerItem>

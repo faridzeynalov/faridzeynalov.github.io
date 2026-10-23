@@ -136,6 +136,20 @@
   --code-punct: #a3adb8;
 }
 
+/* Controls (buttons, chips, nav pills): fully round in Classic, editor-like corners in Developer. */
+:root {
+  --radius-pill: calc(infinity * 1px);
+}
+
+:root[data-skin="dev"] {
+  --radius-pill: 6px;
+  --radius-md: 4px;
+  --radius-lg: 5px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+  --radius-3xl: 10px;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
@@ -335,6 +349,65 @@
 
 @utility mask-fade-x {
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+@utility rounded-pill {
+  border-radius: var(--radius-pill);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Developer style                                                            */
+/* -------------------------------------------------------------------------- */
+
+/* Dotted editor grid instead of lines. */
+:root[data-skin="dev"] .bg-grid {
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1.25px);
+  background-size: 22px 22px;
+}
+
+/* Mono type reads badly with the tight display tracking used for Geist. */
+:root[data-skin="dev"] :is(h1, h2, h3, .lit-text) {
+  letter-spacing: -0.02em;
+}
+
+/* Italic serif accents become string literals: "crafting polished UIs." */
+:root[data-skin="dev"] .accent-text {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--code-string);
+}
+
+:root[data-skin="dev"] .accent-text::before {
+  content: '"';
+}
+
+:root[data-skin="dev"] .accent-text::after {
+  content: '"';
+}
+
+/*
+ * Cards marked with data-file="name.tsx" get an editor title bar with that file name.
+ * The cards add top padding for it themselves (dev:pt-…).
+ */
+:root[data-skin="dev"] [data-file]::before {
+  content: attr(data-file);
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 2rem;
+  padding-inline: 0.875rem;
+  border-bottom: 1px solid var(--border);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+  background: var(--bg-subtle);
+  box-shadow: inset 0 2px 0 var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0;
+  color: var(--fg-muted);
+  pointer-events: none;
 }
 
 /*

@@ -70,7 +70,7 @@ export default async function PortfolioPage({ params }: PageProps<"/[locale]/por
         title={
           <>
             {tCta("portfolioTitle")}{" "}
-            <span className="font-serif font-normal tracking-normal text-fg-muted italic">
+            <span className="accent-text font-serif font-normal tracking-normal text-fg-muted italic">
               {tCta("portfolioAccent")}
             </span>
           </>

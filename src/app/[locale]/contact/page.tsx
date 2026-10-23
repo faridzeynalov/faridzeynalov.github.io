@@ -40,7 +40,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
         accent={t("accent")}
         description={t("description")}
       >
-        <p className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-bg-elevated/60 py-1.5 pr-4 pl-3 text-sm text-fg-muted backdrop-blur">
+        <p className="mt-8 inline-flex items-center gap-2.5 rounded-pill border border-border bg-bg-elevated/60 py-1.5 pr-4 pl-3 text-sm text-fg-muted backdrop-blur">
           <span className="pulse-dot size-2 rounded-full bg-emerald-500" aria-hidden />
           {t("available")}
         </p>

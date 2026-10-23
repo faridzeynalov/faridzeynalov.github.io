@@ -75,10 +75,10 @@ export function SiteFooter() {
         <p>{t("builtWith")}</p>
       </div>
 
-      {/* Oversized outlined wordmark — a quiet sign-off. */}
+      {/* Oversized outlined wordmark — a quiet sign-off (a JSX tag in the Developer style). */}
       <p
         aria-hidden
-        className="pointer-events-none container-page -mb-[0.24em] text-[clamp(4rem,17vw,15rem)] leading-none font-semibold tracking-[-0.06em] text-transparent select-none [-webkit-text-stroke:1px_var(--border-strong)]"
+        className="pointer-events-none container-page -mb-[0.24em] text-[clamp(4rem,17vw,15rem)] leading-none font-semibold tracking-[-0.06em] whitespace-nowrap text-transparent select-none [-webkit-text-stroke:1px_var(--border-strong)] dev:text-[clamp(2.5rem,11vw,10rem)] dev:tracking-[-0.04em] dev:before:content-['<'] dev:after:content-['_/>']"
       >
         {profile.name.split(" ")[1].toLowerCase()}
       </p>

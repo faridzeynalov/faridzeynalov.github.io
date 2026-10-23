@@ -127,8 +127,12 @@ test.describe("dedicated pages", () => {
   test("contact composer is labelled and explains it uses the mail app", async ({ page }) => {
     await page.goto("contact");
     await expect(page.getByRole("radio", { name: "Freelance project" })).toBeChecked();
-    await page.getByRole("radio", { name: "Full-time role" }).check({ force: true });
-    await expect(page.getByRole("radio", { name: "Full-time role" })).toBeChecked();
+    // A click that lands before hydration is lost (React then restores the default), so retry.
+    const fullTime = page.getByRole("radio", { name: "Full-time role" });
+    await expect(async () => {
+      await fullTime.check({ force: true });
+      await expect(fullTime).toBeChecked({ timeout: 500 });
+    }).toPass();
     await page.getByLabel("Message").fill("Hello!");
     await expect(page.getByText("Nothing is sent from this site.")).toBeVisible();
   });

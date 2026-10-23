@@ -25,9 +25,12 @@ export function HeroIntro({
     <div>
       <Enter
         as="p"
-        className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-bg-elevated/80 py-1 pr-3.5 pl-2.5 text-[13px] text-fg-muted"
+        className="mb-8 inline-flex items-center gap-2.5 rounded-pill border border-border bg-bg-elevated/80 py-1 pr-3.5 pl-2.5 text-[13px] text-fg-muted"
       >
         <span className="pulse-dot size-2 rounded-full bg-emerald-500" aria-hidden />
+        <span className="hidden text-[var(--code-comment)] dev:inline" aria-hidden>
+          {"//"}
+        </span>
         {badge}
       </Enter>
 
@@ -35,14 +38,16 @@ export function HeroIntro({
       <div className="@container">
         <h1
           id="hero-title"
-          className="text-[clamp(2.25rem,9.6cqw,4.6rem)] leading-[1.04] font-semibold tracking-[-0.045em]"
+          className="text-[clamp(2.25rem,9.6cqw,4.6rem)] leading-[1.04] font-semibold tracking-[-0.045em] dev:text-[clamp(1.9rem,7.4cqw,3.6rem)] dev:leading-[1.12]"
         >
           <RiseLine delay={50}>{name}</RiseLine>
           <RiseLine delay={150} className="text-fg-muted">
             {jobTitle}
           </RiseLine>
           <RiseLine delay={250}>
-            <span className="font-serif font-normal tracking-[-0.01em] italic">{tagline}</span>
+            <span className="accent-text font-serif font-normal tracking-[-0.01em] italic">
+              {tagline}
+            </span>
           </RiseLine>
         </h1>
       </div>

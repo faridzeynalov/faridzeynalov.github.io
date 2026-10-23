@@ -2,8 +2,10 @@ import { Bot, Braces, MessagesSquare, Plug, Sparkles, type LucideIcon } from "lu
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { useTranslations } from "next-intl";
+import { getContent } from "@/content";
 import { getAi } from "@/data/ai";
 import { useAppLocale } from "@/i18n/use-app-locale";
+import { toFileName } from "@/lib/utils";
 import type { AiIcon } from "@/types/content";
 
 const icons: Record<AiIcon, LucideIcon> = {
@@ -68,12 +70,13 @@ export function AiSection() {
 
           {/* Capabilities */}
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:col-span-7" stagger={0.1}>
-            {ai.capabilities.map((capability) => {
+            {ai.capabilities.map((capability, index) => {
               const Icon = icons[capability.icon];
               return (
                 <StaggerItem
                   key={capability.title}
-                  className="group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-6 transition-colors duration-500 hover:border-border-strong md:p-7"
+                  file={toFileName(getContent("en").ai.capabilities[index].title, "md")}
+                  className="group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-6 transition-colors duration-500 hover:border-border-strong md:p-7 dev:pt-14 dev:md:pt-15"
                 >
                   <div
                     className="pointer-events-none absolute -right-32 -bottom-32 size-72 opacity-0 transition-opacity duration-700 [--glow-strength:15%] glow group-hover:opacity-100"

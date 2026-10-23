@@ -7,13 +7,16 @@ interface EnterProps {
   /** Delay in milliseconds. */
   delay?: number;
   as?: "div" | "p" | "span";
+  /** File name for the Developer style's card title bar (see `[data-file]` in globals.css). */
+  file?: string;
 }
 
 /** CSS-only fade-up for above-the-fold content — no JavaScript needed. */
-export function Enter({ children, className, delay = 0, as: Component = "div" }: EnterProps) {
+export function Enter({ children, className, delay = 0, as: Component = "div", file }: EnterProps) {
   return (
     <Component
       className={cn("animate-enter", className)}
+      data-file={file}
       style={{ "--delay": `${delay}ms` } as CSSProperties}
     >
       {children}

@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PrintButton } from "@/components/cv/print-button";
 import { DrawLine, ReadingProgress } from "@/components/cv/reading-progress";
+import { PromptEyebrow } from "@/components/layout/page-header";
 import { Enter } from "@/components/motion/enter";
 import { buttonVariants } from "@/components/ui/button";
 import { getAi } from "@/data/ai";
@@ -62,8 +63,8 @@ export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
       <div className="container-page max-w-5xl print:max-w-none print:px-0">
         {/* Toolbar */}
         <Enter className="mb-6 flex flex-wrap items-center justify-between gap-4 print:hidden">
-          <p className="font-mono text-xs text-fg-subtle uppercase">
-            <span className="text-accent">/</span> {t("eyebrow")}
+          <p>
+            <PromptEyebrow>{t("eyebrow")}</PromptEyebrow>
           </p>
           <div className="flex flex-wrap gap-2">
             <PrintButton />
@@ -78,10 +79,11 @@ export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
         <Enter
           delay={100}
           as="div"
-          className="overflow-hidden rounded-3xl border border-border bg-bg-elevated shadow-soft print:rounded-none print:border-0 print:shadow-none"
+          file="cv.md"
+          className="relative overflow-hidden rounded-3xl border border-border bg-bg-elevated shadow-soft print:rounded-none print:border-0 print:shadow-none"
         >
           <article aria-labelledby="cv-name">
-            <header className="border-b border-border px-6 py-10 sm:px-10 md:px-12 print:px-0 print:py-6">
+            <header className="border-b border-border px-6 py-10 sm:px-10 md:px-12 print:px-0 print:py-6 dev:pt-16">
               <h1
                 id="cv-name"
                 className="text-[clamp(2.25rem,6vw,3.75rem)] leading-none font-semibold tracking-[-0.04em]"

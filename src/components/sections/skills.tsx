@@ -2,9 +2,10 @@ import { Braces, Layers, ShieldCheck, Wrench, type LucideIcon } from "lucide-rea
 import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { useTranslations } from "next-intl";
+import { getContent } from "@/content";
 import { getProfile } from "@/data/profile";
 import { useAppLocale } from "@/i18n/use-app-locale";
-import { cn } from "@/lib/utils";
+import { cn, toFileName } from "@/lib/utils";
 
 const icons: LucideIcon[] = [Braces, Layers, ShieldCheck, Wrench];
 
@@ -33,8 +34,9 @@ export function Skills() {
             return (
               <StaggerItem
                 key={group.title}
+                file={toFileName(getContent("en").profile.skills[index].title, "ts")}
                 className={cn(
-                  "group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-6 transition-colors duration-500 hover:border-border-strong md:p-7",
+                  "group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-6 transition-colors duration-500 hover:border-border-strong md:p-7 dev:pt-14 dev:md:pt-15",
                   wide ? "md:col-span-4" : "md:col-span-2",
                 )}
               >

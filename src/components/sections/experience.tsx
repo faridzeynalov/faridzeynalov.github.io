@@ -4,6 +4,7 @@ import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { useTranslations } from "next-intl";
 import { getProfile } from "@/data/profile";
 import { useAppLocale } from "@/i18n/use-app-locale";
+import { toFileName } from "@/lib/utils";
 
 export function Experience() {
   const t = useTranslations("Experience");
@@ -29,7 +30,8 @@ export function Experience() {
               <Reveal
                 key={job.company}
                 as="article"
-                className="relative rounded-2xl border border-border bg-bg-elevated p-6 md:p-8"
+                file={toFileName(job.company, "md")}
+                className="relative rounded-2xl border border-border bg-bg-elevated p-6 md:p-8 dev:pt-14 dev:md:pt-16"
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
@@ -56,7 +58,7 @@ export function Experience() {
                       </p>
                     </div>
                   </div>
-                  <p className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 font-mono text-xs text-fg-muted">
+                  <p className="inline-flex items-center gap-2 rounded-pill border border-border px-3 py-1 font-mono text-xs text-fg-muted">
                     <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden />
                     {job.start} — {job.end}
                   </p>

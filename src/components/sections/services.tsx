@@ -8,7 +8,12 @@ import { Link } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { useScrollReveal } from "@/components/motion/scroll-reveal";
-import { Accent } from "@/components/sections/section-heading";
+import {
+  Accent,
+  HeadingMark,
+  SectionEyebrow,
+  sectionTitleClass,
+} from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { serviceIcons } from "@/components/services/service-icons";
@@ -43,15 +48,11 @@ export function Services({ services }: { services: Service[] }) {
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-28">
             <Reveal>
-              <p className="mb-4 flex items-center gap-3 font-mono text-xs text-fg-subtle uppercase">
-                <span className="text-accent">02</span>
-                <span className="h-px w-8 bg-border-strong" aria-hidden />
+              <SectionEyebrow index="02" className="mb-4">
                 {t("eyebrow")}
-              </p>
-              <h2
-                id="services-title"
-                className="text-[clamp(2rem,4.6vw,3.25rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance"
-              >
+              </SectionEyebrow>
+              <h2 id="services-title" className={sectionTitleClass}>
+                <HeadingMark />
                 {t("title")} <Accent>{t("accent")}</Accent>
               </h2>
               <p className="mt-4 max-w-md text-base text-pretty text-fg-muted md:text-lg">
@@ -191,8 +192,9 @@ function ServiceCard({
       </span>
 
       <article
+        data-file={`${service.id}.tsx`}
         className={cn(
-          "group relative overflow-hidden rounded-2xl border bg-bg-elevated p-6 transition-[border-color,box-shadow] duration-500 md:p-8",
+          "group relative overflow-hidden rounded-2xl border bg-bg-elevated p-6 transition-[border-color,box-shadow] duration-500 md:p-8 dev:pt-14 dev:md:pt-16",
           active ? "border-border-strong shadow-float" : "border-border",
         )}
       >

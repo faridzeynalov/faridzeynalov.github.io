@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
  * navigational buttons, or use `<Button>` for actions.
  */
 export const buttonVariants = cva(
-  "group/button relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full text-sm font-medium whitespace-nowrap transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out-quart select-none active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "group/button relative inline-flex shrink-0 items-center justify-center gap-2 rounded-pill text-sm font-medium whitespace-nowrap transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out-quart select-none active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         primary:
-          "bg-fg text-bg shadow-soft hover:bg-fg/90 [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:translate-x-0.5",
+          "bg-fg text-bg shadow-soft hover:bg-fg/90 dev:bg-accent dev:text-accent-fg dev:hover:bg-accent/90 [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:translate-x-0.5",
         accent: "bg-accent text-accent-fg shadow-soft hover:brightness-110",
         secondary:
           "border border-border-strong bg-bg-elevated/60 text-fg backdrop-blur hover:border-fg/30 hover:bg-bg-subtle",

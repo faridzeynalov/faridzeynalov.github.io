@@ -35,7 +35,8 @@ export function MessageComposer({ email }: { email: string }) {
         compose();
       }}
       aria-describedby={noteId}
-      className="rounded-3xl border border-border bg-bg-elevated p-6 md:p-10"
+      data-file="message.md"
+      className="relative rounded-3xl border border-border bg-bg-elevated p-6 md:p-10 dev:pt-14 dev:md:pt-18"
     >
       <fieldset>
         <legend className="font-mono text-xs text-fg-subtle uppercase">{t("topic")}</legend>
@@ -46,7 +47,7 @@ export function MessageComposer({ email }: { email: string }) {
               <label
                 key={option}
                 className={cn(
-                  "relative cursor-pointer rounded-full border px-4 py-2 text-sm transition-[background-color,border-color,color] duration-300 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring",
+                  "relative cursor-pointer rounded-pill border px-4 py-2 text-sm transition-[background-color,border-color,color] duration-300 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring",
                   selected
                     ? "border-transparent bg-fg text-bg"
                     : "border-border text-fg-muted hover:border-border-strong hover:text-fg",

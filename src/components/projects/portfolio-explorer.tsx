@@ -90,7 +90,7 @@ export function PortfolioExplorer({
                 onClick={() => select(option.id)}
                 aria-pressed={active}
                 className={cn(
-                  "relative inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
+                  "relative inline-flex shrink-0 items-center gap-2 rounded-pill border px-4 py-2 text-sm transition-colors",
                   active
                     ? "border-transparent text-bg"
                     : "border-border text-fg-muted hover:border-border-strong hover:text-fg",
@@ -99,7 +99,7 @@ export function PortfolioExplorer({
                 {active && (
                   <m.span
                     layoutId="filter-pill"
-                    className="absolute inset-0 rounded-full bg-fg"
+                    className="absolute inset-0 rounded-pill bg-fg"
                     transition={{ type: "spring", stiffness: 400, damping: 34 }}
                     aria-hidden
                   />
@@ -121,7 +121,7 @@ export function PortfolioExplorer({
         <div
           role="group"
           aria-label={t("layout")}
-          className="flex shrink-0 gap-1 self-start rounded-full border border-border p-1"
+          className="flex shrink-0 gap-1 self-start rounded-pill border border-border p-1"
         >
           {(["grid", "list"] as const).map((option) => (
             <button
@@ -132,7 +132,7 @@ export function PortfolioExplorer({
               aria-label={option === "grid" ? t("gridView") : t("listView")}
               title={option === "grid" ? t("gridView") : t("listView")}
               className={cn(
-                "inline-flex size-8 items-center justify-center rounded-full transition-colors",
+                "inline-flex size-8 items-center justify-center rounded-pill transition-colors",
                 view === option ? "bg-fg text-bg" : "text-fg-muted hover:text-fg",
               )}
             >

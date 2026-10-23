@@ -45,7 +45,7 @@ export default async function ServicesPage({ params }: PageProps<"/[locale]/serv
             <li key={service.id}>
               <a
                 href={`#${service.id}`}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-elevated/60 px-4 py-2 text-sm text-fg-muted backdrop-blur transition-colors hover:border-border-strong hover:text-fg"
+                className="inline-flex items-center gap-2 rounded-pill border border-border bg-bg-elevated/60 px-4 py-2 text-sm text-fg-muted backdrop-blur transition-colors hover:border-border-strong hover:text-fg"
               >
                 <span className="font-mono text-[11px] text-accent">
                   {String(index + 1).padStart(2, "0")}

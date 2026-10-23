@@ -48,7 +48,7 @@ export default function NotFound() {
             <p className="font-mono text-sm text-accent">Error 404</p>
             <h1 className="mt-4 text-[clamp(3rem,10vw,7rem)] leading-none font-semibold tracking-[-0.05em]">
               Nothing{" "}
-              <span className="font-serif font-normal tracking-normal text-fg-muted italic">
+              <span className="accent-text font-serif font-normal tracking-normal text-fg-muted italic">
                 here.
               </span>
             </h1>

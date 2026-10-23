@@ -35,7 +35,7 @@ export function UnavailablePreview({
       <span className="relative font-mono text-[clamp(1rem,3.4vw,2rem)] tracking-tight text-fg">
         {project.domain}
       </span>
-      <span className="relative inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/70 px-2.5 py-0.5 font-mono text-[11px] text-fg-muted">
+      <span className="relative inline-flex items-center gap-1.5 rounded-pill border border-border bg-bg/70 px-2.5 py-0.5 font-mono text-[11px] text-fg-muted">
         <CloudOff className="size-3" aria-hidden />
         {t("previewUnavailable")}
       </span>
