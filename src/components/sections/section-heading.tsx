@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 
@@ -61,12 +61,16 @@ export function SectionEyebrow({
   children: ReactNode;
   className?: string;
 }) {
+  // Developer style: the comment types itself out when its section is revealed
+  // (`.type-on-reveal`), one step per character of "// 02 · Services".
+  const steps = 6 + index.length + (typeof children === "string" ? children.length : 12);
   return (
     <p
       className={cn(
-        "flex items-center gap-3 font-mono text-xs text-fg-subtle uppercase dev:gap-2 dev:text-[var(--code-comment)] dev:normal-case",
+        "type-on-reveal flex w-fit items-center gap-3 font-mono text-xs text-fg-subtle uppercase dev:gap-2 dev:text-[var(--code-comment)] dev:normal-case",
         className,
       )}
+      style={{ "--type-steps": steps } as CSSProperties}
     >
       <span className="hidden dev:inline" aria-hidden>
         {"//"}

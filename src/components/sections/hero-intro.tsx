@@ -1,5 +1,8 @@
-import type { ReactNode } from "react";
-import { Enter, RiseLine } from "@/components/motion/enter";
+import type { CSSProperties, ReactNode } from "react";
+import { Enter, RiseLine, TYPE_SPEED, TypeCaret, TypedText } from "@/components/motion/enter";
+
+/** Pause between typed lines (Developer style), in ms. */
+const LINE_PAUSE = 180;
 
 interface HeroIntroProps {
   name: string;
@@ -21,6 +24,17 @@ export function HeroIntro({
   actions,
   stats,
 }: HeroIntroProps) {
+  // When each typed line starts (Developer style): one after another, with a short pause.
+  const nameAt = 200;
+  const jobTitleAt = nameAt + name.length * TYPE_SPEED + LINE_PAUSE;
+  const taglineAt = jobTitleAt + jobTitle.length * TYPE_SPEED + LINE_PAUSE + TYPE_SPEED;
+  const typed = {
+    name: nameAt,
+    jobTitle: jobTitleAt,
+    tagline: taglineAt,
+    end: taglineAt + tagline.length * TYPE_SPEED,
+  };
+
   return (
     <div>
       <Enter
@@ -40,14 +54,26 @@ export function HeroIntro({
           id="hero-title"
           className="text-[clamp(2.25rem,9.6cqw,4.6rem)] leading-[1.04] font-semibold tracking-[-0.045em] dev:text-[clamp(1.9rem,7.4cqw,3.6rem)] dev:leading-[1.12]"
         >
-          <RiseLine delay={50}>{name}</RiseLine>
+          {/* Classic: each line rises. Developer: the three lines type out one after another. */}
+          <RiseLine delay={50}>
+            <TypedText text={name} delay={typed.name} />
+          </RiseLine>
           <RiseLine delay={150} className="text-fg-muted">
-            {jobTitle}
+            <TypedText text={jobTitle} delay={typed.jobTitle} />
           </RiseLine>
           <RiseLine delay={250}>
-            <span className="accent-text font-serif font-normal tracking-[-0.01em] italic">
-              {tagline}
+            <span
+              className="accent-text font-serif font-normal tracking-[-0.01em] italic"
+              style={
+                {
+                  "--quote-start": `${typed.tagline - TYPE_SPEED}ms`,
+                  "--quote-end": `${typed.end}ms`,
+                } as CSSProperties
+              }
+            >
+              <TypedText text={tagline} delay={typed.tagline} />
             </span>
+            <TypeCaret delay={typed.end} />
           </RiseLine>
         </h1>
       </div>

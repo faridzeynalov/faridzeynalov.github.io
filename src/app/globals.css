@@ -410,6 +410,124 @@
   pointer-events: none;
 }
 
+/* ---------- Developer style animations: typing, carets, terminal progress ---------- */
+
+@keyframes type-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes type-line {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Page titles: the split characters keep their per-character delays but appear (typed) instead
+   of rising. Hero lines likewise switch from rising to typing (.type-char below). */
+:root[data-skin="dev"] .animate-rise {
+  animation-name: type-in;
+  animation-duration: 1ms;
+  animation-timing-function: steps(1, jump-start);
+}
+
+:root[data-skin="dev"] .type-char {
+  animation: type-in 1ms steps(1, jump-start) both;
+  animation-delay: var(--type-delay, 0ms);
+}
+
+/* Quotes around typed accents open before and close after the typed text. */
+:root[data-skin="dev"] .accent-text::before {
+  animation: type-in 1ms steps(1, jump-start) both;
+  animation-delay: var(--quote-start, 0ms);
+}
+
+:root[data-skin="dev"] .accent-text::after {
+  animation: type-in 1ms steps(1, jump-start) both;
+  animation-delay: var(--quote-end, 0ms);
+}
+
+/* Blinking block caret after typed text. */
+.type-caret-wrap {
+  display: none;
+}
+
+:root[data-skin="dev"] .type-caret-wrap {
+  display: inline-block;
+  animation: type-in 1ms steps(1, jump-start) both;
+  animation-delay: var(--type-delay, 0ms);
+}
+
+.type-caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.82em;
+  margin-left: 0.18em;
+  vertical-align: -0.04em;
+  background: var(--accent);
+  animation: caret-blink 1.06s steps(1) infinite;
+}
+
+/* Section comments ("// 02 · Services") type out when their section is revealed, and reset
+   with it (data-shown is set by Reveal). */
+:root[data-skin="dev"] [data-shown="false"] .type-on-reveal {
+  clip-path: inset(0 100% 0 0);
+}
+
+:root[data-skin="dev"] [data-shown="true"] .type-on-reveal {
+  animation: type-line calc(var(--type-steps, 24) * 28ms) steps(var(--type-steps, 24), end) both;
+  animation-delay: 0.15s;
+}
+
+/* About story: typed letters simply appear, with a caret after the last one. */
+:root[data-skin="dev"] .lit-char {
+  filter: none;
+  translate: none;
+}
+
+:root[data-skin="dev"] .lit-caret {
+  position: relative;
+}
+
+:root[data-skin="dev"] .lit-caret::after {
+  content: "";
+  position: absolute;
+  top: 0.18em;
+  bottom: 0.12em;
+  left: calc(100% + 0.12em);
+  width: 0.5em;
+  background: var(--accent);
+  animation: caret-blink 1.06s steps(1) infinite;
+}
+
+/* Page progress: a segmented terminal loading bar instead of the gradient line. */
+:root[data-skin="dev"] .route-bar {
+  background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 13px);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .type-char,
+  .type-caret-wrap,
+  .animate-rise,
+  .accent-text::before,
+  .accent-text::after {
+    animation-delay: 0ms !important;
+  }
+
+  :root[data-skin="dev"] [data-shown] .type-on-reveal {
+    clip-path: none;
+    animation: none;
+  }
+}
+
 /*
  * Soft accent glow. A radial gradient instead of a large `blur()` filter: it looks the same
  * but costs nothing to scroll past, while big filtered layers are slow to re-raster on phones.

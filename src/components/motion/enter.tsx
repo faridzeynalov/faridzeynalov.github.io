@@ -24,6 +24,57 @@ export function Enter({ children, className, delay = 0, as: Component = "div", f
   );
 }
 
+/** Milliseconds per character for the Developer style's typing effect. */
+export const TYPE_SPEED = 38;
+
+/**
+ * Text that types itself out in the Developer style (each character appears at its own delay;
+ * see `.type-char` in globals.css). In Classic the characters are simply shown, so the parent's
+ * own animation (e.g. RiseLine) applies. Screen readers get the plain text.
+ */
+export function TypedText({ text, delay = 0 }: { text: string; delay?: number }) {
+  let index = 0;
+  const words = text.split(" ");
+  return (
+    <>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden>
+        {words.map((word, w) => (
+          <span key={w}>
+            <span className="inline-block whitespace-nowrap">
+              {[...word].map((char, c) => (
+                <span
+                  key={c}
+                  className="type-char"
+                  style={{ "--type-delay": `${delay + index++ * TYPE_SPEED}ms` } as CSSProperties}
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
+            {/* A plain space (not typed) so lines can wrap between words without a leading
+                space; the pause it gets keeps the typing rhythm. */}
+            {w < words.length - 1 && (index++, " ")}
+          </span>
+        ))}
+      </span>
+    </>
+  );
+}
+
+/** Blinking block caret shown after typed text (Developer style only), appearing at `delay`. */
+export function TypeCaret({ delay = 0 }: { delay?: number }) {
+  return (
+    <span
+      aria-hidden
+      className="type-caret-wrap"
+      style={{ "--type-delay": `${delay}ms` } as CSSProperties}
+    >
+      <span className="type-caret" />
+    </span>
+  );
+}
+
 /** Masked line reveal: the text rises from behind an invisible edge. */
 export function RiseLine({
   children,

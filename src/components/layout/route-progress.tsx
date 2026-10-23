@@ -138,12 +138,12 @@ export function RouteProgress() {
 
   return (
     <m.div
-      className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-[3px] print:hidden"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-[3px] print:hidden dev:h-1"
       style={{ opacity }}
       aria-hidden
     >
       <m.div
-        className="h-full origin-left bg-[linear-gradient(90deg,var(--accent),#f472b6_50%,#8b5cf6)] shadow-[0_0_12px_var(--accent)]"
+        className="route-bar h-full origin-left bg-[linear-gradient(90deg,var(--accent),#f472b6_50%,#8b5cf6)] shadow-[0_0_12px_var(--accent)]"
         style={{ scaleX: progress }}
       />
     </m.div>
