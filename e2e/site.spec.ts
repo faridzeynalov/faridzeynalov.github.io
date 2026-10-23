@@ -260,8 +260,8 @@ test.describe("theme", () => {
     await switchTo(/English/);
     await expect(page).toHaveURL(/:\d+\/$/);
     await expect(html).toHaveClass(new RegExp(`\\b${chosen}\\b`));
-    // The icon shows the theme you'd switch to: Sun in dark mode, Moon in light mode.
-    await expect(moon).toHaveCSS("opacity", chosen === "light" ? "1" : "0");
+    // The button shows the current mode: Moon in dark mode, Sun in light mode.
+    await expect(moon).toHaveCSS("opacity", chosen === "dark" ? "1" : "0");
   });
 
   test("starts in the Classic style; Developer is remembered, before paint and across languages", async ({

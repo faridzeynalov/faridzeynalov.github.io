@@ -129,10 +129,10 @@ export function AppearanceMenu({ className }: { className?: string }) {
           <Code2 className="absolute inset-0 hidden size-4 text-accent dev:block" />
         </span>
         <span className="h-4 w-px bg-border-strong" aria-hidden />
-        {/* Same convention as the old toggle: Sun in dark mode, Moon in light mode. */}
+        {/* Like the style icon, the current mode: Moon in dark mode, Sun in light mode. */}
         <span className="relative size-4 overflow-hidden" aria-hidden>
-          <Sun className="absolute inset-0 size-4 translate-y-5 rotate-90 opacity-0 transition-all duration-500 ease-out-expo dark:translate-y-0 dark:rotate-0 dark:opacity-100" />
-          <Moon className="absolute inset-0 size-4 transition-all duration-500 ease-out-expo dark:-translate-y-5 dark:-rotate-90 dark:opacity-0" />
+          <Moon className="absolute inset-0 size-4 translate-y-5 rotate-90 text-accent opacity-0 transition-all duration-500 ease-out-expo dark:translate-y-0 dark:rotate-0 dark:opacity-100" />
+          <Sun className="absolute inset-0 size-4 text-accent transition-all duration-500 ease-out-expo dark:-translate-y-5 dark:-rotate-90 dark:opacity-0" />
         </span>
         <ChevronDown
           aria-hidden
