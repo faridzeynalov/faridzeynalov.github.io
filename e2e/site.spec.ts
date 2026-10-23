@@ -134,6 +134,33 @@ test.describe("dedicated pages", () => {
   });
 });
 
+test("new pages start at the top; Back restores the previous position", async ({ page }) => {
+  await page.goto("./");
+  await page.evaluate(() => window.scrollTo({ top: 2000, behavior: "instant" }));
+  // Click via the DOM so the test runner doesn't scroll the link into view first.
+  await page
+    .locator('a[href$="/portfolio/"]')
+    .first()
+    .evaluate((el: HTMLElement) => el.click());
+  await expect(page).toHaveURL(/\/portfolio\/$/);
+  await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(0);
+
+  await page.evaluate(() => window.scrollTo({ top: 1200, behavior: "instant" }));
+  const atClick = await page.evaluate(() => Math.round(window.scrollY));
+  await page
+    .locator("main article h2 a")
+    .nth(4)
+    .evaluate((el: HTMLElement) => el.click());
+  await expect(page).toHaveURL(/\/portfolio\/[a-z0-9-]+\/$/);
+  await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(0);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/portfolio\/$/);
+  await expect
+    .poll(() => page.evaluate(() => Math.round(window.scrollY)))
+    .toBeGreaterThan(atClick - 5);
+});
+
 test("portfolio list view shows every project", async ({ page }) => {
   await page.goto("portfolio/");
   await page.getByRole("button", { name: "List view" }).click();

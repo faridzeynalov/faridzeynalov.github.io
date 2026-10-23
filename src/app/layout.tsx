@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { CursorEffects } from "@/components/layout/cursor-effects";
+import { RouteProgress } from "@/components/layout/route-progress";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProvider } from "@/components/motion/motion-provider";
@@ -71,9 +72,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // The theme class is added by the inline script before paint, so React must not
     // complain about the class/style it didn't render.
+    // data-scroll-behavior="smooth": CSS keeps smooth scrolling for in-page links, but Next.js
+    // switches it off during route changes so a new page always starts instantly at the top.
     <html
       lang="en"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
     >
       <head>
@@ -87,6 +91,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <MotionProvider>
+          <RouteProgress />
           <SiteHeader />
           <main id="main">{children}</main>
           <SiteFooter />
