@@ -2,26 +2,31 @@
 
 import { useMotionValue, useSpring } from "motion/react";
 import * as m from "motion/react-m";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { CODE_SNIPPETS, createSnippetPicker } from "@/lib/code-snippets";
 import { cn } from "@/lib/utils";
 
 const SNIPPET_MIN_GAP = 30; // a term reappears only after at least this many others
-const SPAWN_DISTANCE = 64; // px of pointer travel between snippets
-const MAX_SNIPPETS = 28;
+const SPAWN_DISTANCE = 64; // px of mouse travel between snippets
+const TOUCH_SPAWN_DISTANCE = 48; // px of finger travel between snippets
+const SCROLL_SPAWN_DISTANCE = 140; // px of momentum scrolling between snippets
+const TAP_BURST = 3;
 const INTERACTIVE = "a, button, [role='button'], summary, label, select";
 
+type Mode = "mouse" | "touch" | null;
+
 /**
- * Theme-aware custom cursor (dot + trailing ring) and a trail of code snippets that
- * drift up behind the page. Mouse users only; off for touch and reduced motion.
+ * Code snippets that drift up behind the page as you move, plus (for mice) a theme-aware
+ * custom cursor. Touch screens get the snippet trail on tap, drag and scroll, with the
+ * native behaviour otherwise unchanged. Everything is off with reduced motion.
  */
 export function CursorEffects() {
-  const [enabled, setEnabled] = useState(false);
+  const [mode, setMode] = useState<Mode>(null);
 
   useEffect(() => {
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setEnabled(fine.matches && !reduced.matches);
+    const update = () => setMode(reduced.matches ? null : fine.matches ? "mouse" : "touch");
     update();
     fine.addEventListener("change", update);
     reduced.addEventListener("change", update);
@@ -31,12 +36,129 @@ export function CursorEffects() {
     };
   }, []);
 
-  if (!enabled) return null;
-  return <CursorLayers />;
+  if (mode === "mouse") return <CursorLayers />;
+  if (mode === "touch") return <TouchTrail />;
+  return null;
 }
 
+/** Layer behind the page content (negative z-index: under in-flow content and cards). */
+function TrailLayer({ layerRef }: { layerRef: RefObject<HTMLDivElement | null> }) {
+  return (
+    <div
+      ref={layerRef}
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden print:hidden"
+      aria-hidden
+    />
+  );
+}
+
+/** Returns a stable `spawn(x, y, spread)` that drops one snippet near a viewport point. */
+function useSnippetSpawner(layerRef: RefObject<HTMLDivElement | null>, maxSnippets: number) {
+  const pickerRef = useRef<(() => string) | null>(null);
+
+  return useCallback(
+    (px: number, py: number, spread = 1) => {
+      const layer = layerRef.current;
+      if (!layer) return;
+      pickerRef.current ??= createSnippetPicker(CODE_SNIPPETS, SNIPPET_MIN_GAP);
+      while (layer.childElementCount >= maxSnippets) layer.firstElementChild?.remove();
+
+      const el = document.createElement("span");
+      el.className = "code-trail-snippet";
+      el.textContent = pickerRef.current();
+      el.style.left = `${px + (Math.random() - 0.5) * 140 * spread}px`;
+      el.style.top = `${py + (Math.random() - 0.5) * 90 * spread}px`;
+      el.style.setProperty("--r", `${(Math.random() - 0.5) * 16}deg`);
+      el.style.setProperty("--drift", `${-18 - Math.random() * 26}px`);
+      el.style.setProperty("--o", `${0.45 + Math.random() * 0.4}`);
+      el.style.animationDuration = `${1.6 + Math.random() * 1.2}s`;
+      if (Math.random() < 0.25) el.dataset.accent = "";
+      el.addEventListener("animationend", () => el.remove(), { once: true });
+      layer.appendChild(el);
+    },
+    [layerRef, maxSnippets],
+  );
+}
+
+/**
+ * Touch: a small burst where the finger lands, a trail along the finger while dragging or
+ * scrolling, and scattered snippets while the page glides on momentum after release.
+ */
+function TouchTrail() {
+  const layerRef = useRef<HTMLDivElement>(null);
+  const spawn = useSnippetSpawner(layerRef, 22);
+
+  useEffect(() => {
+    let fingerDown = false;
+    let lastX = 0;
+    let lastY = 0;
+    let travelled = 0;
+    let lastScrollY = window.scrollY;
+    let scrolled = 0;
+
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      fingerDown = true;
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+      travelled = 0;
+      for (let i = 0; i < TAP_BURST; i++) spawn(lastX, lastY, 0.9);
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      travelled += Math.hypot(touch.clientX - lastX, touch.clientY - lastY);
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+      if (travelled >= TOUCH_SPAWN_DISTANCE) {
+        travelled = 0;
+        spawn(lastX, lastY);
+      }
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length === 0) fingerDown = false;
+    };
+
+    // Momentum scrolling after the finger lifts: scatter snippets across the screen.
+    const onScroll = () => {
+      const delta = Math.abs(window.scrollY - lastScrollY);
+      lastScrollY = window.scrollY;
+      if (fingerDown) return; // the finger trail already covers active drags
+      scrolled += delta;
+      while (scrolled >= SCROLL_SPAWN_DISTANCE) {
+        scrolled -= SCROLL_SPAWN_DISTANCE;
+        spawn(
+          window.innerWidth * (0.15 + Math.random() * 0.7),
+          window.innerHeight * (0.2 + Math.random() * 0.6),
+          0.6,
+        );
+      }
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [spawn]);
+
+  return <TrailLayer layerRef={layerRef} />;
+}
+
+/** Mouse: theme-aware dot + trailing ring, and the snippet trail. */
 function CursorLayers() {
   const trailRef = useRef<HTMLDivElement>(null);
+  const spawn = useSnippetSpawner(trailRef, 28);
   const [visible, setVisible] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -53,26 +175,6 @@ function CursorLayers() {
     let lastX: number | null = null;
     let lastY: number | null = null;
     let travelled = 0;
-    const nextSnippet = createSnippetPicker(CODE_SNIPPETS, SNIPPET_MIN_GAP);
-
-    const spawn = (px: number, py: number) => {
-      const layer = trailRef.current;
-      if (!layer) return;
-      while (layer.childElementCount >= MAX_SNIPPETS) layer.firstElementChild?.remove();
-
-      const el = document.createElement("span");
-      el.className = "code-trail-snippet";
-      el.textContent = nextSnippet();
-      el.style.left = `${px + (Math.random() - 0.5) * 140}px`;
-      el.style.top = `${py + (Math.random() - 0.5) * 90}px`;
-      el.style.setProperty("--r", `${(Math.random() - 0.5) * 16}deg`);
-      el.style.setProperty("--drift", `${-18 - Math.random() * 26}px`);
-      el.style.setProperty("--o", `${0.45 + Math.random() * 0.4}`);
-      el.style.animationDuration = `${1.6 + Math.random() * 1.2}s`;
-      if (Math.random() < 0.25) el.dataset.accent = "";
-      el.addEventListener("animationend", () => el.remove(), { once: true });
-      layer.appendChild(el);
-    };
 
     const onMove = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
@@ -108,16 +210,11 @@ function CursorLayers() {
       window.removeEventListener("pointerup", onUp);
       document.documentElement.removeEventListener("mouseleave", onLeave);
     };
-  }, [x, y]);
+  }, [x, y, spawn]);
 
   return (
     <>
-      {/* Behind the page content: negative z-index under in-flow content and cards. */}
-      <div
-        ref={trailRef}
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden print:hidden"
-        aria-hidden
-      />
+      <TrailLayer layerRef={trailRef} />
 
       <div
         className={cn(
