@@ -6,6 +6,9 @@
  */
 @custom-variant dark (&:where(:root:not(.light), :root:not(.light) *));
 
+/* Site style (Appearance menu): `dev:` applies in the Developer (code editor) style. */
+@custom-variant dev (&:where([data-skin="dev"], [data-skin="dev"] *));
+
 /* -------------------------------------------------------------------------- */
 /* Design tokens                                                              */
 /* -------------------------------------------------------------------------- */
@@ -66,6 +69,73 @@
   color-scheme: dark;
 }
 
+/* Classic style fonts. */
+:root {
+  --font-body: var(--font-geist-sans);
+  --font-accent: var(--font-instrument-serif-schwa), var(--font-instrument-serif);
+}
+
+/*
+ * Developer style: the same layout dressed as a code editor. Everything is set in the mono font
+ * and the palette follows GitHub's editor themes, with a terminal-green accent.
+ */
+:root[data-skin="dev"] {
+  --font-body: var(--font-geist-mono);
+  --font-accent: var(--font-geist-mono);
+}
+
+:root[data-skin="dev"].light {
+  --bg: #f6f8fa;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #eff2f5;
+  --bg-inset: #e6eaef;
+  --fg: #1f2328;
+  --fg-muted: #4f5761;
+  --fg-subtle: #6a737d;
+  --border: rgb(31 35 40 / 0.1);
+  --border-strong: rgb(31 35 40 / 0.18);
+  --accent: #1a7f37;
+  --accent-soft: rgb(26 127 55 / 0.1);
+  --accent-fg: #ffffff;
+  --ring: #1a7f37;
+  --grid-line: rgb(31 35 40 / 0.06);
+  --shadow-color: 20 30 40;
+  --frame-bg: #ffffff;
+  --frame-bar: #eff2f5;
+  --code-bg: #ffffff;
+  --code-keyword: #cf222e;
+  --code-string: #0a3069;
+  --code-prop: #8250df;
+  --code-comment: #6e7781;
+  --code-punct: #4f5761;
+}
+
+:root[data-skin="dev"]:not(.light) {
+  --bg: #0d1117;
+  --bg-elevated: #161b22;
+  --bg-subtle: #1b2129;
+  --bg-inset: #222a33;
+  --fg: #e6edf3;
+  --fg-muted: #a3adb8;
+  --fg-subtle: #848d97;
+  --border: rgb(240 246 252 / 0.1);
+  --border-strong: rgb(240 246 252 / 0.18);
+  --accent: #56d364;
+  --accent-soft: rgb(86 211 100 / 0.12);
+  --accent-fg: #04130a;
+  --ring: #56d364;
+  --grid-line: rgb(240 246 252 / 0.05);
+  --shadow-color: 0 0 0;
+  --frame-bg: #161b22;
+  --frame-bar: #1b2129;
+  --code-bg: #0d1117;
+  --code-keyword: #ff7b72;
+  --code-string: #a5d6ff;
+  --code-prop: #d2a8ff;
+  --code-comment: #8b949e;
+  --code-punct: #a3adb8;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
@@ -84,10 +154,10 @@
   --color-frame-bar: var(--frame-bar);
   --color-code: var(--code-bg);
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* --font-body / --font-accent switch with the site style (see the Developer style below). */
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
-  --font-serif:
-    var(--font-instrument-serif-schwa), var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-serif: var(--font-accent), ui-serif, Georgia, serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);

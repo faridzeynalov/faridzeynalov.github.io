@@ -31,12 +31,20 @@
     "homeLink": "{name} — главная",
     "skip": "Перейти к содержимому",
     "language": "Язык",
-    "switchLanguage": "Переключить на {language}"
+    "switchLanguage": "Переключить на {language}",
+    "getInTouch": "Связаться"
   },
   "Theme": {
-    "toggle": "Сменить тему",
-    "toLight": "Включить светлую тему",
-    "toDark": "Включить тёмную тему"
+    "appearance": "Оформление",
+    "current": "Оформление: {style}, {mode}",
+    "style": "Стиль",
+    "classic": "Классический",
+    "classicHint": "Чисто и просто",
+    "developer": "Developer",
+    "developerHint": "Как редактор кода",
+    "mode": "Режим",
+    "light": "Светлый",
+    "dark": "Тёмный"
   },
   "Explorer": {
     "title": "Explorer",

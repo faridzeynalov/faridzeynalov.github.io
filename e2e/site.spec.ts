@@ -214,7 +214,8 @@ test.describe("theme", () => {
     await page.goto("./");
     await expect(page.locator("html")).toHaveClass(/\bdark\b/);
 
-    await page.getByRole("button", { name: "Switch to light theme" }).click();
+    await page.getByRole("button", { name: /^Appearance/ }).click();
+    await page.getByRole("button", { name: "Light" }).click();
     await expect(page.locator("html")).toHaveClass(/\blight\b/);
 
     // The class must be present in the very first paint after reload — before hydration.
@@ -230,8 +231,11 @@ test.describe("theme", () => {
     test.skip(isMobile, "Desktop header switcher");
     await page.goto("az");
     const html = page.locator("html");
-    const toggle = page.locator("header button").filter({ has: page.locator("svg.lucide-moon") });
-    const moon = toggle.locator("svg.lucide-moon");
+    // The appearance button's label is localized ("Görünüş: …", "Оформление: …").
+    const appearance = page
+      .locator("header button")
+      .filter({ has: page.locator("svg.lucide-moon") });
+    const moon = appearance.locator("svg.lucide-moon");
     const switchTo = async (name: RegExp) => {
       await page.getByRole("button", { name: /: / }).first().click();
       await page.getByRole("link", { name }).click();
@@ -244,7 +248,9 @@ test.describe("theme", () => {
     await expect(page).toHaveURL(/\/ru$/);
     await expect(html).toHaveClass(new RegExp(`\\b${start}\\b`));
 
-    await toggle.click();
+    await appearance.click();
+    // On /ru the mode options read "Светлый" / "Тёмный".
+    await page.getByRole("button", { name: start === "dark" ? "Светлый" : "Тёмный" }).click();
     const chosen = start === "dark" ? "light" : "dark";
     await expect(html).toHaveClass(new RegExp(`\\b${chosen}\\b`));
     await switchTo(/English/);
@@ -252,6 +258,32 @@ test.describe("theme", () => {
     await expect(html).toHaveClass(new RegExp(`\\b${chosen}\\b`));
     // The icon shows the theme you'd switch to: Sun in dark mode, Moon in light mode.
     await expect(moon).toHaveCSS("opacity", chosen === "light" ? "1" : "0");
+  });
+
+  test("starts in the Classic style; Developer is remembered, before paint and across languages", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "Desktop header menus");
+    const html = page.locator("html");
+    await page.goto("./");
+    await expect(html).toHaveAttribute("data-skin", "classic");
+
+    await page.getByRole("button", { name: /^Appearance/ }).click();
+    await page.getByRole("button", { name: /^Developer/ }).click();
+    await expect(html).toHaveAttribute("data-skin", "dev");
+    await expect(page.getByRole("button", { name: /^Appearance: Developer/ })).toBeVisible();
+
+    // Set by the head script on the very first paint after reload.
+    await page.reload({ waitUntil: "commit" });
+    await page.waitForSelector('html[data-skin="dev"]', { timeout: 2000 });
+
+    // Switching language re-creates <html>; the style comes back with it.
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: /: English/ }).click();
+    await page.getByRole("link", { name: /Azərbaycanca/ }).click();
+    await expect(page).toHaveURL(/\/az$/);
+    await expect(html).toHaveAttribute("data-skin", "dev");
   });
 
   test("respects a light system preference when nothing is stored", async ({ browser }) => {
@@ -269,10 +301,9 @@ test("mobile menu opens, traps focus and closes with Escape", async ({ page, isM
   await page.getByRole("button", { name: "Open menu" }).click();
   const menu = page.getByRole("dialog", { name: "Menu" });
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole("link", { name: "home.tsx" })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
+  // Classic (default) style: a plain list of pages.
+  await expect(menu.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
+  await expect(menu.getByRole("link", { name: "home.tsx" })).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(menu).toBeHidden();
   await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
@@ -280,6 +311,8 @@ test("mobile menu opens, traps focus and closes with Escape", async ({ page, isM
 
 test("mobile explorer folders expand and their files navigate", async ({ page, isMobile }) => {
   test.skip(!isMobile, "Mobile navigation only");
+  // The VS Code explorer is the Developer style's mobile menu.
+  await page.addInitScript(() => localStorage.setItem("skin", "dev"));
   await page.goto("./");
   await page.getByRole("button", { name: "Open menu" }).click();
   const menu = page.getByRole("dialog", { name: "Menu" });
@@ -378,6 +411,7 @@ test.describe("languages", () => {
 
   test("the mobile explorer switches language", async ({ page, isMobile }) => {
     test.skip(!isMobile, "Mobile navigation only");
+    await page.addInitScript(() => localStorage.setItem("skin", "dev"));
     await page.goto("about");
     await page.getByRole("button", { name: "Open menu" }).click();
     const menu = page.getByRole("dialog", { name: "Menu" });

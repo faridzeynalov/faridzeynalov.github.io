@@ -31,12 +31,20 @@
     "homeLink": "{name} — home",
     "skip": "Skip to content",
     "language": "Language",
-    "switchLanguage": "Switch to {language}"
+    "switchLanguage": "Switch to {language}",
+    "getInTouch": "Get in touch"
   },
   "Theme": {
-    "toggle": "Toggle color theme",
-    "toLight": "Switch to light theme",
-    "toDark": "Switch to dark theme"
+    "appearance": "Appearance",
+    "current": "Appearance: {style}, {mode}",
+    "style": "Style",
+    "classic": "Classic",
+    "classicHint": "Clean and simple",
+    "developer": "Developer",
+    "developerHint": "Code editor look",
+    "mode": "Mode",
+    "light": "Light",
+    "dark": "Dark"
   },
   "Explorer": {
     "title": "Explorer",

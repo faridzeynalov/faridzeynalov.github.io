@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Logo } from "@/components/layout/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { AppearanceMenu } from "@/components/layout/appearance-menu";
 import { useActiveNav } from "@/components/layout/use-active-nav";
 import { buttonVariants } from "@/components/ui/button";
 import { navItems } from "@/lib/site";
@@ -74,7 +74,7 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
 
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <ThemeToggle />
+          <AppearanceMenu />
           <Link
             href="/contact"
             className={cn(buttonVariants({ size: "sm" }), "hidden lg:inline-flex")}

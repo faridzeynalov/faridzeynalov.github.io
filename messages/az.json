@@ -31,12 +31,20 @@
     "homeLink": "{name} — ana səhifə",
     "skip": "Məzmuna keç",
     "language": "Dil",
-    "switchLanguage": "{language} dilinə keç"
+    "switchLanguage": "{language} dilinə keç",
+    "getInTouch": "Əlaqə saxlayın"
   },
   "Theme": {
-    "toggle": "Rəng mövzusunu dəyiş",
-    "toLight": "Açıq mövzuya keç",
-    "toDark": "Qaranlıq mövzuya keç"
+    "appearance": "Görünüş",
+    "current": "Görünüş: {style}, {mode}",
+    "style": "Stil",
+    "classic": "Klassik",
+    "classicHint": "Sadə və təmiz",
+    "developer": "Developer",
+    "developerHint": "Kod redaktoru görünüşü",
+    "mode": "Rejim",
+    "light": "Gündüz",
+    "dark": "Gecə"
   },
   "Explorer": {
     "title": "Explorer",
