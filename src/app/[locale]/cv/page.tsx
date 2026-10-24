@@ -86,7 +86,7 @@ export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
             <header className="border-b border-border px-6 py-10 sm:px-10 md:px-12 print:px-0 print:py-6 dev:pt-16">
               <h1
                 id="cv-name"
-                className="text-[clamp(2.25rem,6vw,3.75rem)] leading-none font-semibold tracking-[-0.04em]"
+                className="text-[clamp(2.25rem,6vw,3.75rem)] leading-none font-semibold tracking-[-0.04em] pixel:text-[calc(var(--pixel-scale)*clamp(1.4rem,3.6vw,2.4rem))]"
               >
                 {profile.name}
               </h1>

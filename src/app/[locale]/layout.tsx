@@ -17,6 +17,7 @@ import { getAllProjects } from "@/lib/projects";
 import { basePath, siteUrl } from "@/lib/site";
 import { themeInitScript } from "@/lib/theme";
 import { instrumentSerifSchwa } from "@/fonts/schwa";
+import { skinFontVariables } from "@/fonts/skins";
 import "../globals.css";
 
 // Latin-ext covers Azerbaijani (ə, ğ, ı, ş …); Cyrillic covers Russian. Instrument Serif has no
@@ -123,7 +124,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       lang={locale}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${instrumentSerifSchwa.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${instrumentSerifSchwa.variable} ${skinFontVariables}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

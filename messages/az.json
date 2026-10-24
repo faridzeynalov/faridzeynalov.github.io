@@ -44,7 +44,11 @@
     "developerHint": "Kod redaktoru görünüşü",
     "mode": "Rejim",
     "light": "Gündüz",
-    "dark": "Gecə"
+    "dark": "Gecə",
+    "pixel": "8-bit",
+    "pixelHint": "Retro piksel oyunu",
+    "paper": "Kağız",
+    "paperHint": "Dəftər kağızı və mürəkkəb"
   },
   "Explorer": {
     "title": "Explorer",

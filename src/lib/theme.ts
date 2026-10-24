@@ -1,6 +1,10 @@
 export type Theme = "light" | "dark";
-/** Site style: the default look, or the code-editor look. Independent of light/dark. */
-export type Skin = "classic" | "dev";
+/**
+ * Site style, independent of light/dark: the default look, a code editor, a retro 8-bit game,
+ * or notebook paper and ink.
+ */
+export const SKINS = ["classic", "dev", "pixel", "paper"] as const;
+export type Skin = (typeof SKINS)[number];
 
 export const THEME_STORAGE_KEY = "theme";
 export const SKIN_STORAGE_KEY = "skin";
@@ -17,7 +21,7 @@ export const FOLLOW_SYSTEM_THEME = true;
  * present immediately (no flash). Theme: saved choice → OS preference (if enabled) → dark.
  * Style: saved choice → classic.
  */
-export const themeInitScript = `(function(){var d=document.documentElement;try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var s=localStorage.getItem(k);var t=s==="light"||s==="dark"?s:(${FOLLOW_SYSTEM_THEME}&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.classList.add(t);d.style.colorScheme=t;var sk=localStorage.getItem(${JSON.stringify(SKIN_STORAGE_KEY)});d.dataset.skin=sk==="dev"||sk==="classic"?sk:${JSON.stringify(DEFAULT_SKIN)};}catch(e){d.classList.add("dark");d.dataset.skin=${JSON.stringify(DEFAULT_SKIN)};}})();`;
+export const themeInitScript = `(function(){var d=document.documentElement;try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var s=localStorage.getItem(k);var t=s==="light"||s==="dark"?s:(${FOLLOW_SYSTEM_THEME}&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.classList.add(t);d.style.colorScheme=t;var sk=localStorage.getItem(${JSON.stringify(SKIN_STORAGE_KEY)});d.dataset.skin=${JSON.stringify(SKINS)}.indexOf(sk)>-1?sk:${JSON.stringify(DEFAULT_SKIN)};}catch(e){d.classList.add("dark");d.dataset.skin=${JSON.stringify(DEFAULT_SKIN)};}})();`;
 
 function readStorage(key: string) {
   try {
@@ -61,13 +65,18 @@ export function applyTheme(theme: Theme, persist = true) {
   if (persist) writeStorage(THEME_STORAGE_KEY, theme);
 }
 
+function isSkin(value: string | null | undefined): value is Skin {
+  return (SKINS as readonly string[]).includes(value ?? "");
+}
+
 export function resolveSkin(): Skin {
   const value = readStorage(SKIN_STORAGE_KEY);
-  return value === "dev" || value === "classic" ? value : DEFAULT_SKIN;
+  return isSkin(value) ? value : DEFAULT_SKIN;
 }
 
 export function getDocumentSkin(): Skin {
-  return document.documentElement.dataset.skin === "dev" ? "dev" : "classic";
+  const value = document.documentElement.dataset.skin;
+  return isSkin(value) ? value : DEFAULT_SKIN;
 }
 
 export function applySkin(skin: Skin, persist = true) {

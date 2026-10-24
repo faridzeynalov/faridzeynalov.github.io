@@ -66,7 +66,7 @@ export function KineticTitle({
   return (
     <h1
       className={cn(
-        "text-[clamp(3rem,9vw,7.5rem)] leading-[0.95] font-semibold tracking-[-0.05em] dev:text-[clamp(2.5rem,7vw,5.75rem)] dev:leading-[1.05]",
+        "text-[clamp(3rem,9vw,7.5rem)] leading-[0.95] font-semibold tracking-[-0.05em] dev:text-[clamp(2.5rem,7vw,5.75rem)] dev:leading-[1.05] pixel:text-[calc(var(--pixel-scale)*clamp(1.6rem,5vw,3.6rem))] pixel:leading-[1.3]",
         className,
       )}
     >

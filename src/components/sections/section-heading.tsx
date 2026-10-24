@@ -45,9 +45,9 @@ export function SectionHeading({
   );
 }
 
-/** Size and weight of section titles (smaller in the Developer style: mono runs wider). */
+/** Size and weight of section titles (smaller in Developer and 8-bit: their fonts run wider). */
 export const sectionTitleClass =
-  "text-[clamp(2rem,4.6vw,3.25rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance dev:text-[clamp(1.75rem,3.9vw,2.75rem)]";
+  "text-[clamp(2rem,4.6vw,3.25rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance dev:text-[clamp(1.75rem,3.9vw,2.75rem)] pixel:text-[calc(var(--pixel-scale)*clamp(1.2rem,2.7vw,1.9rem))] pixel:leading-[1.45]";
 
 /**
  * "02 —— Services". In the Developer style it reads as a code comment: "// 02 · Services".

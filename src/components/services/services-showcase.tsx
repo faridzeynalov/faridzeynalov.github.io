@@ -162,7 +162,7 @@ export function ServicesShowcase({ services }: { services: Service[] }) {
                 <p className="relative mt-8 font-mono text-xs text-fg-subtle uppercase">
                   {service.tagline}
                 </p>
-                <h2 className="relative mt-2 text-3xl font-semibold tracking-[-0.03em] text-balance md:text-4xl">
+                <h2 className="relative mt-2 text-3xl font-semibold tracking-[-0.03em] text-balance md:text-4xl pixel:text-[calc(var(--pixel-scale)*1.25rem)] pixel:md:text-[calc(var(--pixel-scale)*1.5rem)]">
                   {service.title}
                 </h2>
                 <p className="relative mt-5 max-w-xl text-base leading-relaxed text-pretty text-fg-muted md:text-lg">

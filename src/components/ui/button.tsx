@@ -12,7 +12,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-fg text-bg shadow-soft hover:bg-fg/90 dev:bg-accent dev:text-accent-fg dev:hover:bg-accent/90 [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:translate-x-0.5",
+          "bg-fg text-bg shadow-soft hover:bg-fg/90 dev:bg-accent dev:text-accent-fg dev:hover:bg-accent/90 pixel:bg-accent pixel:text-accent-fg pixel:hover:bg-accent/90 [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:translate-x-0.5",
         accent: "bg-accent text-accent-fg shadow-soft hover:brightness-110",
         secondary:
           "border border-border-strong bg-bg-elevated/60 text-fg backdrop-blur hover:border-fg/30 hover:bg-bg-subtle",

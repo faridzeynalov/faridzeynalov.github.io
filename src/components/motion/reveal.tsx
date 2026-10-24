@@ -10,20 +10,43 @@ const ease = [0.16, 1, 0.3, 1] as const;
 /** Hiding again (replay mode) happens below the viewport, so it can be quick. */
 const hide = { duration: 0.3 };
 
+/** Easing that moves in a few hard steps, like a sprite (8-bit style). */
+const steps = (count: number) => (t: number) => Math.min(1, Math.ceil(t * count) / count);
+
 /**
  * Classic: fade up. Developer: slides in from the left like a line of code being inserted —
- * shorter and snappier. `data-shown` lets CSS start Developer-only effects (typed eyebrows).
+ * shorter and snappier. 8-bit: rises in four hard steps. Paper: settles in with a slight tilt,
+ * like a sheet being laid down. `data-shown` lets CSS start style-specific effects (typed
+ * eyebrows).
  */
 function revealVariants(skin: Skin | null, y: number, delay: number) {
+  if (skin === "pixel") {
+    return {
+      hidden: { opacity: 0, x: 0, y: y + 8, rotate: 0, transition: hide },
+      show: {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        rotate: 0,
+        transition: { duration: 0.4, delay, ease: steps(4) },
+      },
+    };
+  }
+  if (skin === "paper") {
+    return {
+      hidden: { opacity: 0, x: 0, y: y * 0.6, rotate: -1.5, transition: hide },
+      show: { opacity: 1, x: 0, y: 0, rotate: 0, transition: { duration: 0.75, delay, ease } },
+    };
+  }
   if (skin === "dev") {
     return {
-      hidden: { opacity: 0, x: -16, y: 0, transition: hide },
-      show: { opacity: 1, x: 0, y: 0, transition: { duration: 0.45, delay, ease } },
+      hidden: { opacity: 0, x: -16, y: 0, rotate: 0, transition: hide },
+      show: { opacity: 1, x: 0, y: 0, rotate: 0, transition: { duration: 0.45, delay, ease } },
     };
   }
   return {
-    hidden: { opacity: 0, x: 0, y, transition: hide },
-    show: { opacity: 1, x: 0, y: 0, transition: { duration: 0.8, delay, ease } },
+    hidden: { opacity: 0, x: 0, y, rotate: 0, transition: hide },
+    show: { opacity: 1, x: 0, y: 0, rotate: 0, transition: { duration: 0.8, delay, ease } },
   };
 }
 

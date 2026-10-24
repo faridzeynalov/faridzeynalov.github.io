@@ -70,7 +70,8 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
     charsRef.current = Array.from(
       ref.current?.querySelectorAll<HTMLSpanElement>(".lit-char") ?? [],
     );
-    typedRef.current = document.documentElement.dataset.skin === "dev";
+    // Developer and 8-bit type the story out; the others use the blurred fade.
+    typedRef.current = ["dev", "pixel"].includes(document.documentElement.dataset.skin ?? "");
     stateRef.current = [];
     render(scrollYProgress.get());
     // `render` only reads refs.

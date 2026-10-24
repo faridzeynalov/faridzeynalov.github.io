@@ -4,8 +4,10 @@ import {
   Check,
   ChevronDown,
   Code2,
+  Gamepad2,
   LayoutTemplate,
   Moon,
+  NotebookPen,
   Sun,
   type LucideIcon,
 } from "lucide-react";
@@ -24,9 +26,18 @@ import {
 } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
+/** The styles in the menu, in order, with their icon and message keys (Theme namespace). */
+const STYLES = [
+  { skin: "classic", icon: LayoutTemplate, label: "classic", hint: "classicHint" },
+  { skin: "dev", icon: Code2, label: "developer", hint: "developerHint" },
+  { skin: "pixel", icon: Gamepad2, label: "pixel", hint: "pixelHint" },
+  { skin: "paper", icon: NotebookPen, label: "paper", hint: "paperHint" },
+] as const satisfies readonly { skin: Skin; icon: LucideIcon; label: string; hint: string }[];
+
 /**
- * Header appearance menu: the site style (Classic / Developer) and light/dark mode. Light/dark
- * keeps the circular reveal from the button; a style change crossfades the whole page.
+ * Header appearance menu: the site style (Classic / Developer / 8-bit / Paper) and light/dark
+ * mode. Light/dark keeps the circular reveal from the button; a style change crossfades the
+ * whole page.
  */
 export function AppearanceMenu({ className }: { className?: string }) {
   const t = useTranslations("Theme");
@@ -105,7 +116,7 @@ export function AppearanceMenu({ className }: { className?: string }) {
   const label =
     theme && skin
       ? t("current", {
-          style: t(skin === "dev" ? "developer" : "classic"),
+          style: t(STYLES.find((style) => style.skin === skin)!.label),
           mode: t(theme),
         })
       : t("appearance");
@@ -122,11 +133,13 @@ export function AppearanceMenu({ className }: { className?: string }) {
         title={label}
         className="inline-flex h-9 items-center gap-2 rounded-pill border border-border pr-2.5 pl-3 text-fg-muted transition-colors hover:border-border-strong hover:text-fg"
       >
-        {/* Both choices at a glance: the style (Classic / Developer) and the mode. Every icon
-            renders and CSS picks from the <html> class and style, so there's no hydration flash. */}
+        {/* Both choices at a glance: the style and the mode. Every icon renders and CSS picks
+            from the <html> class and style attribute, so there's no hydration flash. */}
         <span className="relative size-4" aria-hidden>
-          <LayoutTemplate className="absolute inset-0 size-4 text-accent dev:hidden" />
+          <LayoutTemplate className="absolute inset-0 size-4 text-accent dev:hidden pixel:hidden paper:hidden" />
           <Code2 className="absolute inset-0 hidden size-4 text-accent dev:block" />
+          <Gamepad2 className="absolute inset-0 hidden size-4 text-accent pixel:block" />
+          <NotebookPen className="absolute inset-0 hidden size-4 text-accent paper:block" />
         </span>
         <span className="h-4 w-px bg-border-strong" aria-hidden />
         {/* Like the style icon, the current mode: Moon in dark mode, Sun in light mode. */}
@@ -151,20 +164,16 @@ export function AppearanceMenu({ className }: { className?: string }) {
             transition={{ duration: 0.18 }}
           >
             <Group label={t("style")}>
-              <Option
-                icon={LayoutTemplate}
-                label={t("classic")}
-                hint={t("classicHint")}
-                selected={skin === "classic"}
-                onSelect={() => chooseSkin("classic")}
-              />
-              <Option
-                icon={Code2}
-                label={t("developer")}
-                hint={t("developerHint")}
-                selected={skin === "dev"}
-                onSelect={() => chooseSkin("dev")}
-              />
+              {STYLES.map((style) => (
+                <Option
+                  key={style.skin}
+                  icon={style.icon}
+                  label={t(style.label)}
+                  hint={t(style.hint)}
+                  selected={skin === style.skin}
+                  onSelect={() => chooseSkin(style.skin)}
+                />
+              ))}
             </Group>
             <div className="mx-2 my-1.5 h-px bg-border" aria-hidden />
             <Group label={t("mode")} row>

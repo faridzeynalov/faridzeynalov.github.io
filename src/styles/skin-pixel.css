@@ -1,0 +1,168 @@
+/*
+ * 8-bit style: the same layout as a retro game. Press Start 2P for headings, Pixelify Sans for
+ * text, square corners, thick borders with hard pixel shadows, a checkerboard grid, typed text
+ * (like game dialogue) and stepped motion. Dark is an NES-style night palette with a coin-yellow
+ * accent; light is a Game Boy green palette with a red accent.
+ */
+
+:root[data-skin="pixel"] {
+  --font-body: var(--font-pixelify-schwa), var(--font-pixelify);
+  --font-accent: var(--font-press-start-schwa), var(--font-press-start);
+  --font-code: var(--font-pixelify-schwa), var(--font-pixelify);
+  --font-display: var(--font-press-start-schwa), var(--font-press-start);
+  --radius-pill: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+}
+
+/* Heading sizes are multiplied by this (see the `pixel:` size classes in components). */
+:root[data-skin="pixel"] {
+  --pixel-scale: 1;
+}
+
+/*
+ * Azerbaijani: Press Start 2P draws "a" as an upside-down "e", so its "ə" reads as "a"
+ * ("Xidmatlar"). Headings and accents use Pixelify Sans Bold instead, whose "ə" is distinct;
+ * it's narrower, so headings are scaled up to fill the same space.
+ */
+:root[data-skin="pixel"]:lang(az) {
+  --font-display: var(--font-pixelify-schwa), var(--font-pixelify);
+  --font-accent: var(--font-pixelify-schwa), var(--font-pixelify);
+  --pixel-scale: 1.5;
+}
+
+:root[data-skin="pixel"]:lang(az) :is(h1, h2, .accent-text) {
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+:root[data-skin="pixel"]:not(.light) {
+  --bg: #10101e;
+  --bg-elevated: #1b1b33;
+  --bg-subtle: #23234a;
+  --bg-inset: #2c2c5a;
+  --fg: #f4f4f4;
+  --fg-muted: #c2c2dc;
+  --fg-subtle: #9a9abb;
+  --border: rgb(244 244 244 / 0.16);
+  --border-strong: rgb(244 244 244 / 0.32);
+  --accent: #ffd23f;
+  --accent-soft: rgb(255 210 63 / 0.16);
+  --accent-fg: #10101e;
+  --ring: #ffd23f;
+  --grid-line: rgb(244 244 244 / 0.035);
+  --shadow-color: 0 0 0;
+  --frame-bg: #1b1b33;
+  --frame-bar: #23234a;
+  --code-bg: #10101e;
+  --code-keyword: #ff5c8a;
+  --code-string: #7cf29c;
+  --code-prop: #6cc6ff;
+  --code-comment: #9a9abb;
+  --code-punct: #c2c2dc;
+  --pixel-edge: #f4f4f4;
+  --pixel-shadow: #000000;
+}
+
+:root[data-skin="pixel"].light {
+  --bg: #dfeac0;
+  --bg-elevated: #eef5d6;
+  --bg-subtle: #d2e0a8;
+  --bg-inset: #c3d495;
+  --fg: #0f380f;
+  --fg-muted: #2c5a2c;
+  --fg-subtle: #4a7a3a;
+  --border: rgb(15 56 15 / 0.28);
+  --border-strong: rgb(15 56 15 / 0.5);
+  --accent: #d1293d;
+  --accent-soft: rgb(209 41 61 / 0.12);
+  --accent-fg: #ffffff;
+  --ring: #d1293d;
+  --grid-line: rgb(15 56 15 / 0.06);
+  --shadow-color: 15 56 15;
+  --frame-bg: #eef5d6;
+  --frame-bar: #d2e0a8;
+  --code-bg: #eef5d6;
+  --code-keyword: #d1293d;
+  --code-string: #306230;
+  --code-prop: #1f5fa8;
+  --code-comment: #4a7a3a;
+  --code-punct: #2c5a2c;
+  --pixel-edge: #0f380f;
+  --pixel-shadow: #0f380f;
+}
+
+/* Crisp pixel text: no smoothing, and never fake bold/italic on pixel fonts. */
+:root[data-skin="pixel"] body {
+  -webkit-font-smoothing: none;
+  font-synthesis: none;
+}
+
+/* Headings in the arcade font. Press Start 2P has a single weight and is very wide, so
+   components size their headings down with `pixel:` variants. */
+:root[data-skin="pixel"] :is(h1, h2) {
+  font-family: var(--font-display), monospace;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+:root[data-skin="pixel"] :is(h3, .lit-text) {
+  letter-spacing: 0;
+}
+
+/* Accents: the arcade font in the accent colour (no italics, no serif). */
+:root[data-skin="pixel"] .accent-text {
+  font-family: var(--font-display), monospace;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+/* Cards and panels: thick edge and a hard, offset pixel shadow. */
+:root[data-skin="pixel"] .border.bg-bg-elevated {
+  border-width: 3px;
+  border-color: var(--pixel-edge);
+  box-shadow: 6px 6px 0 0 var(--pixel-shadow);
+}
+
+/* Buttons: blocky, with a shadow that the button presses into on click. */
+:root[data-skin="pixel"] .group\/button {
+  border: 3px solid var(--pixel-edge);
+  box-shadow: 4px 4px 0 0 var(--pixel-shadow);
+  transition:
+    translate 80ms steps(2),
+    box-shadow 80ms steps(2);
+}
+
+:root[data-skin="pixel"] .group\/button:active {
+  translate: 4px 4px;
+  box-shadow: 0 0 0 0 var(--pixel-shadow);
+  scale: 1;
+}
+
+/* Background: a faint checkerboard instead of the line grid. */
+:root[data-skin="pixel"] .bg-grid {
+  background-image: conic-gradient(
+    var(--grid-line) 25%,
+    transparent 0 50%,
+    var(--grid-line) 0 75%,
+    transparent 0
+  );
+  background-size: 32px 32px;
+}
+
+/* Page progress: a segmented loading bar, like a game's. */
+:root[data-skin="pixel"] .route-bar {
+  background: repeating-linear-gradient(90deg, var(--accent) 0 12px, transparent 12px 16px);
+  box-shadow: none;
+}
+
+:root[data-skin="pixel"] ::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}

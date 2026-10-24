@@ -44,7 +44,11 @@
     "developerHint": "Code editor look",
     "mode": "Mode",
     "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark",
+    "pixel": "8-bit",
+    "pixelHint": "Retro pixel game",
+    "paper": "Paper",
+    "paperHint": "Notebook paper and ink"
   },
   "Explorer": {
     "title": "Explorer",

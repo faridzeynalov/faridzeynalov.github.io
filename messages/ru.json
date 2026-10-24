@@ -44,7 +44,11 @@
     "developerHint": "Как редактор кода",
     "mode": "Режим",
     "light": "Светлый",
-    "dark": "Тёмный"
+    "dark": "Тёмный",
+    "pixel": "8-бит",
+    "pixelHint": "Ретро-пиксельная игра",
+    "paper": "Бумага",
+    "paperHint": "Тетрадный лист и чернила"
   },
   "Explorer": {
     "title": "Explorer",

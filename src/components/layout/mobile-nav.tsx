@@ -170,7 +170,18 @@ function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
                   active === item.href ? "text-fg" : "text-fg-muted",
                 )}
               >
-                {t(item.key)}
+                <span>
+                  {/* 8-bit style: a game-menu cursor on the current page. */}
+                  {active === item.href && (
+                    <span
+                      aria-hidden
+                      className="mr-3 hidden animate-[caret-blink_1.06s_steps(1)_infinite] text-accent pixel:inline"
+                    >
+                      ▶
+                    </span>
+                  )}
+                  {t(item.key)}
+                </span>
                 <span aria-hidden className="font-mono text-xs text-fg-subtle">
                   0{index + 1}
                 </span>

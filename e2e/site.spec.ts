@@ -264,6 +264,28 @@ test.describe("theme", () => {
     await expect(moon).toHaveCSS("opacity", chosen === "dark" ? "1" : "0");
   });
 
+  for (const [skin, heading] of [
+    ["pixel", "Press Start 2P"],
+    ["paper", "Lora"],
+  ] as const) {
+    test(`the ${skin} style applies before paint with its own fonts, in light and dark`, async ({
+      page,
+    }) => {
+      for (const theme of ["dark", "light"]) {
+        await page.addInitScript(
+          ([s, t]) => {
+            localStorage.setItem("skin", s);
+            localStorage.setItem("theme", t);
+          },
+          [skin, theme],
+        );
+        await page.goto("./", { waitUntil: "commit" });
+        await page.waitForSelector(`html[data-skin="${skin}"].${theme}`, { timeout: 2000 });
+        await expect(page.locator("h1")).toHaveCSS("font-family", new RegExp(heading));
+      }
+    });
+  }
+
   test("starts in the Classic style; Developer is remembered, before paint and across languages", async ({
     page,
     isMobile,

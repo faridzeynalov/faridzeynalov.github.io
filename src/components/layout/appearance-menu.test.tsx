@@ -51,4 +51,27 @@ describe("AppearanceMenu", () => {
       await screen.findByRole("button", { name: "Appearance: Developer, Dark" }),
     ).toBeInTheDocument();
   });
+
+  it.each([
+    ["8-bit", "pixel"],
+    ["Paper", "paper"],
+  ])("switches to the %s style and remembers it", async (name, skin) => {
+    const user = setup();
+    await user.click(await screen.findByRole("button", { name: /Appearance/ }));
+    await user.click(screen.getByRole("button", { name: new RegExp(`^${name}`) }));
+
+    expect(document.documentElement.dataset.skin).toBe(skin);
+    expect(localStorage.getItem("skin")).toBe(skin);
+    expect(
+      await screen.findByRole("button", { name: `Appearance: ${name}, Dark` }),
+    ).toBeInTheDocument();
+  });
+
+  it("lists all four styles", async () => {
+    const user = setup();
+    await user.click(await screen.findByRole("button", { name: /Appearance/ }));
+    for (const name of ["Classic", "Developer", "8-bit", "Paper"]) {
+      expect(screen.getByRole("button", { name: new RegExp(`^${name}`) })).toBeInTheDocument();
+    }
+  });
 });

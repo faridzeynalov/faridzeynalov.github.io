@@ -1,0 +1,159 @@
+/*
+ * Paper style: the same layout as notebook paper and ink. Lora for text, Caveat for handwritten
+ * accents under a highlighter stroke, paper grain, ruled lines instead of the grid, cards as
+ * sheets with soft shadows (some taped on, slightly askew). Light is cream paper with blue ink;
+ * dark is dark kraft paper with an amber pencil.
+ */
+
+:root[data-skin="paper"] {
+  --font-body: var(--font-lora);
+  --font-accent: var(--font-caveat);
+  --radius-pill: 6px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 5px;
+  --radius-2xl: 6px;
+  --radius-3xl: 8px;
+}
+
+:root[data-skin="paper"].light {
+  --bg: #f3eee3;
+  --bg-elevated: #fcfaf4;
+  --bg-subtle: #ece5d6;
+  --bg-inset: #e4dccb;
+  --fg: #2a2723;
+  --fg-muted: #57514a;
+  --fg-subtle: #7a7268;
+  --border: rgb(42 39 35 / 0.13);
+  --border-strong: rgb(42 39 35 / 0.24);
+  --accent: #2f5aa8;
+  --accent-soft: rgb(47 90 168 / 0.1);
+  --accent-fg: #ffffff;
+  --ring: #2f5aa8;
+  --grid-line: rgb(47 90 168 / 0.13);
+  --shadow-color: 70 50 25;
+  --frame-bg: #fcfaf4;
+  --frame-bar: #ece5d6;
+  --code-bg: #fcfaf4;
+  --code-keyword: #b23a2e;
+  --code-string: #2f6b3a;
+  --code-prop: #2f5aa8;
+  --code-comment: #8a8175;
+  --code-punct: #57514a;
+  --highlight: #fbe38e;
+  --tape: rgb(238 222 160 / 0.8);
+  --margin-line: rgb(196 70 70 / 0.22);
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .18 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+:root[data-skin="paper"]:not(.light) {
+  --bg: #1d1a16;
+  --bg-elevated: #27231d;
+  --bg-subtle: #2d2922;
+  --bg-inset: #363028;
+  --fg: #efe7d8;
+  --fg-muted: #c4baa8;
+  --fg-subtle: #9c9281;
+  --border: rgb(239 231 216 / 0.12);
+  --border-strong: rgb(239 231 216 / 0.22);
+  --accent: #f0b54a;
+  --accent-soft: rgb(240 181 74 / 0.14);
+  --accent-fg: #1d1a16;
+  --ring: #f0b54a;
+  --grid-line: rgb(239 231 216 / 0.06);
+  --shadow-color: 0 0 0;
+  --frame-bg: #27231d;
+  --frame-bar: #2d2922;
+  --code-bg: #1d1a16;
+  --code-keyword: #f08a6a;
+  --code-string: #b9d98f;
+  --code-prop: #9cc3f0;
+  --code-comment: #9c9281;
+  --code-punct: #c4baa8;
+  --highlight: rgb(240 181 74 / 0.3);
+  --tape: rgb(240 210 150 / 0.28);
+  --margin-line: rgb(240 120 100 / 0.18);
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .95 0 0 0 0 .9 0 0 0 0 .8 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Paper grain: a small static tile, so it costs nothing while scrolling. */
+:root[data-skin="paper"] body {
+  background-image: var(--paper-grain);
+}
+
+:root[data-skin="paper"] :is(h1, h2, h3) {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+:root[data-skin="paper"] .lit-text {
+  letter-spacing: -0.01em;
+}
+
+/* Accents: handwriting in ink, under a highlighter stroke. */
+:root[data-skin="paper"] .accent-text {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.22em;
+  line-height: 0.95;
+  color: var(--accent);
+  background: linear-gradient(transparent 58%, var(--highlight) 58% 90%, transparent 90%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding-inline: 0.08em;
+}
+
+/* Block accents (page titles) shouldn't highlight the whole line width. */
+:root[data-skin="paper"] .accent-text.block {
+  width: fit-content;
+}
+
+/* Background: ruled notebook lines with a red margin line, instead of the grid. */
+:root[data-skin="paper"] .bg-grid {
+  background-image:
+    linear-gradient(to right, transparent 72px, var(--margin-line) 72px 73px, transparent 73px),
+    repeating-linear-gradient(to bottom, transparent 0 31px, var(--grid-line) 31px 32px);
+  background-size: auto;
+}
+
+/* Cards and panels: sheets of paper with a soft, warm shadow. */
+:root[data-skin="paper"] .border.bg-bg-elevated {
+  box-shadow:
+    0 1px 0 rgb(var(--shadow-color) / 0.05),
+    0 12px 28px -16px rgb(var(--shadow-color) / 0.45);
+}
+
+/* Cards with a file name (see [data-file]) are taped on, slightly askew. */
+:root[data-skin="paper"] [data-file]:nth-child(odd) {
+  rotate: -0.45deg;
+}
+
+:root[data-skin="paper"] [data-file]:nth-child(even) {
+  rotate: 0.4deg;
+}
+
+:root[data-skin="paper"] [data-file]::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -7px;
+  left: 50%;
+  width: 6.5rem;
+  height: 1.5rem;
+  translate: -50% 0;
+  rotate: -2.5deg;
+  background: var(--tape);
+  box-shadow: 0 1px 2px rgb(var(--shadow-color) / 0.12);
+  pointer-events: none;
+}
+
+/* Page progress: a plain ink line. */
+:root[data-skin="paper"] .route-bar {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+:root[data-skin="paper"] ::selection {
+  background: var(--highlight);
+  color: var(--fg);
+}

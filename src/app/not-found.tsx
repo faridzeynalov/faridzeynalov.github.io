@@ -6,6 +6,7 @@ import { localizedPath } from "@/lib/i18n-metadata";
 import { basePath } from "@/lib/site";
 import { themeInitScript } from "@/lib/theme";
 import { instrumentSerifSchwa } from "@/fonts/schwa";
+import { skinFontVariables } from "@/fonts/skins";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "latin-ext"] });
@@ -32,7 +33,7 @@ export default function NotFound() {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${instrumentSerif.variable} ${instrumentSerifSchwa.variable}`}
+      className={`${geistSans.variable} ${instrumentSerif.variable} ${instrumentSerifSchwa.variable} ${skinFontVariables}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: legacyRedirect }} />

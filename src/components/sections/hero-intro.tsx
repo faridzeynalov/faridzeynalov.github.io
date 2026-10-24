@@ -52,9 +52,9 @@ export function HeroIntro({
       <div className="@container">
         <h1
           id="hero-title"
-          className="text-[clamp(2.25rem,9.6cqw,4.6rem)] leading-[1.04] font-semibold tracking-[-0.045em] dev:text-[clamp(1.9rem,7.4cqw,3.6rem)] dev:leading-[1.12]"
+          className="text-[clamp(2.25rem,9.6cqw,4.6rem)] leading-[1.04] font-semibold tracking-[-0.045em] dev:text-[clamp(1.9rem,7.4cqw,3.6rem)] dev:leading-[1.12] pixel:text-[calc(var(--pixel-scale)*clamp(1.1rem,4.9cqw,2.4rem))] pixel:leading-[1.45]"
         >
-          {/* Classic: each line rises. Developer: the three lines type out one after another. */}
+          {/* Classic: each line rises. Developer and 8-bit: the lines type out one after another. */}
           <RiseLine delay={50}>
             <TypedText text={name} delay={typed.name} />
           </RiseLine>

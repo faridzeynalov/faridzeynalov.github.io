@@ -129,7 +129,7 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/portf
                 {industry}
                 {project.group && <span>· {project.group}</span>}
               </p>
-              <h1 className="mt-5 text-[clamp(2.5rem,6.5vw,5rem)] leading-[1] font-semibold tracking-[-0.045em] text-balance">
+              <h1 className="mt-5 text-[clamp(2.5rem,6.5vw,5rem)] leading-[1] font-semibold tracking-[-0.045em] text-balance pixel:text-[calc(var(--pixel-scale)*clamp(1.5rem,4vw,3rem))] pixel:leading-[1.3]">
                 {project.name}
               </h1>
               <p className="mt-6 max-w-2xl text-lg text-pretty text-fg-muted md:text-xl">

@@ -44,7 +44,7 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
             )}
             <h2
               id={compact ? "cta-title" : "contact-title"}
-              className="text-[clamp(2.1rem,5.5vw,4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance dev:text-[clamp(1.8rem,4.4vw,3.2rem)] dev:leading-[1.12]"
+              className="text-[clamp(2.1rem,5.5vw,4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance dev:text-[clamp(1.8rem,4.4vw,3.2rem)] dev:leading-[1.12] pixel:text-[calc(var(--pixel-scale)*clamp(1.2rem,3vw,2.2rem))] pixel:leading-[1.45]"
             >
               {title ?? (
                 <>

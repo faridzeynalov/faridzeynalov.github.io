@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* The 8-bit and Paper styles (palettes, fonts and their details) live in their own files. */
+@import "../styles/skin-pixel.css";
+@import "../styles/skin-paper.css";
 
 /*
  * Class-based dark mode: the theme script in <head> sets `.dark` or `.light` on <html>. Like the
@@ -6,8 +9,10 @@
  */
 @custom-variant dark (&:where(:root:not(.light), :root:not(.light) *));
 
-/* Site style (Appearance menu): `dev:` applies in the Developer (code editor) style. */
+/* Site style (Appearance menu): `dev:`, `pixel:` (8-bit) and `paper:` apply in that style. */
 @custom-variant dev (&:where([data-skin="dev"], [data-skin="dev"] *));
+@custom-variant pixel (&:where([data-skin="pixel"], [data-skin="pixel"] *));
+@custom-variant paper (&:where([data-skin="paper"], [data-skin="paper"] *));
 
 /* -------------------------------------------------------------------------- */
 /* Design tokens                                                              */
@@ -73,6 +78,7 @@
 :root {
   --font-body: var(--font-geist-sans);
   --font-accent: var(--font-instrument-serif-schwa), var(--font-instrument-serif);
+  --font-code: var(--font-geist-mono);
 }
 
 /*
@@ -168,9 +174,9 @@
   --color-frame-bar: var(--frame-bar);
   --color-code: var(--code-bg);
 
-  /* --font-body / --font-accent switch with the site style (see the Developer style below). */
+  /* --font-body / --font-accent / --font-code switch with the site style. */
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-mono: var(--font-code), ui-monospace, "SFMono-Regular", monospace;
   --font-serif: var(--font-accent), ui-serif, Georgia, serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -388,7 +394,7 @@
   pointer-events: none;
 }
 
-/* ---------- Developer style animations: typing, carets, terminal progress ---------- */
+/* ---------- Developer (and 8-bit) animations: typing, carets, progress ---------- */
 
 @keyframes type-in {
   from {
@@ -410,13 +416,13 @@
 
 /* Page titles: the split characters keep their per-character delays but appear (typed) instead
    of rising. Hero lines likewise switch from rising to typing (.type-char below). */
-:root[data-skin="dev"] .animate-rise {
+:root:is([data-skin="dev"], [data-skin="pixel"]) .animate-rise {
   animation-name: type-in;
   animation-duration: 1ms;
   animation-timing-function: steps(1, jump-start);
 }
 
-:root[data-skin="dev"] .type-char {
+:root:is([data-skin="dev"], [data-skin="pixel"]) .type-char {
   animation: type-in 1ms steps(1, jump-start) both;
   animation-delay: var(--type-delay, 0ms);
 }
@@ -437,7 +443,7 @@
   display: none;
 }
 
-:root[data-skin="dev"] .type-caret-wrap {
+:root:is([data-skin="dev"], [data-skin="pixel"]) .type-caret-wrap {
   display: inline-block;
   animation: type-in 1ms steps(1, jump-start) both;
   animation-delay: var(--type-delay, 0ms);
@@ -455,26 +461,26 @@
 
 /* Section comments ("// 02 · Services") type out when their section is revealed, and reset
    with it (data-shown is set by Reveal). */
-:root[data-skin="dev"] [data-shown="false"] .type-on-reveal {
+:root:is([data-skin="dev"], [data-skin="pixel"]) [data-shown="false"] .type-on-reveal {
   clip-path: inset(0 100% 0 0);
 }
 
-:root[data-skin="dev"] [data-shown="true"] .type-on-reveal {
+:root:is([data-skin="dev"], [data-skin="pixel"]) [data-shown="true"] .type-on-reveal {
   animation: type-line calc(var(--type-steps, 24) * 28ms) steps(var(--type-steps, 24), end) both;
   animation-delay: 0.15s;
 }
 
 /* About story: typed letters simply appear, with a caret after the last one. */
-:root[data-skin="dev"] .lit-char {
+:root:is([data-skin="dev"], [data-skin="pixel"]) .lit-char {
   filter: none;
   translate: none;
 }
 
-:root[data-skin="dev"] .lit-caret {
+:root:is([data-skin="dev"], [data-skin="pixel"]) .lit-caret {
   position: relative;
 }
 
-:root[data-skin="dev"] .lit-caret::after {
+:root:is([data-skin="dev"], [data-skin="pixel"]) .lit-caret::after {
   content: "";
   position: absolute;
   top: 0.18em;
@@ -512,7 +518,7 @@
     animation-delay: 0ms !important;
   }
 
-  :root[data-skin="dev"] [data-shown] .type-on-reveal {
+  :root:is([data-skin="dev"], [data-skin="pixel"]) [data-shown] .type-on-reveal {
     clip-path: none;
     animation: none;
   }
