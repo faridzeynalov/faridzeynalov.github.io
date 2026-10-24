@@ -73,7 +73,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
         <div className="container-page">
           <ScrollLitText
             text={profile.about.join(" ")}
-            className="max-w-5xl text-[clamp(1.5rem,3.2vw,2.6rem)] leading-[1.3] font-medium tracking-[-0.02em]"
+            className="max-w-5xl text-[clamp(1.5rem,3.2vw,2.6rem)] leading-[1.3] font-medium tracking-[-0.02em] paper:text-[clamp(1.85rem,3.9vw,3.2rem)]"
           />
         </div>
       </section>

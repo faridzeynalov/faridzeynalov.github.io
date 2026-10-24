@@ -34,7 +34,7 @@ export function SplitText({
     <span className={className} style={style}>
       <span className="sr-only">{text}</span>
       {words.map((word, w) => (
-        <span key={w} aria-hidden className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+        <span key={w} aria-hidden className="rise-mask inline-block pb-[0.08em] align-bottom">
           {[...word].map((char, c) => (
             <span
               key={c}

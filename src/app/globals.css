@@ -199,10 +199,20 @@
   }
 }
 
+/* Starts low enough to stay hidden below the mask's extended bottom edge (.rise-mask). */
 @keyframes rise {
   from {
-    transform: translateY(105%);
+    transform: translateY(165%);
   }
+}
+
+/*
+ * The mask text rises out of. A clip that reaches past the text box (rather than
+ * overflow: hidden) so tall ascents, descenders and italic overhangs — Caveat, Pixelify Bold,
+ * Cyrillic — aren't cut off once the text is in place. It doesn't affect layout.
+ */
+.rise-mask {
+  clip-path: inset(-0.3em -0.6em -0.45em -0.6em);
 }
 
 @utility animate-enter {
@@ -231,6 +241,15 @@
     filter: none !important;
     translate: none !important;
   }
+
+  .lit-pen {
+    display: none !important;
+  }
+}
+
+/* The pen that writes the story in the Paper style (shown in skin-paper.css). */
+.lit-pen {
+  display: none;
 }
 
 /* "Available" dot: a ring that grows and fades. transform + opacity only, so it never repaints. */

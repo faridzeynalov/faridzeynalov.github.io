@@ -86,7 +86,7 @@ export function RiseLine({
   delay?: number;
 }) {
   return (
-    <span className="block overflow-hidden pb-[0.06em]">
+    <span className="rise-mask block pb-[0.06em]">
       <span
         className={cn("block animate-rise", className)}
         style={{ "--delay": `${delay}ms` } as CSSProperties}

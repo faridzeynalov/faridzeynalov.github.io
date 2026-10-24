@@ -9,8 +9,7 @@
 //
 // Built so far (sources are the Google Fonts TTFs, all SIL Open Font License 1.1):
 //   Instrument Serif Italic → src/fonts/instrument-serif-schwa-italic.otf
-//   Press Start 2P          → src/fonts/press-start-schwa.otf (--pixel)
-//   Pixelify Sans           → src/fonts/pixelify-schwa.otf (--pixel)
+//   (The 8-bit style's pixel fonts get hand-drawn glyphs instead: scripts/build-pixel-glyphs.mjs.)
 import { writeFileSync } from "node:fs";
 import opentype from "opentype.js";
 

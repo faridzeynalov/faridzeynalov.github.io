@@ -35,33 +35,21 @@ export const caveat = Caveat({
   preload: false,
 });
 
-// Neither pixel font has "ə"/"Ə": these supply them, drawn from each font's own "e"
-// (scripts/build-schwa-font.mjs). They sit before the font in the stack and only load on pages
-// with a schwa.
-export const pressStartSchwa = localFont({
-  src: "./press-start-schwa.otf",
-  variable: "--font-press-start-schwa",
+// Pixelify Sans has no "ə"/"Ə" and its "2"/"5" read as "Z"/"S": these glyphs are redrawn on
+// its pixel grid (scripts/build-pixel-glyphs.mjs). The supplement sits before Pixelify in the
+// stack and, by unicode-range, only loads on pages that use those characters.
+export const pixelifyFixes = localFont({
+  src: [
+    { path: "./pixelify-fixes.otf", weight: "400" },
+    { path: "./pixelify-fixes-bold.otf", weight: "700" },
+  ],
+  variable: "--font-pixelify-fixes",
   adjustFontFallback: false,
   preload: false,
-  declarations: [{ prop: "unicode-range", value: "U+0259, U+018F" }],
-});
-
-export const pixelifySchwa = localFont({
-  src: "./pixelify-schwa.otf",
-  variable: "--font-pixelify-schwa",
-  adjustFontFallback: false,
-  preload: false,
-  declarations: [{ prop: "unicode-range", value: "U+0259, U+018F" }],
+  declarations: [{ prop: "unicode-range", value: "U+0259, U+018F, U+0032, U+0035" }],
 });
 
 /** All the class names that define the style fonts' CSS variables, for <html>. */
-export const skinFontVariables = [
-  pressStart,
-  pixelify,
-  lora,
-  caveat,
-  pressStartSchwa,
-  pixelifySchwa,
-]
+export const skinFontVariables = [pressStart, pixelify, lora, caveat, pixelifyFixes]
   .map((font) => font.variable)
   .join(" ");

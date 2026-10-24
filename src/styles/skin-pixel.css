@@ -6,10 +6,10 @@
  */
 
 :root[data-skin="pixel"] {
-  --font-body: var(--font-pixelify-schwa), var(--font-pixelify);
-  --font-accent: var(--font-press-start-schwa), var(--font-press-start);
-  --font-code: var(--font-pixelify-schwa), var(--font-pixelify);
-  --font-display: var(--font-press-start-schwa), var(--font-press-start);
+  --font-body: var(--font-pixelify-fixes), var(--font-pixelify);
+  --font-accent: var(--font-press-start), var(--font-pixelify-fixes);
+  --font-code: var(--font-pixelify-fixes), var(--font-pixelify);
+  --font-display: var(--font-press-start), var(--font-pixelify-fixes);
   --radius-pill: 0px;
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -30,8 +30,8 @@
  * it's narrower, so headings are scaled up to fill the same space.
  */
 :root[data-skin="pixel"]:lang(az) {
-  --font-display: var(--font-pixelify-schwa), var(--font-pixelify);
-  --font-accent: var(--font-pixelify-schwa), var(--font-pixelify);
+  --font-display: var(--font-pixelify-fixes), var(--font-pixelify);
+  --font-accent: var(--font-pixelify-fixes), var(--font-pixelify);
   --pixel-scale: 1.5;
 }
 
