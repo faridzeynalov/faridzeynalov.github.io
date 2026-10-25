@@ -49,7 +49,7 @@ const MOVES = [
 const MOVE_MS = 1150;
 const MATE_HOLD_MS = 4200;
 
-type Kind = "p" | "n" | "b" | "r" | "q" | "k";
+export type Kind = "p" | "n" | "b" | "r" | "q" | "k";
 
 interface Piece {
   id: string;
@@ -255,7 +255,7 @@ function Details({ kind }: { kind: Kind }) {
   }
 }
 
-function PieceShape({ kind, white }: { kind: Kind; white: boolean }) {
+export function PieceShape({ kind, white }: { kind: Kind; white: boolean }) {
   return (
     <svg
       viewBox="0 0 40 48"

@@ -290,5 +290,69 @@
   "Chess": {
     "game": "The Opera Game",
     "players": "Morphy vs Duke Karl & Count Isouard · Paris, 1858"
+  },
+  "Games": {
+    "open": "Play a game",
+    "close": "Close",
+    "restart": "Restart",
+    "moves": "{n, plural, one {# move} other {# moves}}",
+    "bestMoves": "Best: {n} moves",
+    "best": "Best: {n}",
+    "score": "Score: {n}",
+    "classic": {
+      "title": "Memory",
+      "hint": "Turn two cards at a time and find all eight pairs."
+    },
+    "dev": {
+      "title": "Snake",
+      "hint": "Eat the '{}' bugs and grow. Arrow keys or WASD; swipe on a phone."
+    },
+    "pixel": {
+      "title": "Bug Runner",
+      "hint": "Jump over the bugs. Space or ↑; tap on a phone."
+    },
+    "paper": {
+      "title": "Noughts and crosses",
+      "hint": "You play X against me. Three in a row wins."
+    },
+    "chess": {
+      "title": "Mate in three",
+      "hint": "White to move and mate in three. Pick a piece to see its moves; Black answers each one.",
+      "toMove": "Mate in three · your move {n} of 3",
+      "solved": "Checkmate! {name}",
+      "wrong": "Not the strongest move — try again",
+      "count": "Puzzle {n} of {total}",
+      "next": "Next",
+      "reply": "Black is answering…",
+      "target": "possible move",
+      "names": {
+        "anastasia": "Anastasia’s mate",
+        "philidor": "Philidor’s smothered mate",
+        "damiano": "Damiano’s mate",
+        "reti": "Réti – Tartakower, Vienna 1910"
+      }
+    },
+    "memory": {
+      "card": "Card {n}",
+      "hidden": "Hidden card",
+      "won": "All pairs in {moves} moves!"
+    },
+    "snake": {
+      "start": "Press an arrow key or swipe to start",
+      "over": "Game over · {n} bugs eaten"
+    },
+    "runner": {
+      "start": "Press Space or tap to start",
+      "over": "Game over · {n} points"
+    },
+    "ttt": {
+      "won": "You win!",
+      "lost": "I win this time.",
+      "draw": "A draw.",
+      "yourTurn": "Your move",
+      "thinking": "Thinking…",
+      "cell": "Square {n}: {mark}",
+      "tally": "You {you} · Draws {draw} · Me {me}"
+    }
   }
 }

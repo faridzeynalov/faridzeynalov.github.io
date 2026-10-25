@@ -452,3 +452,89 @@ test.describe("languages", () => {
     await expect(page).toHaveURL(/\/ru\/about$/);
   });
 });
+
+test.describe("games", () => {
+  const button = (page: Page) => page.getByRole("button", { name: "Play a game" });
+
+  for (const [skin, title] of [
+    ["classic", "Memory"],
+    ["dev", "Snake"],
+    ["pixel", "Bug Runner"],
+    ["paper", "Noughts and crosses"],
+    ["chess", "Mate in three"],
+  ] as const) {
+    test(`the ${skin} style opens its own game`, async ({ page }) => {
+      await page.addInitScript((s) => localStorage.setItem("skin", s), skin);
+      await page.goto("./");
+      await button(page).click();
+      const dialog = page.getByRole("dialog", { name: title });
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await expect(button(page)).toBeFocused();
+    });
+  }
+
+  test("the button can be dragged to the other side, and stays there", async ({ page }) => {
+    await page.goto("./");
+    const box = await button(page).boundingBox();
+    expect(box && box.x).toBeGreaterThan(200);
+    await page.mouse.move(box!.x + 26, box!.y + 26);
+    await page.mouse.down();
+    for (let i = 1; i <= 8; i++) {
+      await page.mouse.move(box!.x + 26 - ((box!.x - 40) * i) / 8, box!.y + 26 - 200 * (i / 8));
+    }
+    await page.mouse.up();
+    // Dragging doesn't open the game; the button snaps to the left edge, where it was dropped.
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect.poll(async () => (await button(page).boundingBox())?.x).toBeLessThan(30);
+    const y = (await button(page).boundingBox())!.y;
+    expect(Math.abs(y - (box!.y - 200))).toBeLessThan(40);
+
+    await page.reload();
+    await expect.poll(async () => (await button(page).boundingBox())?.x).toBeLessThan(30);
+  });
+
+  test("the chess puzzle shows legal moves, rejects a weak one and plays to mate", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => localStorage.setItem("skin", "chess"));
+    await page.goto("./");
+    await button(page).click();
+    const dialog = page.getByRole("dialog", { name: "Mate in three" });
+    const square = (name: string) =>
+      dialog.getByRole("button", { name: new RegExp(`^${name}(,|$)`) });
+
+    // Anastasia's mate. Picking the knight marks where it can go.
+    await square("d5").click();
+    await expect(square("e7")).toHaveAccessibleName("e7, possible move");
+    await expect(square("e6")).toHaveAccessibleName("e6");
+
+    // Grabbing the pawn at once isn't the key move.
+    await square("h4").click();
+    await square("h7").click();
+    await expect(dialog.getByText("Not the strongest move — try again")).toBeVisible();
+
+    // Then the solution, waiting for Black's answer before each move.
+    for (const [n, from, to] of [
+      [1, "d5", "e7"],
+      [2, "h4", "h7"],
+      [3, "e5", "h5"],
+    ] as const) {
+      if (n > 1) await expect(dialog.getByText(`your move ${n} of 3`)).toBeVisible();
+      await square(from).click();
+      await square(to).click();
+    }
+    await expect(dialog.getByText("Checkmate! Anastasia’s mate")).toBeVisible();
+  });
+
+  test("noughts and crosses answers a move", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("skin", "paper"));
+    await page.goto("./");
+    await button(page).click();
+    const dialog = page.getByRole("dialog", { name: "Noughts and crosses" });
+    await dialog.getByRole("button", { name: "Square 5: –" }).click();
+    await expect(dialog.getByRole("button", { name: "Square 5: x" })).toBeVisible();
+    await expect(dialog.getByRole("button", { name: /: o$/ })).toHaveCount(1);
+  });
+});

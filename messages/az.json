@@ -290,5 +290,69 @@
   "Chess": {
     "game": "Opera oyunu",
     "players": "Morfi – hersoq Karl və qraf İzuar · Paris, 1858"
+  },
+  "Games": {
+    "open": "Oyun oyna",
+    "close": "Bağla",
+    "restart": "Yenidən",
+    "moves": "{n} gediş",
+    "bestMoves": "Rekord: {n} gediş",
+    "best": "Rekord: {n}",
+    "score": "Xal: {n}",
+    "classic": {
+      "title": "Yaddaş",
+      "hint": "Hər dəfə iki kart aç və səkkiz cütün hamısını tap."
+    },
+    "dev": {
+      "title": "Snake",
+      "hint": "'{}' baqlarını ye və böyü. Ox düymələri və ya WASD; telefonda sürüşdür."
+    },
+    "pixel": {
+      "title": "Baq qaçışı",
+      "hint": "Baqların üstündən tullan. Boşluq və ya ↑; telefonda toxun."
+    },
+    "paper": {
+      "title": "X-O",
+      "hint": "Sən X ilə mənə qarşı oynayırsan. Bir sırada üçü qazanır."
+    },
+    "chess": {
+      "title": "Üç gedişdə mat",
+      "hint": "Gediş ağlarındır: üç gedişdə mat ver. Fiquru seç ki, gedişlərini görəsən; qaralar hər gedişə cavab verir.",
+      "toMove": "Üç gedişdə mat · gediş {n} / 3",
+      "solved": "Mat! {name}",
+      "wrong": "Ən güclü gediş deyil — yenidən cəhd et",
+      "count": "Tapmaca {n} / {total}",
+      "next": "Növbəti",
+      "reply": "Qaralar cavab verir…",
+      "target": "mümkün gediş",
+      "names": {
+        "anastasia": "Anastasiya matı",
+        "philidor": "Filidorun boğulmuş matı",
+        "damiano": "Damiano matı",
+        "reti": "Reti – Tartakover, Vyana 1910"
+      }
+    },
+    "memory": {
+      "card": "Kart {n}",
+      "hidden": "Bağlı kart",
+      "won": "Bütün cütlər {moves} gedişdə!"
+    },
+    "snake": {
+      "start": "Başlamaq üçün ox düyməsinə bas və ya sürüşdür",
+      "over": "Oyun bitdi · {n} baq yeyildi"
+    },
+    "runner": {
+      "start": "Başlamaq üçün Boşluq düyməsinə bas və ya toxun",
+      "over": "Oyun bitdi · {n} xal"
+    },
+    "ttt": {
+      "won": "Sən qazandın!",
+      "lost": "Bu dəfə mən qazandım.",
+      "draw": "Heç-heçə.",
+      "yourTurn": "Sənin gedişin",
+      "thinking": "Fikirləşirəm…",
+      "cell": "Xana {n}: {mark}",
+      "tally": "Sən {you} · Heç-heçə {draw} · Mən {me}"
+    }
   }
 }

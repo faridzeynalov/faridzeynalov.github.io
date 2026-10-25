@@ -724,3 +724,45 @@ html.has-custom-cursor :is(input, textarea, [contenteditable="true"]) {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Games (GameLauncher)                                                       */
+/* -------------------------------------------------------------------------- */
+
+/* Paper's noughts and crosses: each stroke is drawn in ink from its start. */
+.ink-draw path,
+path.ink-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ink-draw 0.45s cubic-bezier(0.5, 0, 0.3, 1) forwards;
+}
+
+@keyframes ink-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* A wrong answer (Chess puzzles). */
+@keyframes shake {
+  20%,
+  60% {
+    translate: -5px 0;
+  }
+  40%,
+  80% {
+    translate: 5px 0;
+  }
+}
+
+/* Chess puzzles: pieces stand flat in their squares (the contact board tilts them). */
+.puzzle-board .chess-figure {
+  position: static;
+  width: 100%;
+  height: 100%;
+  transform: none;
+}
+
+.puzzle-board .chess-shadow {
+  display: none;
+}
