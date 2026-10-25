@@ -13,15 +13,10 @@ import {
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { useSkin } from "@/components/layout/use-appearance";
-import { BoardView } from "@/components/projects/board-view";
-import { Journal } from "@/components/projects/journal";
-import { LevelSelect } from "@/components/projects/level-select";
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectList } from "@/components/projects/project-list";
-import { ShowcaseView } from "@/components/projects/showcase-view";
-import { TerminalView } from "@/components/projects/terminal-view";
 import { Button } from "@/components/ui/button";
 import { getIndustryFilters, isIndustry } from "@/lib/industries";
 import type { Skin } from "@/lib/theme";
@@ -29,6 +24,31 @@ import { cn } from "@/lib/utils";
 import type { Industry, Project } from "@/types/project";
 
 type Filter = Industry | "all";
+
+// Each style's own view is loaded only when it's opened, so the page stays light (and
+// quick to become interactive) for everyone else.
+const ShowcaseView = lazy(() =>
+  import("@/components/projects/showcase-view").then((mod) => ({ default: mod.ShowcaseView })),
+);
+const TerminalView = lazy(() =>
+  import("@/components/projects/terminal-view").then((mod) => ({ default: mod.TerminalView })),
+);
+const LevelSelect = lazy(() =>
+  import("@/components/projects/level-select").then((mod) => ({ default: mod.LevelSelect })),
+);
+const Journal = lazy(() =>
+  import("@/components/projects/journal").then((mod) => ({ default: mod.Journal })),
+);
+const BoardView = lazy(() =>
+  import("@/components/projects/board-view").then((mod) => ({ default: mod.BoardView })),
+);
+const STYLE_VIEW_COMPONENTS = {
+  showcase: ShowcaseView,
+  terminal: TerminalView,
+  levels: LevelSelect,
+  journal: Journal,
+  board: BoardView,
+};
 /** Each style's own third view, after the grid and the list. */
 const STYLE_VIEWS = {
   classic: "showcase",
@@ -201,16 +221,10 @@ export function PortfolioExplorer({
             {t("showAll")}
           </Button>
         </div>
-      ) : view === "journal" ? (
-        <Journal projects={visible} industryLabels={industryLabels} />
-      ) : view === "showcase" ? (
-        <ShowcaseView projects={visible} industryLabels={industryLabels} />
-      ) : view === "terminal" ? (
-        <TerminalView projects={visible} industryLabels={industryLabels} />
-      ) : view === "levels" ? (
-        <LevelSelect projects={visible} industryLabels={industryLabels} />
-      ) : view === "board" ? (
-        <BoardView projects={visible} industryLabels={industryLabels} />
+      ) : view !== "grid" && view !== "list" ? (
+        <Suspense fallback={<div className="mt-10 h-96 animate-pulse rounded-2xl bg-bg-subtle" />}>
+          <StyleViewPanel view={view} projects={visible} industryLabels={industryLabels} />
+        </Suspense>
       ) : view === "list" ? (
         <div className="mt-10">
           <ProjectList projects={visible} industryLabels={industryLabels} />
@@ -243,4 +257,18 @@ export function PortfolioExplorer({
       )}
     </div>
   );
+}
+
+/** The current style's own view of the projects (see STYLE_VIEWS). */
+function StyleViewPanel({
+  view,
+  projects,
+  industryLabels,
+}: {
+  view: StyleView;
+  projects: Project[];
+  industryLabels: Record<Industry, string>;
+}) {
+  const View = STYLE_VIEW_COMPONENTS[view];
+  return <View projects={projects} industryLabels={industryLabels} />;
 }
