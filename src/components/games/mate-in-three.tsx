@@ -1,15 +1,17 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Crown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { PieceShape, type Kind } from "@/components/chess/opera-game";
+import { ChessGift } from "@/components/games/chess-gift";
 import { GameBar } from "@/components/games/game-ui";
 import { PUZZLES } from "@/components/games/puzzles";
 import {
   forcesMate,
   inCheck,
   isCheckmate,
+  isSacrifice,
   legalMoves,
   parsePosition,
   play,
@@ -25,8 +27,20 @@ const SYMBOLS = {
   white: { k: "♔", q: "♕", r: "♖", b: "♗", n: "♘", p: "♙" },
   black: { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" },
 } as const;
-/** How long Black takes to answer. */
+/** How long Black takes to answer (longer after a brilliant move, to enjoy it). */
 const REPLY_MS = 650;
+const BRILLIANT_REPLY_MS = 1300;
+const SOLVED_KEY = "chess-puzzles-solved";
+
+/** The puzzles solved in this browser, by name. */
+function readSolved(): Set<string> {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SOLVED_KEY) ?? "[]") as unknown;
+    return new Set(Array.isArray(saved) ? saved.filter((name) => typeof name === "string") : []);
+  } catch {
+    return new Set();
+  }
+}
 
 interface BoardPiece {
   id: string;
@@ -79,6 +93,11 @@ export default function MateInThree() {
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<"solved" | "wrong" | null>(null);
   const [last, setLast] = useState<string | null>(null);
+  /** The square of White's last move, when it was a sacrifice. */
+  const [brilliant, setBrilliant] = useState<string | null>(null);
+  const [solved, setSolved] = useState(readSolved);
+  const [showGift, setShowGift] = useState(false);
+  const allSolved = PUZZLES.every((other) => solved.has(other.name));
   const blackToMove = !position.white && result !== "solved";
 
   const moves = useMemo(() => legalMoves(position), [position]);
@@ -99,6 +118,7 @@ export default function MateInThree() {
     setSelected(null);
     setResult(null);
     setLast(null);
+    setBrilliant(null);
   };
 
   const apply = useCallback((move: string) => {
@@ -111,13 +131,17 @@ export default function MateInThree() {
   // Black's answer: the main line's defence while on it, otherwise any (they all lose in time).
   useEffect(() => {
     if (!blackToMove) return;
-    const timer = window.setTimeout(() => {
-      const scripted = onMainLine ? puzzle.line[ply] : undefined;
-      const reply = scripted && moves.includes(scripted) ? scripted : moves[0];
-      if (reply) apply(reply);
-    }, REPLY_MS);
+    const timer = window.setTimeout(
+      () => {
+        const scripted = onMainLine ? puzzle.line[ply] : undefined;
+        const reply = scripted && moves.includes(scripted) ? scripted : moves[0];
+        if (reply) apply(reply);
+        setBrilliant(null);
+      },
+      brilliant ? BRILLIANT_REPLY_MS : REPLY_MS,
+    );
     return () => window.clearTimeout(timer);
-  }, [blackToMove, onMainLine, puzzle, ply, moves, apply]);
+  }, [blackToMove, onMainLine, puzzle, ply, moves, apply, brilliant]);
 
   const pick = (square: string) => {
     if (result === "solved" || blackToMove) return;
@@ -146,9 +170,23 @@ export default function MateInThree() {
       setResult("wrong");
       return;
     }
-    setResult(isCheckmate(after) ? "solved" : null);
+    const mate = isCheckmate(after);
+    setResult(mate ? "solved" : null);
+    setBrilliant(isSacrifice(position, move) ? square : null);
     setOnMainLine((value) => value && move === puzzle.line[ply]);
     apply(move);
+    if (mate) {
+      const next = new Set(solved).add(puzzle.name);
+      setSolved(next);
+      try {
+        localStorage.setItem(SOLVED_KEY, JSON.stringify([...next]));
+      } catch {
+        // Storage blocked: progress still counts for this visit.
+      }
+      if (!allSolved && PUZZLES.every((other) => next.has(other.name))) {
+        window.setTimeout(() => setShowGift(true), 900);
+      }
+    }
   };
 
   const status =
@@ -157,7 +195,9 @@ export default function MateInThree() {
       : result === "wrong"
         ? t("chess.wrong")
         : blackToMove
-          ? t("chess.reply")
+          ? brilliant
+            ? t("chess.brilliant")
+            : t("chess.reply")
           : t("chess.toMove", { n: ply / 2 + 1 });
 
   const kingInCheck = inCheck(position)
@@ -237,12 +277,64 @@ export default function MateInThree() {
             );
           })}
         </div>
+        {/* A brilliant move (a sacrifice) gets its "!!" badge on the square it went to. */}
+        {brilliant && (
+          <span
+            key={`${ply}-${brilliant}`}
+            className="pointer-events-none absolute top-0 left-0 z-[1] size-[12.5%]"
+            style={
+              {
+                translate: `${coords(brilliant).x * 100}% ${coords(brilliant).y * 100}%`,
+              } as CSSProperties
+            }
+          >
+            <span
+              className={cn(
+                "brilliant-badge absolute flex size-[58%] items-center justify-center rounded-full font-sans text-[clamp(10px,3vw,14px)] leading-none font-extrabold tracking-[-0.06em] text-white",
+                // Over the square's top-right corner, kept inside the board on its edges.
+                coords(brilliant).x === 7 ? "right-[3%]" : "-right-[20%]",
+                coords(brilliant).y === 0 ? "top-[3%]" : "-top-[20%]",
+              )}
+              title={t("chess.brilliant")}
+            >
+              !!
+            </span>
+          </span>
+        )}
+        {showGift && <ChessGift onClose={() => setShowGift(false)} />}
       </div>
       <GameBar
         status={status}
-        best={t("chess.count", { n: index + 1, total: PUZZLES.length })}
+        best={
+          <>
+            {t("chess.count", { n: index + 1, total: PUZZLES.length })}
+            {/* One pip per puzzle, filled once solved. */}
+            <span className="ml-1 inline-flex gap-0.5" aria-hidden>
+              {PUZZLES.map((other, i) => (
+                <span
+                  key={other.name}
+                  className={cn(
+                    "size-1.5 rounded-[1px]",
+                    solved.has(other.name) ? "bg-accent" : "bg-border-strong",
+                    i === index && "outline-1 outline-offset-1 outline-fg/50",
+                  )}
+                />
+              ))}
+            </span>
+          </>
+        }
         onRestart={() => load(index)}
       >
+        {allSolved && !showGift && (
+          <button
+            type="button"
+            onClick={() => setShowGift(true)}
+            aria-label={t("chess.allSolved")}
+            className="inline-flex size-9 items-center justify-center rounded-pill border border-accent/50 text-accent transition-colors hover:bg-accent-soft"
+          >
+            <Crown className="size-4" aria-hidden />
+          </button>
+        )}
         {result === "solved" && (
           <button
             type="button"

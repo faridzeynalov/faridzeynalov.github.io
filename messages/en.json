@@ -329,8 +329,16 @@
         "anastasia": "Anastasia’s mate",
         "philidor": "Philidor’s smothered mate",
         "damiano": "Damiano’s mate",
+        "backRank": "Back-rank mate",
+        "corridor": "Pin and back-rank mate",
+        "openFile": "Mate on the open file",
+        "quietQueen": "The quiet queen move",
+        "hFile": "Breakthrough on the h-file",
+        "quietKnight": "The quiet knight move",
         "reti": "Réti – Tartakower, Vienna 1910"
-      }
+      },
+      "brilliant": "Brilliant move!!",
+      "allSolved": "All puzzles solved"
     },
     "memory": {
       "card": "Card {n}",

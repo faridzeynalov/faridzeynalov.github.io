@@ -329,8 +329,16 @@
         "anastasia": "Anastasiya matı",
         "philidor": "Filidorun boğulmuş matı",
         "damiano": "Damiano matı",
+        "backRank": "Arxa sıra matı",
+        "corridor": "Bağlama və arxa sıra matı",
+        "openFile": "Açıq xətdə mat",
+        "quietQueen": "Vəzirin sakit gedişi",
+        "hFile": "h-xəttində yarma",
+        "quietKnight": "Atın sakit gedişi",
         "reti": "Reti – Tartakover, Vyana 1910"
-      }
+      },
+      "brilliant": "Brilyant gediş!!",
+      "allSolved": "Bütün tapmacalar həll olunub"
     },
     "memory": {
       "card": "Kart {n}",

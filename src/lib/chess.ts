@@ -196,3 +196,19 @@ function mates(pos: Position, n: number): boolean {
 export function forcesMate(pos: Position, move: string, n: number): boolean {
   return mates(play(pos, move), n - 1);
 }
+
+const VALUES: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+
+/**
+ * Whether a move is a sacrifice ("brilliant" in the puzzles): a piece worth 3 or more goes where
+ * the opponent can legally take it, for less than it's worth. A double check that can't be
+ * answered by the capture doesn't count.
+ */
+export function isSacrifice(pos: Position, move: string): boolean {
+  const from = squareIndex(move.slice(0, 2));
+  const to = move.slice(2, 4);
+  const piece = pos.board[from].toLowerCase();
+  const taken = pos.board[squareIndex(to)].toLowerCase();
+  if (VALUES[piece] < 3 || VALUES[piece] <= (VALUES[taken] ?? 0)) return false;
+  return legalMoves(play(pos, move)).some((reply) => reply.slice(2, 4) === to);
+}

@@ -524,8 +524,46 @@ test.describe("games", () => {
       if (n > 1) await expect(dialog.getByText(`your move ${n} of 3`)).toBeVisible();
       await square(from).click();
       await square(to).click();
+      // 2.Qxh7+ is a queen sacrifice: a brilliant move, with its badge.
+      if (n === 2) {
+        await expect(dialog.getByText("Brilliant move!!")).toBeVisible();
+        await expect(dialog.locator(".brilliant-badge")).toBeVisible();
+      }
     }
     await expect(dialog.getByText("Checkmate! Anastasia’s mate")).toBeVisible();
+    // Only one puzzle solved: nothing else happens.
+    await page.waitForTimeout(1200);
+    await expect(dialog.locator(".chess-gift")).toHaveCount(0);
+  });
+
+  test("solving the last chess puzzle reveals the surprise", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("skin", "chess");
+      const others = ["backRank", "philidor", "damiano", "corridor", "openFile"];
+      others.push("quietQueen", "hFile", "quietKnight", "reti");
+      localStorage.setItem("chess-puzzles-solved", JSON.stringify(others));
+    });
+    await page.goto("./");
+    await button(page).click();
+    const dialog = page.getByRole("dialog", { name: "Mate in three" });
+    const square = (name: string) =>
+      dialog.getByRole("button", { name: new RegExp(`^${name}(,|$)`) });
+    for (const [n, from, to] of [
+      [1, "d5", "e7"],
+      [2, "h4", "h7"],
+      [3, "e5", "h5"],
+    ] as const) {
+      if (n > 1) await expect(dialog.getByText(`your move ${n} of 3`)).toBeVisible();
+      await square(from).click();
+      await square(to).click();
+    }
+    const gift = dialog.locator(".chess-gift");
+    await expect(gift).toBeVisible();
+    // It can be closed, and brought back from the crown.
+    await gift.getByRole("button", { name: "Close" }).click();
+    await expect(gift).toHaveCount(0);
+    await dialog.getByRole("button", { name: "All puzzles solved" }).click();
+    await expect(dialog.locator(".chess-gift")).toBeVisible();
   });
 
   test("noughts and crosses answers a move", async ({ page }) => {

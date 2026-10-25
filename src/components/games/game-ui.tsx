@@ -53,11 +53,13 @@ export function GameBar({
   return (
     <div className="mt-4 flex items-center justify-between gap-3 text-sm">
       <div className="min-w-0">
-        <p className="font-medium text-fg" aria-live="polite">
+        {/* Always two lines tall, so the panel doesn't grow and shrink as the status changes
+            (e.g. a chess move's comment wrapping on a phone). */}
+        <p className="line-clamp-2 min-h-[2lh] font-medium text-pretty text-fg" aria-live="polite">
           {status}
         </p>
         {best && (
-          <p className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-fg-subtle">
+          <p className="mt-0.5 inline-flex items-center gap-1.5 text-xs whitespace-nowrap text-fg-subtle">
             <Trophy className="size-3" aria-hidden />
             {best}
           </p>
@@ -68,10 +70,12 @@ export function GameBar({
         <button
           type="button"
           onClick={onRestart}
-          className="inline-flex h-9 items-center gap-1.5 rounded-pill border border-border-strong px-3.5 text-[13px] text-fg-muted transition-colors hover:border-fg/30 hover:text-fg"
+          aria-label={t("restart")}
+          className="inline-flex h-9 items-center gap-1.5 rounded-pill border border-border-strong px-3 text-[13px] text-fg-muted transition-colors hover:border-fg/30 hover:text-fg sm:px-3.5"
         >
           <RotateCcw className="size-3.5" aria-hidden />
-          {t("restart")}
+          {/* Icon only on phones, so the status keeps its room next to the buttons. */}
+          <span className="max-sm:hidden">{t("restart")}</span>
         </button>
       </div>
     </div>
