@@ -89,8 +89,10 @@ export function PortfolioExplorer({
   const [filter, setFilter] = useState<Filter>("all");
   const [chosenView, setView] = useState<View>("grid");
   const skin = useSkin();
-  // Before the style is known (server render) there's no third view yet.
-  const styleView = skin ? STYLE_VIEWS[skin] : null;
+  const wide = useWideScreen();
+  // The styles' own views are made for larger screens: phones keep the grid and the list.
+  // Before the style is known (server render) there's no third view yet either.
+  const styleView = skin && wide ? STYLE_VIEWS[skin] : null;
   // A style's own view belongs to that style; in the others the grid stands in for it.
   const view =
     chosenView === "grid" || chosenView === "list" || chosenView === styleView
@@ -257,6 +259,19 @@ export function PortfolioExplorer({
       )}
     </div>
   );
+}
+
+/** Whether the screen is wide enough for the styles' own views (tablets and up). */
+function useWideScreen() {
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const update = () => setWide(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return wide;
 }
 
 /** The current style's own view of the projects (see STYLE_VIEWS). */

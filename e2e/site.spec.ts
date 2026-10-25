@@ -458,6 +458,7 @@ test.describe("journal", () => {
     page,
     isMobile,
   }) => {
+    test.skip(isMobile, "The styles' own views are for larger screens");
     await page.addInitScript(() => localStorage.setItem("skin", "paper"));
     await page.goto("./portfolio");
     await page.getByRole("button", { name: "Journal view" }).click();
@@ -495,13 +496,32 @@ test.describe("journal", () => {
 });
 
 test.describe("portfolio style views", () => {
+  test("phones keep just the grid and the list", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "Phones only");
+    for (const skin of ["classic", "dev", "pixel", "paper", "chess"]) {
+      await page.addInitScript((s) => localStorage.setItem("skin", s), skin);
+      // Even a shared link to a style's view opens the grid.
+      await page.goto("./portfolio?view=journal");
+      const layout = page.getByRole("group", { name: "Layout" });
+      await expect(layout.getByRole("button", { name: "Grid view" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      await expect(layout.getByRole("button")).toHaveCount(2);
+    }
+  });
+
   for (const [skin, name, keys] of [
     ["classic", "Showcase view", ["ArrowRight"]],
     ["dev", "Terminal view", ["ArrowDown"]],
     ["pixel", "Level select", ["ArrowRight"]],
     ["chess", "Board view", ["ArrowRight"]],
   ] as const) {
-    test(`the ${skin} style has its own third view, driven by the keyboard`, async ({ page }) => {
+    test(`the ${skin} style has its own third view, driven by the keyboard`, async ({
+      page,
+      isMobile,
+    }) => {
+      test.skip(isMobile, "The styles' own views are for larger screens");
       await page.addInitScript((s) => localStorage.setItem("skin", s), skin);
       await page.goto("./portfolio");
       const toggle = page.getByRole("button", { name });
