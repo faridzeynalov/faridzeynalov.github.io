@@ -50,7 +50,9 @@
     "paper": "Paper",
     "paperHint": "Notebook paper and ink",
     "chess": "Chess",
-    "chessHint": "Board, pieces and opening moves"
+    "chessHint": "Board, pieces and opening moves",
+    "football": "Football",
+    "footballHint": "Floodlit pitch, matchday energy"
   },
   "Explorer": {
     "title": "Explorer",
@@ -201,7 +203,12 @@
     "levelsStage": "Stage {n}",
     "boardHint": "Pick a square — each piece is an industry",
     "boardOpen": "Open project",
-    "boardLegend": "Pieces"
+    "boardLegend": "Pieces",
+    "albumView": "Sticker album",
+    "albumTitle": "Portfolio Album",
+    "albumSeason": "Season 2022 – 2026 · Farid Zeynalov",
+    "albumCollected": "{n}/{total} collected",
+    "albumCount": "{n, plural, one {# sticker} other {# stickers}}"
   },
   "ProjectCard": {
     "technologies": "Technologies",
@@ -392,6 +399,27 @@
       "thinking": "Thinking…",
       "cell": "Square {n}: {mark}",
       "tally": "You {you} · Draws {draw} · Me {me}"
+    },
+    "football": {
+      "title": "Penalty shoot-out",
+      "hint": "Aim, click, then click again for the power. In goal: click where to dive."
+    },
+    "penalty": {
+      "aim": "Aim — click to lock it",
+      "power": "Click to set the power",
+      "keep": "Their kick — click where to dive",
+      "goal": "Goal!",
+      "saved": "Saved!",
+      "post": "Off the woodwork!",
+      "wide": "Wide!",
+      "over": "Over the bar!",
+      "conceded": "They scored.",
+      "youSaved": "What a save!",
+      "rivalMissed": "They missed!",
+      "won": "You win the shoot-out {a}–{b}!",
+      "lost": "Bugs FC win it {b}–{a}.",
+      "sudden": "Sudden death",
+      "you": "You"
     }
   },
   "Support": {
@@ -400,5 +428,12 @@
     "text": "Buy me a coffee on kofe.al — scan the code or follow the link.",
     "close": "Close",
     "qr": "QR code for kofe.al/@faridzeynalov"
+  },
+  "Football": {
+    "goal": "Goal!",
+    "moveTitle": "The team move",
+    "moveText": "Six passes from the keeper to the back of the net — that's how I like to ship.",
+    "halfTime": "Half time",
+    "fullTime": "Full time"
   }
 }

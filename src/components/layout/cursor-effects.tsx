@@ -3,7 +3,12 @@
 import { useMotionValue, useSpring } from "motion/react";
 import * as m from "motion/react-m";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import { CHESS_SNIPPETS, CODE_SNIPPETS, createSnippetPicker } from "@/lib/code-snippets";
+import {
+  CHESS_SNIPPETS,
+  CODE_SNIPPETS,
+  FOOTBALL_SNIPPETS,
+  createSnippetPicker,
+} from "@/lib/code-snippets";
 import { cn } from "@/lib/utils";
 
 const SNIPPET_MIN_GAP = 30; // a term reappears only after at least this many others
@@ -15,7 +20,7 @@ const INTERACTIVE = "a, button, [role='button'], summary, label, select";
 type Mode = "mouse" | "touch" | null;
 
 /**
- * Code snippets (chess moves in the Chess style) that drift up behind the page as you move, plus
+ * Code snippets (chess moves in the Chess style, match calls in the Football one) that drift up behind the page as you move, plus
  * (for mice) a theme-aware custom cursor. Touch screens get the snippet trail only where the
  * finger touches and slides, never from the page scrolling by itself. Everything is off with
  * reduced motion.
@@ -56,6 +61,7 @@ function TrailLayer({ layerRef }: { layerRef: RefObject<HTMLDivElement | null> }
 function useSnippetSpawner(layerRef: RefObject<HTMLDivElement | null>, maxSnippets: number) {
   const pickerRef = useRef<(() => string) | null>(null);
   const chessPickerRef = useRef<(() => string) | null>(null);
+  const footballPickerRef = useRef<(() => string) | null>(null);
 
   return useCallback(
     (px: number, py: number, spread = 1) => {
@@ -66,9 +72,13 @@ function useSnippetSpawner(layerRef: RefObject<HTMLDivElement | null>, maxSnippe
       const el = document.createElement("span");
       el.className = "code-trail-snippet";
       // The Chess style scatters moves and openings instead of code.
-      if (document.documentElement.dataset.skin === "chess") {
+      const skin = document.documentElement.dataset.skin;
+      if (skin === "chess") {
         chessPickerRef.current ??= createSnippetPicker(CHESS_SNIPPETS, SNIPPET_MIN_GAP);
         el.textContent = chessPickerRef.current();
+      } else if (skin === "football") {
+        footballPickerRef.current ??= createSnippetPicker(FOOTBALL_SNIPPETS, SNIPPET_MIN_GAP);
+        el.textContent = footballPickerRef.current();
       } else {
         pickerRef.current ??= createSnippetPicker(CODE_SNIPPETS, SNIPPET_MIN_GAP);
         el.textContent = pickerRef.current();

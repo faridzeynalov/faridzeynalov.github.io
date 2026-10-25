@@ -275,6 +275,7 @@ test.describe("theme", () => {
     ["pixel", "Press Start 2P"],
     ["paper", "Lora"],
     ["chess", "Playfair"],
+    ["football", "Oswald"],
   ] as const) {
     test(`the ${skin} style applies before paint with its own fonts, in light and dark`, async ({
       page,
@@ -506,7 +507,7 @@ test.describe("journal", () => {
 test.describe("portfolio style views", () => {
   test("phones keep just the grid and the list", async ({ page, isMobile }) => {
     test.skip(!isMobile, "Phones only");
-    for (const skin of ["classic", "dev", "pixel", "paper", "chess"]) {
+    for (const skin of ["classic", "dev", "pixel", "paper", "chess", "football"]) {
       await page.addInitScript((s) => localStorage.setItem("skin", s), skin);
       // Even a shared link to a style's view opens the grid.
       await page.goto("./portfolio?view=journal");
@@ -554,6 +555,31 @@ test.describe("portfolio style views", () => {
   }
 });
 
+test("the football style's portfolio is a sticker album", async ({ page, isMobile }) => {
+  test.skip(isMobile, "The styles' own views are for larger screens");
+  await page.addInitScript(() => localStorage.setItem("skin", "football"));
+  await page.goto("./portfolio");
+  await portfolioReady(page);
+  await page.getByRole("button", { name: "Sticker album" }).click();
+  await expect(page).toHaveURL(/view=album/);
+  // A sticker for every project, numbered through the album, each linking to its project.
+  const stickers = page.locator(".sticker");
+  await expect(stickers).toHaveCount(29);
+  await expect(stickers.first().locator(".sticker-number")).toHaveText("01");
+  await expect(stickers.last().locator(".sticker-number")).toHaveText("29");
+  await stickers.first().click();
+  await expect(page).toHaveURL(/\/portfolio\/[a-z0-9-]+$/);
+});
+
+test("the football style plays a team move to a goal on the tactics board", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("skin", "football"));
+  await page.goto("./");
+  const board = page.locator(".tactics");
+  await board.scrollIntoViewIfNeeded();
+  await expect(board.locator(".tactics-goal")).toBeVisible({ timeout: 15_000 });
+  await expect(board.locator(".tactics-score")).toContainText("1 – 0");
+});
+
 test("the coffee button shows the kofe.al code and link", async ({ page }) => {
   await page.goto("./");
   await page.getByRole("button", { name: "Buy me a coffee" }).click();
@@ -575,6 +601,7 @@ test.describe("games", () => {
     ["pixel", "Bug Runner"],
     ["paper", "Noughts and crosses"],
     ["chess", "Mate in three"],
+    ["football", "Penalty shoot-out"],
   ] as const) {
     test(`the ${skin} style opens its own game`, async ({ page }) => {
       await page.addInitScript((s) => localStorage.setItem("skin", s), skin);
@@ -588,24 +615,16 @@ test.describe("games", () => {
     });
   }
 
-  test("the button can be dragged to the other side, and stays there", async ({ page }) => {
+  test("the button sits in the bottom-right corner, level with the coffee button", async ({
+    page,
+  }) => {
     await page.goto("./");
-    const box = await button(page).boundingBox();
-    expect(box && box.x).toBeGreaterThan(200);
-    await page.mouse.move(box!.x + 26, box!.y + 26);
-    await page.mouse.down();
-    for (let i = 1; i <= 8; i++) {
-      await page.mouse.move(box!.x + 26 - ((box!.x - 40) * i) / 8, box!.y + 26 - 200 * (i / 8));
-    }
-    await page.mouse.up();
-    // Dragging doesn't open the game; the button snaps to the left edge, where it was dropped.
-    await expect(page.getByRole("dialog")).toHaveCount(0);
-    await expect.poll(async () => (await button(page).boundingBox())?.x).toBeLessThan(30);
-    const y = (await button(page).boundingBox())!.y;
-    expect(Math.abs(y - (box!.y - 200))).toBeLessThan(40);
-
-    await page.reload();
-    await expect.poll(async () => (await button(page).boundingBox())?.x).toBeLessThan(30);
+    const game = (await button(page).boundingBox())!;
+    const coffee = (await page.getByRole("button", { name: "Buy me a coffee" }).boundingBox())!;
+    const width = page.viewportSize()!.width;
+    expect(Math.abs(game.y + game.height - (coffee.y + coffee.height))).toBeLessThan(1);
+    expect(width - (game.x + game.width)).toBeLessThan(30);
+    expect(coffee.x).toBeLessThan(30);
   });
 
   test("the chess puzzle shows legal moves, rejects a weak one and plays to mate", async ({

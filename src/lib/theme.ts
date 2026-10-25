@@ -1,9 +1,9 @@
 export type Theme = "light" | "dark";
 /**
  * Site style, independent of light/dark: the default look, a code editor, a retro 8-bit game,
- * notebook paper and ink, or a chessboard.
+ * notebook paper and ink, a chessboard, or a floodlit football pitch.
  */
-export const SKINS = ["classic", "dev", "pixel", "paper", "chess"] as const;
+export const SKINS = ["classic", "dev", "pixel", "paper", "chess", "football"] as const;
 export type Skin = (typeof SKINS)[number];
 
 export const THEME_STORAGE_KEY = "theme";

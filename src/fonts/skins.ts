@@ -1,8 +1,16 @@
-import { Caveat, Lora, Pixelify_Sans, Playfair_Display, Press_Start_2P } from "next/font/google";
+import {
+  Caveat,
+  Lora,
+  Oswald,
+  Pixelify_Sans,
+  Playfair_Display,
+  Press_Start_2P,
+} from "next/font/google";
 import localFont from "next/font/local";
 
-// Fonts for the 8-bit, Paper and Chess styles. `preload: false`: they're only downloaded when a
-// page actually uses them (i.e. in that style), so Classic and Developer visitors never fetch them.
+// Fonts for the 8-bit, Paper, Chess and Football styles. `preload: false`: they're only
+// downloaded when a page actually uses them (i.e. in that style), so Classic and Developer
+// visitors never fetch them.
 // Latin-ext covers Azerbaijani and Cyrillic covers Russian.
 
 /** 8-bit headings. */
@@ -40,6 +48,13 @@ export const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin", "latin-ext", "cyrillic"],
   style: ["normal", "italic"],
+  preload: false,
+});
+
+/** Football style headings, scores and shirt numbers: a condensed, matchday-poster sans. */
+export const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin", "latin-ext", "cyrillic"],
   preload: false,
 });
 
@@ -81,6 +96,7 @@ export const skinFontVariables = [
   lora,
   caveat,
   playfair,
+  oswald,
   pixelifyFixes,
 ]
   .map((font) => font.variable)

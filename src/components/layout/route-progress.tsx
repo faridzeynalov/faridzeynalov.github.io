@@ -1,8 +1,14 @@
 "use client";
 
-import { animate, useMotionValue, type AnimationPlaybackControls } from "motion/react";
+import {
+  animate,
+  useMotionValue,
+  useTransform,
+  type AnimationPlaybackControls,
+} from "motion/react";
 import * as m from "motion/react-m";
 import { usePathname } from "next/navigation";
+import { FootballIcon } from "@/components/football/football-icon";
 import { useEffect, useRef } from "react";
 
 /** Minimum time the bar stays up, so instant (prefetched) navigations still read as feedback. */
@@ -136,6 +142,11 @@ export function RouteProgress() {
     };
   }, [pathname, progress, opacity]);
 
+  // Football style: a ball rolls along at the tip of the line (it turns once per 40% of the
+  // width, as a ball of its size would).
+  const ballX = useTransform(progress, (value) => `calc(${value * 100}vw - 14px)`);
+  const ballTurn = useTransform(progress, (value) => value * 900);
+
   return (
     <m.div
       className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-[3px] print:hidden"
@@ -146,6 +157,11 @@ export function RouteProgress() {
         className="route-bar h-full origin-left bg-[linear-gradient(90deg,var(--accent),#f472b6_50%,#8b5cf6)] shadow-[0_0_12px_var(--accent)]"
         style={{ scaleX: progress }}
       />
+      <m.span className="route-ball absolute top-[-5px] left-0 text-accent" style={{ x: ballX }}>
+        <m.span className="block" style={{ rotate: ballTurn }}>
+          <FootballIcon className="size-[13px] drop-shadow-[0_1px_2px_rgb(0_0_0/0.4)]" />
+        </m.span>
+      </m.span>
     </m.div>
   );
 }

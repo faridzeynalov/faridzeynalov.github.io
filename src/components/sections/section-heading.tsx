@@ -8,6 +8,7 @@ import {
   Crown,
 } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
+import { FootballIcon } from "@/components/football/football-icon";
 import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +64,8 @@ const PIECES = [ChessPawn, ChessKnight, ChessBishop, ChessRook, ChessQueen, Ches
 
 /**
  * "02 —— Services". In the Developer style it reads as a code comment: "// 02 · Services"; in
- * the Chess style it gets its piece, and the rule becomes a strip of board squares.
+ * the Chess style it gets its piece, and the rule becomes a strip of board squares; in the
+ * Football style a ball, and the number reads as a match minute (02′).
  */
 export function SectionEyebrow({
   index,
@@ -90,7 +92,8 @@ export function SectionEyebrow({
         {"//"}
       </span>
       <Piece className="hidden size-4 text-accent chess:block" aria-hidden />
-      <span className="text-accent">{index}</span>
+      <FootballIcon className="hidden size-4 text-accent football:block" />
+      <span className="eyebrow-index text-accent">{index}</span>
       <span className="eyebrow-rule h-px w-8 bg-border-strong dev:hidden" aria-hidden />
       <span className="hidden dev:inline" aria-hidden>
         ·

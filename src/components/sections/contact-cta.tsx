@@ -1,5 +1,6 @@
 import { ArrowUpRight, Mail, Phone } from "lucide-react";
 import { OperaGame } from "@/components/chess/opera-game";
+import { TacticsBoard } from "@/components/football/tactics-board";
 import { Reveal } from "@/components/motion/reveal";
 import { Accent, SectionEyebrow } from "@/components/sections/section-heading";
 import { CopyButton } from "@/components/ui/copy-button";
@@ -94,6 +95,8 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
 
             {/* Chess style only: "your move", under a board replaying a famous game. */}
             {!compact && <OperaGame className="mt-16" />}
+            {/* Football style: a team move, played out on a tactics board. */}
+            {!compact && <TacticsBoard className="mt-16" />}
           </div>
         </Reveal>
       </div>

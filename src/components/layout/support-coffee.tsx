@@ -11,8 +11,8 @@ import qrCode from "@/assets/kofe-qr.png";
 const KOFE_URL = "https://kofe.al/@faridzeynalov";
 
 /**
- * "Buy me a coffee": a button fixed to the bottom-left corner (the game button keeps the
- * right). It opens a small card with the kofe.al QR code, to scan from another device, and
+ * "Buy me a coffee": a button fixed to the bottom-left corner (the game button sits level with it
+ * on the right). It opens a small card with the kofe.al QR code, to scan from another device, and
  * the link itself.
  */
 export function SupportCoffee() {

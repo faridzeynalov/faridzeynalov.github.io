@@ -18,9 +18,27 @@ const steps = (count: number) => (t: number) => Math.min(1, Math.ceil(t * count)
  * Classic: fade up. Developer: slides in from the left like a line of code being inserted —
  * shorter and snappier. 8-bit: rises in four hard steps. Paper: settles in with a slight tilt,
  * like a sheet being laid down. Chess: moves like a knight, in an L: two squares up, then one
- * across. `data-shown` lets CSS start style-specific effects (typed eyebrows).
+ * across. Football: drops in like a ball and bounces twice before it settles. `data-shown` lets CSS start style-specific effects (typed eyebrows).
  */
 function revealVariants(skin: Skin | null, y: number, delay: number): Variants {
+  if (skin === "football") {
+    const drop = -(y + 16);
+    return {
+      hidden: { opacity: 0, x: 0, y: drop, rotate: 0, transition: hide },
+      show: {
+        opacity: [0, 1, 1, 1, 1, 1],
+        x: 0,
+        y: [drop, 0, -9, 0, -3, 0],
+        rotate: 0,
+        transition: {
+          duration: 0.85,
+          delay,
+          times: [0, 0.42, 0.6, 0.76, 0.88, 1],
+          ease: ["easeIn", "easeOut", "easeIn", "easeOut", "easeIn"],
+        },
+      },
+    };
+  }
   if (skin === "chess") {
     const x = -Math.round(y * 0.6);
     return {

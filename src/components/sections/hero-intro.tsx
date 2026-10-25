@@ -91,7 +91,7 @@ export function HeroIntro({
       </Enter>
 
       <Enter delay={650}>
-        <dl className="mt-12 grid max-w-md grid-cols-3 gap-4 border-t border-border pt-6">
+        <dl className="hero-stats mt-12 grid max-w-md grid-cols-3 gap-4 border-t border-border pt-6">
           {stats.map((stat) => (
             <div key={stat.label} className="grid content-start gap-1">
               <dt className="row-start-2 text-xs text-fg-subtle">{stat.label}</dt>

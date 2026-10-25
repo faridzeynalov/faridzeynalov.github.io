@@ -56,6 +56,7 @@ describe("AppearanceMenu", () => {
     ["8-bit", "pixel"],
     ["Paper", "paper"],
     ["Chess", "chess"],
+    ["Football", "football"],
   ])("switches to the %s style and remembers it", async (name, skin) => {
     const user = setup();
     await user.click(await screen.findByRole("button", { name: /Appearance/ }));
@@ -68,10 +69,10 @@ describe("AppearanceMenu", () => {
     ).toBeInTheDocument();
   });
 
-  it("lists all five styles", async () => {
+  it("lists all six styles", async () => {
     const user = setup();
     await user.click(await screen.findByRole("button", { name: /Appearance/ }));
-    for (const name of ["Classic", "Developer", "8-bit", "Paper", "Chess"]) {
+    for (const name of ["Classic", "Developer", "8-bit", "Paper", "Chess", "Football"]) {
       expect(screen.getByRole("button", { name: new RegExp(`^${name}`) })).toBeInTheDocument();
     }
   });

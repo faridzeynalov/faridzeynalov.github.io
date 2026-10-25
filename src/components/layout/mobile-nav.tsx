@@ -14,6 +14,7 @@ import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type RefObject } from "react";
+import { FootballIcon } from "@/components/football/football-icon";
 import { ExplorerTree } from "@/components/layout/explorer-tree";
 import { LogoMark } from "@/components/layout/logo";
 import { useSkin } from "@/components/layout/use-appearance";
@@ -172,7 +173,8 @@ function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
                 )}
               >
                 <span>
-                  {/* 8-bit style: a game-menu cursor on the current page. Chess: a knight. */}
+                  {/* 8-bit style: a game-menu cursor on the current page. Chess: a knight; Football: a
+                      ball. */}
                   {active === item.href && (
                     <>
                       <span
@@ -185,6 +187,7 @@ function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
                         aria-hidden
                         className="mr-3 hidden size-7 -translate-y-0.5 align-middle text-accent chess:inline"
                       />
+                      <FootballIcon className="mr-3 hidden size-7 -translate-y-0.5 animate-[ball-spin_6s_linear_infinite] align-middle text-accent football:inline" />
                     </>
                   )}
                   {t(item.key)}

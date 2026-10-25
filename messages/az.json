@@ -50,7 +50,9 @@
     "paper": "Kağız",
     "paperHint": "Dəftər kağızı və mürəkkəb",
     "chess": "Şahmat",
-    "chessHint": "Taxta, fiqurlar və gedişlər"
+    "chessHint": "Taxta, fiqurlar və gedişlər",
+    "football": "Futbol",
+    "footballHint": "Projektor işığında meydan, matç günü əhvalı"
   },
   "Explorer": {
     "title": "Explorer",
@@ -201,7 +203,12 @@
     "levelsStage": "Mərhələ {n}",
     "boardHint": "Xana seç — hər fiqur bir sahədir",
     "boardOpen": "Layihəni aç",
-    "boardLegend": "Fiqurlar"
+    "boardLegend": "Fiqurlar",
+    "albumView": "Stiker albomu",
+    "albumTitle": "Portfolio Albomu",
+    "albumSeason": "Mövsüm 2022 – 2026 · Farid Zeynalov",
+    "albumCollected": "{n}/{total} yığılıb",
+    "albumCount": "{n} stiker"
   },
   "ProjectCard": {
     "technologies": "Texnologiyalar",
@@ -392,6 +399,27 @@
       "thinking": "Fikirləşirəm…",
       "cell": "Xana {n}: {mark}",
       "tally": "Sən {you} · Heç-heçə {draw} · Mən {me}"
+    },
+    "football": {
+      "title": "Penalti seriyası",
+      "hint": "Nişan al, klik et, sonra gücü seçmək üçün yenidən klik et. Qapıda: tullanacağın yerə klik et."
+    },
+    "penalty": {
+      "aim": "Nişan al — kliklə sabitlə",
+      "power": "Gücü seçmək üçün klik et",
+      "keep": "Rəqibin zərbəsi — tullanacağın yerə klik et",
+      "goal": "Qol!",
+      "saved": "Qapıçı tutdu!",
+      "post": "Dirəyə dəydi!",
+      "wide": "Kənara!",
+      "over": "Qapının üstündən!",
+      "conceded": "Qol buraxdın.",
+      "youSaved": "Möhtəşəm qurtarış!",
+      "rivalMissed": "Rəqib vura bilmədi!",
+      "won": "Seriyanı qazandın: {a}–{b}!",
+      "lost": "Bugs FC qazandı: {b}–{a}.",
+      "sudden": "Qızıl zərbə",
+      "you": "Sən"
     }
   },
   "Support": {
@@ -400,5 +428,12 @@
     "text": "kofe.al-da mənə bir kofe al — kodu skan et və ya linkə keç.",
     "close": "Bağla",
     "qr": "kofe.al/@faridzeynalov üçün QR kod"
+  },
+  "Football": {
+    "goal": "Qol!",
+    "moveTitle": "Komanda hücumu",
+    "moveText": "Qapıçıdan torun dərinliyinə altı ötürmə — işi də belə təhvil verirəm.",
+    "halfTime": "Fasilə",
+    "fullTime": "Matç bitdi"
   }
 }

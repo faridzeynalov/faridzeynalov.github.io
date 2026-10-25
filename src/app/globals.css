@@ -3,6 +3,7 @@
 @import "../styles/skin-pixel.css";
 @import "../styles/skin-paper.css";
 @import "../styles/skin-chess.css";
+@import "../styles/skin-football.css";
 
 /*
  * Class-based dark mode: the theme script in <head> sets `.dark` or `.light` on <html>. Like the
@@ -10,11 +11,13 @@
  */
 @custom-variant dark (&:where(:root:not(.light), :root:not(.light) *));
 
-/* Site style (Appearance menu): `dev:`, `pixel:` (8-bit), `paper:` and `chess:` apply in that style. */
+/* Site style (Appearance menu): `dev:`, `pixel:` (8-bit), `paper:`, `chess:` and `football:` apply in that
+   style. */
 @custom-variant dev (&:where([data-skin="dev"], [data-skin="dev"] *));
 @custom-variant pixel (&:where([data-skin="pixel"], [data-skin="pixel"] *));
 @custom-variant paper (&:where([data-skin="paper"], [data-skin="paper"] *));
 @custom-variant chess (&:where([data-skin="chess"], [data-skin="chess"] *));
+@custom-variant football (&:where([data-skin="football"], [data-skin="football"] *));
 
 /* -------------------------------------------------------------------------- */
 /* Design tokens                                                              */

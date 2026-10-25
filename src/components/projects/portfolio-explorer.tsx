@@ -9,6 +9,7 @@ import {
   List,
   SearchX,
   SquareTerminal,
+  Sticker,
 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
@@ -42,12 +43,16 @@ const Journal = lazy(() =>
 const BoardView = lazy(() =>
   import("@/components/projects/board-view").then((mod) => ({ default: mod.BoardView })),
 );
+const StickerAlbum = lazy(() =>
+  import("@/components/projects/sticker-album").then((mod) => ({ default: mod.StickerAlbum })),
+);
 const STYLE_VIEW_COMPONENTS = {
   showcase: ShowcaseView,
   terminal: TerminalView,
   levels: LevelSelect,
   journal: Journal,
   board: BoardView,
+  album: StickerAlbum,
 };
 /** Each style's own third view, after the grid and the list. */
 const STYLE_VIEWS = {
@@ -56,6 +61,7 @@ const STYLE_VIEWS = {
   pixel: "levels",
   paper: "journal",
   chess: "board",
+  football: "album",
 } as const satisfies Record<Skin, string>;
 type StyleView = (typeof STYLE_VIEWS)[Skin];
 type View = "grid" | "list" | StyleView;
@@ -67,6 +73,7 @@ const VIEW_ICONS = {
   levels: Joystick,
   journal: BookOpen,
   board: Grid3x3,
+  album: Sticker,
 } as const;
 const isView = (value: string | null): value is View => !!value && value in VIEW_ICONS;
 
