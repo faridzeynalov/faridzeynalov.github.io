@@ -328,12 +328,35 @@
   width: 100%;
 }
 
-/* Alone on a phone, a turned page lies off to the left: it fades once it's over. */
-.journal-book--single .journal-leaf[data-turned] {
-  opacity: 0;
+/*
+ * Alone on a phone there's no left-hand page to turn onto: hinged on the spine, a page would
+ * stand edge-on half-way and vanish under the finger. Instead it lifts off the stack and is
+ * drawn away to the left with the finger, tilting and catching the light, uncovering the next
+ * page; turning back brings it in from the left. Once turned it waits out of sight.
+ */
+.journal-book--single .journal-leaf {
+  transform: translateZ(
+      calc(
+        var(--d0) * (1 - var(--turn)) + var(--d1) * var(--turn) + sin(var(--turn) * 180deg) * 40px
+      )
+    )
+    translateX(calc(var(--turn) * -112%)) rotateY(calc(var(--turn) * -24deg))
+    rotateZ(calc(var(--turn) * -4deg));
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / calc(sin(var(--turn) * 180deg) * 0.7));
   transition:
-    --turn 0.85s cubic-bezier(0.45, 0.05, 0.2, 1),
-    opacity 0.25s 0.6s;
+    --turn 0.6s cubic-bezier(0.3, 0.1, 0.2, 1),
+    visibility 0s;
+}
+
+.journal-book--single .journal-leaf[data-turned]:not(.is-dragged) {
+  visibility: hidden;
+  transition:
+    --turn 0.6s cubic-bezier(0.3, 0.1, 0.2, 1),
+    visibility 0s 0.6s;
+}
+
+.journal-book--single .journal-leaf.is-dragged {
+  transition: none;
 }
 
 .journal-face {

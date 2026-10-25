@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { BrowserFrame } from "@/components/projects/device-frames";
 import { UnavailablePreview } from "@/components/projects/unavailable-preview";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +46,21 @@ export function ShowcaseView({
     shift: number;
   } | null>(null);
   const draggedAt = useRef(0);
+  const stageRef = useRef<HTMLDivElement>(null);
+  // The stage is as tall as a card (they're all the same height), measured, so no card is cut
+  // off at the bottom on any screen.
+  const [stageHeight, setStageHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    // The card in the middle: the others come and go as the carousel moves.
+    const card = stageRef.current?.querySelector<HTMLElement>('article[aria-hidden="false"]');
+    if (!card) return;
+    const observer = new ResizeObserver(() => {
+      if (card.offsetHeight > 0) setStageHeight(card.offsetHeight);
+    });
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [projects, index]);
 
   const go = (next: number) => setActive(Math.max(0, Math.min(projects.length - 1, next)));
 
@@ -104,12 +119,16 @@ export function ShowcaseView({
       }}
     >
       {/* The stage: side cards fade out at its edges instead of widening the page. */}
-      <div className="overflow-x-clip [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]">
+      {/* (Padded top and bottom so the cards' shadow stays inside the fade.) */}
+      <div className="-my-10 overflow-x-clip [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)] py-10">
         <div
+          ref={stageRef}
           className={cn(
-            "relative h-[clamp(470px,58vw,600px)] touch-pan-y select-none [perspective:1600px]",
+            "relative touch-pan-y select-none [perspective:1600px]",
+            stageHeight === null && "h-[clamp(470px,58vw,600px)]",
             drag === null ? "cursor-grab" : "cursor-grabbing",
           )}
+          style={stageHeight === null ? undefined : { height: stageHeight }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -180,18 +199,22 @@ export function ShowcaseView({
                   )}
                 </div>
                 <div className="flex flex-col gap-2 p-4">
-                  <p className="font-mono text-[11px] text-fg-subtle uppercase">
+                  {/* Every card has the same height: one line for the industry, two each for
+                      the name and the summary, one row of technologies. */}
+                  <p className="truncate font-mono text-[11px] text-fg-subtle uppercase">
                     {industryLabels[project.industry]}
                     {project.group ? ` · ${project.group}` : ""}
                   </p>
-                  <h2 className="text-2xl font-semibold tracking-tight">{project.name}</h2>
-                  <p className="line-clamp-2 text-sm text-pretty text-fg-muted">
+                  <h2 className="line-clamp-2 min-h-[2lh] text-xl leading-tight font-semibold tracking-tight sm:text-2xl">
+                    {project.name}
+                  </h2>
+                  <p className="line-clamp-2 min-h-[2lh] text-sm text-pretty text-fg-muted">
                     {project.summary}
                   </p>
-                  <div className="mt-1 flex items-center justify-between gap-3">
-                    <ul className="flex min-w-0 flex-wrap gap-1.5">
+                  <div className="mt-1 flex h-7 items-center justify-between gap-3">
+                    <ul className="flex min-w-0 flex-nowrap gap-1.5 overflow-hidden [mask-image:linear-gradient(to_right,#000_80%,transparent)]">
                       {project.stack.slice(0, 3).map((item) => (
-                        <li key={item}>
+                        <li key={item} className="shrink-0">
                           <Badge>{item}</Badge>
                         </li>
                       ))}

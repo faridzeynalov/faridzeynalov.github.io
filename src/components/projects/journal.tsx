@@ -64,6 +64,16 @@ function buildLeaves(projects: Project[], spread: boolean): Leaf[] {
   return leaves;
 }
 
+/**
+ * A leaf's transition delays. On a phone a second transition hides a turned page once it's
+ * out of sight (see .journal-book--single), so it waits for the turn to finish; a page coming
+ * back shows at once.
+ */
+function leafDelay(ms: number, spread: boolean, turned: boolean) {
+  if (spread) return `${ms}ms`;
+  return `${ms}ms, ${turned ? ms + 600 : 0}ms`;
+}
+
 function useSpread() {
   const [spread, setSpread] = useState(false);
   useEffect(() => {
@@ -297,9 +307,13 @@ function JournalModal({
                       "--d1": `${(i + 1) * 0.6}px`,
                       // Several leaves turning at once (a jump) riffle one after another, the
                       // top one of the stack first.
-                      transitionDelay: isDragged
-                        ? "0ms"
-                        : `${Math.min(Math.abs(i - (turned > from ? from : from - 1)), 8) * 40}ms`,
+                      transitionDelay: leafDelay(
+                        isDragged
+                          ? 0
+                          : Math.min(Math.abs(i - (turned > from ? from : from - 1)), 8) * 40,
+                        spread,
+                        i < turned,
+                      ),
                     } as CSSProperties
                   }
                   aria-hidden={!(i === turned || (spread && i === turned - 1))}
