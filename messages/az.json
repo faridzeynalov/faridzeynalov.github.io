@@ -393,5 +393,12 @@
       "cell": "Xana {n}: {mark}",
       "tally": "Sən {you} · Heç-heçə {draw} · Mən {me}"
     }
+  },
+  "Support": {
+    "open": "Mənə kofe al",
+    "title": "Burada nəsə xoşuna gəldi?",
+    "text": "kofe.al-da mənə bir kofe al — kodu skan et və ya linkə keç.",
+    "close": "Bağla",
+    "qr": "kofe.al/@faridzeynalov üçün QR kod"
   }
 }

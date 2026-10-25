@@ -88,6 +88,8 @@ export function PortfolioExplorer({
   const locale = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
   const [chosenView, setView] = useState<View>("grid");
+  /** Set once the controls respond (the page hydrates in parts; tests wait for it). */
+  const [ready, setReady] = useState(false);
   const skin = useSkin();
   const wide = useWideScreen();
   // The styles' own views are made for larger screens: phones keep the grid and the list.
@@ -109,6 +111,7 @@ export function PortfolioExplorer({
       setFilter(isIndustry(value) ? value : "all");
       const requested = new URLSearchParams(window.location.search).get(VIEW_PARAM);
       setView(isView(requested) ? requested : "grid");
+      setReady(true);
     };
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
@@ -185,6 +188,7 @@ export function PortfolioExplorer({
         <div
           role="group"
           aria-label={t("layout")}
+          data-ready={ready || undefined}
           className="flex shrink-0 gap-1 self-start rounded-pill border border-border p-1"
         >
           {(["grid", "list", ...(styleView ? [styleView] : [])] as View[]).map((option) => {

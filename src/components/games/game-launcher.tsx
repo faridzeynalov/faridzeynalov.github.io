@@ -59,10 +59,14 @@ function readSpot(): Spot {
   return { side: "right", y: 1 };
 }
 
-/** The band the button can sit in: below the header, above the bottom edge. */
-function band() {
+/** Room kept at the bottom-left for the coffee button (SupportCoffee). */
+const COFFEE_CLEARANCE = 68;
+
+/** The band the button can sit in on a side: below the header, above the bottom edge (and,
+ * on the left, above the coffee button). */
+function band(side: Spot["side"]) {
   const top = 80;
-  const bottom = window.innerHeight - SIZE - 24;
+  const bottom = window.innerHeight - SIZE - 24 - (side === "left" ? COFFEE_CLEARANCE : 0);
   return { top, range: Math.max(0, bottom - top) };
 }
 
@@ -161,9 +165,10 @@ export function GameLauncher() {
     }
     // Snap to the nearer side, at the height it was dropped.
     const dropped = dragPosition(press, event);
-    const { top, range } = band();
+    const side = dropped.x + SIZE / 2 < window.innerWidth / 2 ? "left" : "right";
+    const { top, range } = band(side);
     const next: Spot = {
-      side: dropped.x + SIZE / 2 < window.innerWidth / 2 ? "left" : "right",
+      side,
       y: range ? Math.min(Math.max((dropped.y - top) / range, 0), 1) : 1,
     };
     setSpot(next);
@@ -176,7 +181,7 @@ export function GameLauncher() {
     event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
-  const { top, range } = band();
+  const { top, range } = band(spot.side);
   const left = drag ? drag.x : spot.side === "left" ? EDGE : window.innerWidth - SIZE - EDGE;
   const y = drag ? drag.y : top + spot.y * range;
   const { icon: Icon, Game } = GAMES[skin];

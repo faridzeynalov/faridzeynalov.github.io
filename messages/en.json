@@ -393,5 +393,12 @@
       "cell": "Square {n}: {mark}",
       "tally": "You {you} · Draws {draw} · Me {me}"
     }
+  },
+  "Support": {
+    "open": "Buy me a coffee",
+    "title": "Enjoyed something here?",
+    "text": "Buy me a coffee on kofe.al — scan the code or follow the link.",
+    "close": "Close",
+    "qr": "QR code for kofe.al/@faridzeynalov"
   }
 }

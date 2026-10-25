@@ -1,5 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 
+/** Waits until the portfolio's view controls respond: the page hydrates in parts, and a
+ * click on them before then would be lost, as for a visitor. */
+async function portfolioReady(page: Page) {
+  await expect(page.getByRole("group", { name: "Layout" })).toHaveAttribute("data-ready", "true");
+}
+
 /** Collects same-origin requests that failed, so broken assets/prefetches are caught. */
 function trackFailedRequests(page: Page) {
   const failed: string[] = [];
@@ -167,6 +173,7 @@ test("new pages start at the top; Back restores the previous position", async ({
 
 test("portfolio list view shows every project", async ({ page }) => {
   await page.goto("portfolio");
+  await portfolioReady(page);
   await page.getByRole("button", { name: "List view" }).click();
   await expect(page).toHaveURL(/view=list/);
   await expect(page.locator("main ul h2")).toHaveCount(29);
@@ -461,6 +468,7 @@ test.describe("journal", () => {
     test.skip(isMobile, "The styles' own views are for larger screens");
     await page.addInitScript(() => localStorage.setItem("skin", "paper"));
     await page.goto("./portfolio");
+    await portfolioReady(page);
     await page.getByRole("button", { name: "Journal view" }).click();
     await expect(page).toHaveURL(/view=journal/);
     await page.getByRole("button", { name: /Open the journal/ }).click();
@@ -524,6 +532,7 @@ test.describe("portfolio style views", () => {
       test.skip(isMobile, "The styles' own views are for larger screens");
       await page.addInitScript((s) => localStorage.setItem("skin", s), skin);
       await page.goto("./portfolio");
+      await portfolioReady(page);
       const toggle = page.getByRole("button", { name });
       await toggle.click();
       await expect(toggle).toHaveAttribute("aria-pressed", "true");
@@ -543,6 +552,18 @@ test.describe("portfolio style views", () => {
       }
     });
   }
+});
+
+test("the coffee button shows the kofe.al code and link", async ({ page }) => {
+  await page.goto("./");
+  await page.getByRole("button", { name: "Buy me a coffee" }).click();
+  const card = page.getByRole("dialog", { name: "Buy me a coffee" });
+  await expect(card.getByRole("img", { name: /QR code/ })).toBeVisible();
+  const link = card.getByRole("link", { name: "kofe.al/@faridzeynalov" });
+  await expect(link).toHaveAttribute("href", "https://kofe.al/@faridzeynalov");
+  await expect(link).toHaveAttribute("target", "_blank");
+  await page.keyboard.press("Escape");
+  await expect(card).toBeHidden();
 });
 
 test.describe("games", () => {

@@ -5,6 +5,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { notFound } from "next/navigation";
 import { CursorEffects } from "@/components/layout/cursor-effects";
 import { GameLauncher } from "@/components/games/game-launcher";
+import { SupportCoffee } from "@/components/layout/support-coffee";
 import { RouteProgress } from "@/components/layout/route-progress";
 import { ThemeSync } from "@/components/layout/theme-sync";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -149,6 +150,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <SiteFooter />
             <CursorEffects />
             <GameLauncher />
+            <SupportCoffee />
           </MotionProvider>
         </NextIntlClientProvider>
       </body>
