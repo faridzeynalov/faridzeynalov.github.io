@@ -2,7 +2,7 @@
 
 import { ArrowRight, Crown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { PieceShape, type Kind } from "@/components/chess/opera-game";
 import { ChessGift } from "@/components/games/chess-gift";
 import { GameBar } from "@/components/games/game-ui";
@@ -97,6 +97,7 @@ export default function MateInThree() {
   const [brilliant, setBrilliant] = useState<string | null>(null);
   const [solved, setSolved] = useState(readSolved);
   const [showGift, setShowGift] = useState(false);
+  const giftTimer = useRef<number | undefined>(undefined);
   const allSolved = PUZZLES.every((other) => solved.has(other.name));
   const blackToMove = !position.white && result !== "solved";
 
@@ -119,6 +120,10 @@ export default function MateInThree() {
     setResult(null);
     setLast(null);
     setBrilliant(null);
+    // Restarting or moving on puts the board back in front of the reward (the crown brings it
+    // back), including one about to appear.
+    window.clearTimeout(giftTimer.current);
+    setShowGift(false);
   };
 
   const apply = useCallback((move: string) => {
@@ -184,7 +189,7 @@ export default function MateInThree() {
         // Storage blocked: progress still counts for this visit.
       }
       if (!allSolved && PUZZLES.every((other) => next.has(other.name))) {
-        window.setTimeout(() => setShowGift(true), 900);
+        giftTimer.current = window.setTimeout(() => setShowGift(true), 900);
       }
     }
   };
@@ -276,6 +281,34 @@ export default function MateInThree() {
               </span>
             );
           })}
+        </div>
+        {/* Coordinates, as on a tournament board: ranks down the a-file, files along the first
+            rank, each in the colour of the opposite square. Above the pieces, in the corners. */}
+        <div className="pointer-events-none absolute inset-0 font-sans text-[clamp(8px,2.4vw,11px)] leading-none font-bold">
+          {[8, 7, 6, 5, 4, 3, 2, 1].map((rank, i) => (
+            <span
+              key={rank}
+              className={cn(
+                "absolute left-[1.2%]",
+                rank % 2 === 1 ? "text-[var(--square-light)]" : "text-[var(--square-dark)]",
+              )}
+              style={{ top: `calc(${i * 12.5}% + 1.2%)` }}
+            >
+              {rank}
+            </span>
+          ))}
+          {FILES.split("").map((file, i) => (
+            <span
+              key={file}
+              className={cn(
+                "absolute bottom-[1%] w-[12.5%] pr-[1.2%] text-right",
+                i % 2 === 0 ? "text-[var(--square-light)]" : "text-[var(--square-dark)]",
+              )}
+              style={{ left: `${i * 12.5}%` }}
+            >
+              {file}
+            </span>
+          ))}
         </div>
         {/* A brilliant move (a sacrifice) gets its "!!" badge on the square it went to. */}
         {brilliant && (

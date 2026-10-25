@@ -564,6 +564,13 @@ test.describe("games", () => {
     await expect(gift).toHaveCount(0);
     await dialog.getByRole("button", { name: "All puzzles solved" }).click();
     await expect(dialog.locator(".chess-gift")).toBeVisible();
+
+    // Restarting puts the board back in front of it, ready to play again.
+    await dialog.getByRole("button", { name: "Restart" }).click();
+    await expect(dialog.locator(".chess-gift")).toHaveCount(0);
+    await expect(dialog.getByText("your move 1 of 3")).toBeVisible();
+    await square("d5").click();
+    await expect(square("e7")).toHaveAccessibleName("e7, possible move");
   });
 
   test("noughts and crosses answers a move", async ({ page }) => {
