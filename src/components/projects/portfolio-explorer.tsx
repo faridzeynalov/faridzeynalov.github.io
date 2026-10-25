@@ -1,19 +1,54 @@
 "use client";
 
-import { LayoutGrid, List, SearchX } from "lucide-react";
+import {
+  BookOpen,
+  GalleryHorizontal,
+  Grid3x3,
+  Joystick,
+  LayoutGrid,
+  List,
+  SearchX,
+  SquareTerminal,
+} from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
+import { useSkin } from "@/components/layout/use-appearance";
+import { BoardView } from "@/components/projects/board-view";
+import { Journal } from "@/components/projects/journal";
+import { LevelSelect } from "@/components/projects/level-select";
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectList } from "@/components/projects/project-list";
+import { ShowcaseView } from "@/components/projects/showcase-view";
+import { TerminalView } from "@/components/projects/terminal-view";
 import { Button } from "@/components/ui/button";
 import { getIndustryFilters, isIndustry } from "@/lib/industries";
+import type { Skin } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import type { Industry, Project } from "@/types/project";
 
 type Filter = Industry | "all";
-type View = "grid" | "list";
+/** Each style's own third view, after the grid and the list. */
+const STYLE_VIEWS = {
+  classic: "showcase",
+  dev: "terminal",
+  pixel: "levels",
+  paper: "journal",
+  chess: "board",
+} as const satisfies Record<Skin, string>;
+type StyleView = (typeof STYLE_VIEWS)[Skin];
+type View = "grid" | "list" | StyleView;
+const VIEW_ICONS = {
+  grid: LayoutGrid,
+  list: List,
+  showcase: GalleryHorizontal,
+  terminal: SquareTerminal,
+  levels: Joystick,
+  journal: BookOpen,
+  board: Grid3x3,
+} as const;
+const isView = (value: string | null): value is View => !!value && value in VIEW_ICONS;
 
 const PARAM = "industry";
 const VIEW_PARAM = "view";
@@ -32,7 +67,15 @@ export function PortfolioExplorer({
   const t = useTranslations("Portfolio");
   const locale = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
-  const [view, setView] = useState<View>("grid");
+  const [chosenView, setView] = useState<View>("grid");
+  const skin = useSkin();
+  // Before the style is known (server render) there's no third view yet.
+  const styleView = skin ? STYLE_VIEWS[skin] : null;
+  // A style's own view belongs to that style; in the others the grid stands in for it.
+  const view =
+    chosenView === "grid" || chosenView === "list" || chosenView === styleView
+      ? chosenView
+      : "grid";
   const filters = useMemo(
     () => getIndustryFilters(projects, industryLabels, locale),
     [projects, industryLabels, locale],
@@ -42,9 +85,8 @@ export function PortfolioExplorer({
     const syncFromUrl = () => {
       const value = new URLSearchParams(window.location.search).get(PARAM);
       setFilter(isIndustry(value) ? value : "all");
-      setView(
-        new URLSearchParams(window.location.search).get(VIEW_PARAM) === "list" ? "list" : "grid",
-      );
+      const requested = new URLSearchParams(window.location.search).get(VIEW_PARAM);
+      setView(isView(requested) ? requested : "grid");
     };
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
@@ -123,26 +165,26 @@ export function PortfolioExplorer({
           aria-label={t("layout")}
           className="flex shrink-0 gap-1 self-start rounded-pill border border-border p-1"
         >
-          {(["grid", "list"] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => selectView(option)}
-              aria-pressed={view === option}
-              aria-label={option === "grid" ? t("gridView") : t("listView")}
-              title={option === "grid" ? t("gridView") : t("listView")}
-              className={cn(
-                "inline-flex size-8 items-center justify-center rounded-pill transition-colors",
-                view === option ? "bg-fg text-bg" : "text-fg-muted hover:text-fg",
-              )}
-            >
-              {option === "grid" ? (
-                <LayoutGrid className="size-4" aria-hidden />
-              ) : (
-                <List className="size-4" aria-hidden />
-              )}
-            </button>
-          ))}
+          {(["grid", "list", ...(styleView ? [styleView] : [])] as View[]).map((option) => {
+            const Icon = VIEW_ICONS[option];
+            const label = t(`${option}View`);
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => selectView(option)}
+                aria-pressed={view === option}
+                aria-label={label}
+                title={label}
+                className={cn(
+                  "inline-flex size-8 items-center justify-center rounded-pill transition-colors",
+                  view === option ? "bg-fg text-bg" : "text-fg-muted hover:text-fg",
+                )}
+              >
+                <Icon className="size-4" aria-hidden />
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -159,6 +201,16 @@ export function PortfolioExplorer({
             {t("showAll")}
           </Button>
         </div>
+      ) : view === "journal" ? (
+        <Journal projects={visible} industryLabels={industryLabels} />
+      ) : view === "showcase" ? (
+        <ShowcaseView projects={visible} industryLabels={industryLabels} />
+      ) : view === "terminal" ? (
+        <TerminalView projects={visible} industryLabels={industryLabels} />
+      ) : view === "levels" ? (
+        <LevelSelect projects={visible} industryLabels={industryLabels} />
+      ) : view === "board" ? (
+        <BoardView projects={visible} industryLabels={industryLabels} />
       ) : view === "list" ? (
         <div className="mt-10">
           <ProjectList projects={visible} industryLabels={industryLabels} />

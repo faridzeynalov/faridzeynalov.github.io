@@ -5,6 +5,10 @@ import * as m from "motion/react-m";
 import { useRef } from "react";
 import type { ProcessStep } from "@/types/content";
 
+/** One wave per step: it crosses the middle line at each column's centre. */
+const WAVE =
+  "M 0 60 C 41.67 15, 83.33 15, 125 60 S 208.33 105, 250 60 S 333.33 15, 375 60 S 458.33 105, 500 60 S 583.33 15, 625 60 S 708.33 105, 750 60 S 833.33 15, 875 60 S 958.33 105, 1000 60";
+
 /**
  * "How I work": a wavy path draws itself across the steps as the section scrolls past,
  * and each step lights up when the line reaches it.
@@ -13,10 +17,14 @@ export function ProcessPath({ steps }: { steps: ProcessStep[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 55%"] });
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
+  // The accent wave is revealed from the left by a clip rather than drawn with a dash
+  // (pathLength): with a non-scaling stroke, Safari scales the dash wrongly and shows a dot at
+  // the far end first. The wave always moves rightwards, so the effect is the same.
+  const reveal = useTransform(progress, (value) => `inset(0 ${(1 - value) * 100}% 0 0)`);
 
   return (
     <div ref={ref} className="relative">
-      {/* Desktop: horizontal wave behind the step markers */}
+      {/* Desktop: horizontal wave behind the step markers, and the accent wave over it */}
       <svg
         viewBox="0 0 1000 120"
         preserveAspectRatio="none"
@@ -24,22 +32,33 @@ export function ProcessPath({ steps }: { steps: ProcessStep[] }) {
         aria-hidden
       >
         <path
-          d="M 0 60 C 41.67 15, 83.33 15, 125 60 S 208.33 105, 250 60 S 333.33 15, 375 60 S 458.33 105, 500 60 S 583.33 15, 625 60 S 708.33 105, 750 60 S 833.33 15, 875 60 S 958.33 105, 1000 60"
+          d={WAVE}
           fill="none"
           stroke="var(--border-strong)"
           strokeWidth="1.5"
           vectorEffect="non-scaling-stroke"
         />
-        <m.path
-          d="M 0 60 C 41.67 15, 83.33 15, 125 60 S 208.33 105, 250 60 S 333.33 15, 375 60 S 458.33 105, 500 60 S 583.33 15, 625 60 S 708.33 105, 750 60 S 833.33 15, 875 60 S 958.33 105, 1000 60"
-          fill="none"
-          stroke="var(--accent)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-          style={{ pathLength: progress }}
-        />
       </svg>
+      <m.div
+        className="pointer-events-none absolute top-0 left-0 hidden h-[120px] w-full lg:block"
+        style={{ clipPath: reveal }}
+        aria-hidden
+      >
+        <svg
+          viewBox="0 0 1000 120"
+          preserveAspectRatio="none"
+          className="size-full overflow-visible"
+        >
+          <path
+            d={WAVE}
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      </m.div>
 
       {/* Mobile: vertical rail */}
       <div className="absolute top-2 bottom-2 left-[19px] w-px bg-border lg:hidden" aria-hidden>

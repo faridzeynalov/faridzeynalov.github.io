@@ -788,3 +788,63 @@ path.ink-draw {
 .chess-gift {
   animation: enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Portfolio: each style's third view                                         */
+/* -------------------------------------------------------------------------- */
+
+/* Terminal (Developer): the README prints line by line, then a blinking cursor. */
+.terminal-line {
+  animation: terminal-line 0.25s steps(4, jump-start) both;
+}
+
+@keyframes terminal-line {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.terminal-caret {
+  animation: caret-blink 1.06s steps(1) infinite;
+}
+
+/* Level select (8-bit): the chosen level hops, in hard steps like a sprite. */
+.level-tile.is-selected {
+  animation: level-hop 0.9s steps(2) infinite;
+}
+
+@keyframes level-hop {
+  50% {
+    translate: 0 -4px;
+  }
+}
+
+.level-dialog {
+  animation: level-dialog 0.3s steps(3) both;
+}
+
+@keyframes level-dialog {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Board (Chess): the move panel settles in when another square is picked. */
+.board-move {
+  animation: enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --enter-y: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-tile.is-selected {
+    animation: none;
+  }
+}

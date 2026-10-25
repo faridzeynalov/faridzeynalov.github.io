@@ -26,7 +26,8 @@ interface Handwriting {
  * - lit (Classic): letters rise from below while fading in and coming into focus;
  * - typed (Developer, 8-bit): letters simply appear, with a blinking caret after the last one;
  * - written (Paper): each letter is drawn stroke by stroke from nothing, as with a pen, and a
- *   fountain pen follows the exact point being drawn.
+ *   pencil follows the exact point being drawn. Scrolling back up turns the pencil round and
+ *   its eraser rubs the letters out again.
  */
 type Mode = "lit" | "typed" | "written";
 
@@ -57,6 +58,10 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
   const caretRef = useRef<HTMLSpanElement | null>(null);
   const modeRef = useRef<Mode>("lit");
   const lengthsRef = useRef(new Map<SVGPathElement, number>());
+  /** Paper: scrolling back up turns the pencil round and rubs the story out. */
+  const erasingRef = useRef(false);
+  const lastProgressRef = useRef(0);
+  const crumbAtRef = useRef(0);
   const skin = useSkin();
   const locale = useLocale();
   const [hand, setHand] = useState<Handwriting | null>(null);
@@ -82,6 +87,18 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
     const written = mode === "written";
     // Writing draws one letter at a time; the other modes blend over a window of letters.
     const head = written ? progress * chars.length : progress * (chars.length + WINDOW);
+    // Which way the reader is scrolling (with a little slack, so the pencil doesn't flicker):
+    // down writes, up erases. A turn of direction redraws the letters in the new manner.
+    const delta = progress - lastProgressRef.current;
+    if (written && Math.abs(delta) > 0.0004) {
+      const erasing = delta < 0;
+      if (erasing !== erasingRef.current) {
+        erasingRef.current = erasing;
+        stateRef.current = [];
+      }
+      lastProgressRef.current = progress;
+    }
+    const erasing = written && erasingRef.current;
     let last = -1;
     let drawing = -1;
     for (let i = 0; i < chars.length; i++) {
@@ -103,11 +120,12 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
         // Only the letter being written carries the mask; the others are either hidden (not
         // painted at all) or plain ink, so hundreds of letters don't each become a compositing
         // effect. Visibility rather than opacity, for the same reason.
-        style.opacity = "1";
+        // Erasing instead rubs the whole letter out: it fades under the eraser.
+        style.opacity = erasing && t < 1 ? String(t) : "1";
         style.visibility = t > 0 ? "visible" : "hidden";
-        stroke.style.strokeDashoffset = String(1 - t);
+        stroke.style.strokeDashoffset = erasing ? "0" : String(1 - t);
         const ink = char.querySelector(".hand-ink");
-        if (t > 0 && t < 1) ink?.setAttribute("mask", `url(#${char.dataset.mask})`);
+        if (!erasing && t > 0 && t < 1) ink?.setAttribute("mask", `url(#${char.dataset.mask})`);
         else ink?.removeAttribute("mask");
       } else {
         style.opacity = String(t);
@@ -129,7 +147,8 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
       caretRef.current = caretOn;
     }
 
-    // The pen (Paper) rests its nib on the point being drawn.
+    // The pencil (Paper) rests its point on the point being drawn, or its eraser on the letter
+    // being rubbed out.
     const pen = penRef.current;
     if (pen) {
       const at = drawing >= 0 ? drawing : last;
@@ -137,6 +156,7 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
         pen.style.opacity = "0";
         return;
       }
+      pen.classList.toggle("is-erasing", erasing);
       const char = chars[at];
       const stroke = char.querySelector<SVGPathElement>(".hand-stroke");
       let x = char.offsetLeft + char.offsetWidth;
@@ -152,12 +172,18 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
         x = char.offsetLeft + point.x * scale;
         y = char.offsetTop + point.y * scale;
       }
-      // A slight wobble as it writes, driven by the writing itself: a CSS animation here would
-      // keep the pen on its own animated layer over the letters and make every scroll frame
-      // re-layer the whole paragraph.
-      const wobble = Math.sin(head * Math.PI * 1.5) * 5 - 1;
+      // A slight wobble as it writes (a quicker, wider rub as it erases), driven by the writing
+      // itself: a CSS animation here would keep the pen on its own animated layer over the
+      // letters and make every scroll frame re-layer the whole paragraph.
+      const wobble = erasing
+        ? Math.sin(head * Math.PI * 7) * 9
+        : Math.sin(head * Math.PI * 1.5) * 5 - 1;
       pen.style.opacity = "1";
       pen.style.transform = `translate(${x}px, ${y}px) rotate(${wobble.toFixed(1)}deg)`;
+      if (erasing && Math.abs(head - crumbAtRef.current) > 0.7) {
+        crumbAtRef.current = head;
+        dropCrumb(pen.parentElement, x, y);
+      }
     }
   };
 
@@ -171,6 +197,8 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
     modeRef.current = currentMode();
     stateRef.current = [];
     lengthsRef.current = new Map();
+    erasingRef.current = false;
+    lastProgressRef.current = scrollYProgress.get();
     render(scrollYProgress.get());
     // `render` only reads refs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,32 +235,27 @@ export function ScrollLitText({ text, className }: { text: string; className?: s
           </span>
         ))}
       </span>
-      {/* Paper style: the fountain pen writing the story; its nib is the bottom-left corner. */}
+      {/* Paper style: the pencil writing the story; its point is the bottom-left corner. Drawn
+          lying along x and turned to the diagonal; turned round (CSS) to erase. */}
       <span ref={penRef} className="lit-pen" aria-hidden>
-        <svg viewBox="0 0 64 64" fill="none">
-          {/* Barrel */}
-          <path
-            d="M2 62 L14 56 L50 20 L44 14 L8 50 Z"
-            fill="currentColor"
-            stroke="var(--fg)"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-          {/* Nib slit and breather hole */}
-          <path d="M2 62 L18 46" stroke="var(--bg-elevated)" strokeWidth="1.5" />
-          <circle cx="12" cy="52" r="2.2" fill="var(--bg-elevated)" />
-          {/* Cap end */}
-          <path
-            d="M46 24 L58 12 Q62 8 58 4 Q54 0 50 4 L38 16 Z"
-            fill="var(--fg)"
-            stroke="var(--fg)"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
+        <svg viewBox="0 0 64 64" fill="none" strokeLinejoin="round">
+          <g transform="translate(2 62) rotate(-45)" stroke="#3b2f22" strokeWidth="0.9">
+            {/* Graphite point and sharpened wood */}
+            <path d="M6 -1.8 L16 -6 L16 6 L6 1.8 Z" fill="#ecd2a6" />
+            <path d="M0 0 L6 -1.8 L6 1.8 Z" fill="#3a3632" />
+            {/* Painted body, with its facets */}
+            <path d="M16 -6 H56 V6 H16 Z" fill="#f2c230" />
+            <path d="M16 -2 H56 M16 2 H56" stroke="#d9a514" strokeWidth="1.2" />
+            {/* Metal ferrule */}
+            <path d="M56 -6.4 H64 V6.4 H56 Z" fill="#c9c6bf" />
+            <path d="M58.5 -6.4 V6.4 M61.5 -6.4 V6.4" stroke="#8f8b83" strokeWidth="0.8" />
+            {/* Eraser */}
+            <path d="M64 -6 H70 Q74 -6 74 0 Q74 6 70 6 H64 Z" fill="#f08a9c" />
+          </g>
         </svg>
       </span>
       <noscript>
-        <style>{`.lit-char{opacity:1!important;filter:none!important;translate:none!important}.lit-pen{display:none!important}`}</style>
+        <style>{`.lit-char{opacity:1!important;filter:none!important;translate:none!important}.lit-pen,.eraser-crumb{display:none!important}`}</style>
       </noscript>
     </p>
   );
@@ -293,4 +316,20 @@ function HandLetter({
       </svg>
     </span>
   );
+}
+
+/** A few crumbs of eraser rubbings that fall from the eraser and fade (Paper). */
+function dropCrumb(host: HTMLElement | null, x: number, y: number) {
+  if (!host || host.querySelectorAll(".eraser-crumb").length > 18) return;
+  for (let i = 0; i < 2; i++) {
+    const crumb = document.createElement("span");
+    crumb.className = "eraser-crumb";
+    crumb.style.left = `${x + (Math.random() - 0.5) * 14}px`;
+    crumb.style.top = `${y + (Math.random() - 0.3) * 8}px`;
+    crumb.style.setProperty("--dx", `${(Math.random() - 0.5) * 26}px`);
+    crumb.style.setProperty("--dy", `${10 + Math.random() * 18}px`);
+    crumb.style.setProperty("--r", `${Math.random() * 180}deg`);
+    crumb.addEventListener("animationend", () => crumb.remove(), { once: true });
+    host.appendChild(crumb);
+  }
 }

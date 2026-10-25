@@ -453,6 +453,78 @@ test.describe("languages", () => {
   });
 });
 
+test.describe("journal", () => {
+  test("the Paper style's portfolio opens as a journal whose pages turn", async ({
+    page,
+    isMobile,
+  }) => {
+    await page.addInitScript(() => localStorage.setItem("skin", "paper"));
+    await page.goto("./portfolio");
+    await page.getByRole("button", { name: "Journal view" }).click();
+    await expect(page).toHaveURL(/view=journal/);
+    await page.getByRole("button", { name: /Open the journal/ }).click();
+
+    const journal = page.getByRole("dialog", { name: "Portfolio" });
+    const counter = journal.locator("[aria-live]");
+    await expect(counter).toHaveText("Portfolio");
+    // Forward from the cover: by button on a desk, by tapping the right edge on a phone.
+    if (isMobile) {
+      const box = (await journal.locator(".journal-pages").boundingBox())!;
+      await page.mouse.click(box.x + box.width * 0.9, box.y + box.height * 0.9);
+      await expect(counter).toHaveText("1 / 29");
+    } else {
+      await journal.getByRole("button", { name: "Next page" }).click();
+      await expect(counter).toHaveText("1 / 29");
+      await journal.getByRole("button", { name: "Next page" }).click();
+      await expect(counter).toHaveText("2–3 / 29");
+      await page.keyboard.press("ArrowLeft");
+      await expect(counter).toHaveText("1 / 29");
+    }
+    await page.keyboard.press("Escape");
+    await expect(journal).toBeHidden();
+  });
+
+  test("other styles don't offer the journal", async ({ page }) => {
+    await page.goto("./portfolio?view=journal");
+    await expect(page.getByRole("button", { name: "Journal view" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Grid view" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+});
+
+test.describe("portfolio style views", () => {
+  for (const [skin, name, keys] of [
+    ["classic", "Showcase view", ["ArrowRight"]],
+    ["dev", "Terminal view", ["ArrowDown"]],
+    ["pixel", "Level select", ["ArrowRight"]],
+    ["chess", "Board view", ["ArrowRight"]],
+  ] as const) {
+    test(`the ${skin} style has its own third view, driven by the keyboard`, async ({ page }) => {
+      await page.addInitScript((s) => localStorage.setItem("skin", s), skin);
+      await page.goto("./portfolio");
+      const toggle = page.getByRole("button", { name });
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await expect(page).toHaveURL(/view=/);
+
+      const widget = page.locator("[aria-roledescription=carousel], [role=listbox]").first();
+      await widget.focus();
+      if (skin === "classic") {
+        await expect(widget.getByText("01")).toBeVisible();
+        for (const key of keys) await page.keyboard.press(key);
+        await expect(widget.getByText("02")).toBeVisible();
+      } else {
+        const selected = widget.locator("[aria-selected=true]");
+        const before = await selected.getAttribute("id");
+        for (const key of keys) await page.keyboard.press(key);
+        await expect(selected).not.toHaveAttribute("id", before!);
+      }
+    });
+  }
+});
+
 test.describe("games", () => {
   const button = (page: Page) => page.getByRole("button", { name: "Play a game" });
 

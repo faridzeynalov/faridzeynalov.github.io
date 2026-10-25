@@ -148,8 +148,8 @@
 }
 
 /*
- * About story: handwritten in ink, letter by letter, by a fountain pen that follows the writing
- * (ScrollLitText moves it; its nib is the bottom-left corner).
+ * About story: handwritten letter by letter by a pencil that follows the writing (ScrollLitText
+ * moves it; its point is the bottom-left corner). Scrolling back up, it turns round and erases.
  */
 :root[data-skin="paper"] .lit-text {
   font-family: var(--font-caveat), cursive;
@@ -200,6 +200,34 @@
 :root[data-skin="paper"] .lit-pen svg {
   width: 100%;
   height: 100%;
+  overflow: visible;
+  /* Turning round pivots halfway between point and eraser, so the eraser lands where the point
+     was. */
+  transform-origin: 44% 56%;
+  transition: rotate 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+:root[data-skin="paper"] .lit-pen.is-erasing svg {
+  rotate: 180deg;
+}
+
+/* Rubbings that fall from the eraser. */
+:root[data-skin="paper"] .eraser-crumb {
+  position: absolute;
+  width: 4px;
+  height: 2.5px;
+  border-radius: 1px;
+  background: #e7a3ae;
+  pointer-events: none;
+  animation: eraser-crumb 0.8s cubic-bezier(0.3, 0.6, 0.5, 1) forwards;
+}
+
+@keyframes eraser-crumb {
+  to {
+    translate: var(--dx) var(--dy);
+    rotate: var(--r);
+    opacity: 0;
+  }
 }
 
 /* Page progress: a plain ink line. */
@@ -211,4 +239,299 @@
 :root[data-skin="paper"] ::selection {
   background: var(--highlight);
   color: var(--fg);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Portfolio journal (Journal): a notebook whose pages turn in 3D             */
+/* -------------------------------------------------------------------------- */
+
+/* How far a leaf is turned, 0 (lying right) to 1 (lying left). Registered so it animates, and
+   so the shading and bend can follow the angle. */
+@property --turn {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.journal-book {
+  --cover: #2b4a7e;
+  --cover-edge: #1c3157;
+  --page: #fcfaf4;
+  position: relative;
+  transition: translate 0.9s cubic-bezier(0.45, 0.05, 0.2, 1);
+}
+
+:root:not(.light) .journal-book {
+  --cover: #6b4226;
+  --cover-edge: #432814;
+  --page: #f4ecdc;
+}
+
+/* Two pages side by side on a desk; one page on a phone. */
+.journal-book--spread {
+  width: min(94vw, 1040px, calc(80vh * 1.44));
+  aspect-ratio: 1.44;
+}
+
+.journal-book--single {
+  width: min(92vw, 430px, calc(74vh * 0.72));
+  aspect-ratio: 0.72;
+}
+
+/* One 3D scene: the browser stacks the leaves by their real depth, so a page in mid-turn is
+   always above the pages lying flat, whichever way it goes and however many turn at once. */
+.journal-pages {
+  position: absolute;
+  inset: 0;
+  perspective: 2400px;
+  transform-style: preserve-3d;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.journal-pages:active {
+  cursor: grabbing;
+}
+
+/* A leaf hinges on the spine (its left edge): the right half of a spread, the whole page alone. */
+.journal-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  transform-origin: 0 50%;
+  /* A leaf lies at its place in the right-hand stack (--d0) or, turned, in the left-hand one
+     (--d1), and moves between them as it turns, lifted off the stack and bent slightly, most of
+     all half-way over. */
+  transform: translateZ(
+      calc(
+        var(--d0) * (1 - var(--turn)) + var(--d1) * var(--turn) + sin(var(--turn) * 180deg) * 40px
+      )
+    )
+    rotateY(calc(var(--turn) * -180deg)) skewY(calc(sin(var(--turn) * 180deg) * -1.2deg));
+  transition: --turn 0.85s cubic-bezier(0.45, 0.05, 0.2, 1);
+}
+
+.journal-leaf.is-dragged {
+  transition: none;
+}
+
+.journal-book--spread .journal-leaf {
+  left: 50%;
+  width: 50%;
+}
+
+.journal-book--single .journal-leaf {
+  left: 0;
+  width: 100%;
+}
+
+/* Alone on a phone, a turned page lies off to the left: it fades once it's over. */
+.journal-book--single .journal-leaf[data-turned] {
+  opacity: 0;
+  transition:
+    --turn 0.85s cubic-bezier(0.45, 0.05, 0.2, 1),
+    opacity 0.25s 0.6s;
+}
+
+.journal-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.journal-face--back {
+  transform: rotateY(180deg);
+}
+
+/* Light falls across a page as it turns: darker towards the spine side it's lifting from, and
+   on the back a highlight as it comes down. */
+.journal-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to left, rgb(0 0 0 / 0.32), rgb(0 0 0 / 0.05) 55%, transparent);
+  opacity: calc(sin(var(--turn) * 180deg) * 0.95);
+}
+
+.journal-face--back::after {
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 0.28),
+    rgb(255 255 255 / 0.06) 60%,
+    transparent
+  );
+}
+
+/* The paper: ruled lines, a margin line, and shading along the spine. */
+.journal-paper {
+  position: absolute;
+  inset: 0;
+  background-color: var(--page);
+  background-image:
+    linear-gradient(to right, rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.03) 6%, transparent 12%),
+    linear-gradient(
+      to right,
+      transparent 9%,
+      rgb(196 70 70 / 0.28) 9% calc(9% + 1px),
+      transparent calc(9% + 1px)
+    ),
+    repeating-linear-gradient(to bottom, transparent 0 27px, rgb(47 90 168 / 0.13) 27px 28px),
+    var(--paper-grain);
+  color: #2a2723;
+  --fg: #2a2723;
+  --fg-muted: #57514a;
+  --fg-subtle: #7a7268;
+  --accent: #2f5aa8;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.04);
+}
+
+.journal-paper--left {
+  background-image:
+    linear-gradient(to left, rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.03) 6%, transparent 12%),
+    linear-gradient(
+      to right,
+      transparent 9%,
+      rgb(196 70 70 / 0.28) 9% calc(9% + 1px),
+      transparent calc(9% + 1px)
+    ),
+    repeating-linear-gradient(to bottom, transparent 0 27px, rgb(47 90 168 / 0.13) 27px 28px),
+    var(--paper-grain);
+}
+
+/* Photos taped in, with a soft shadow. */
+.journal-photo {
+  padding: 5px;
+  background: #fff;
+  box-shadow: 0 6px 14px -6px rgb(0 0 0 / 0.35);
+}
+
+.journal-photo::before,
+.journal-photo::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 26%;
+  height: 18px;
+  background: rgb(238 222 160 / 0.82);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.journal-photo::before {
+  left: -4%;
+  rotate: -8deg;
+}
+
+.journal-photo::after {
+  right: -4%;
+  rotate: 7deg;
+}
+
+/* The cover: cloth (light) or leather (dark) with a stitched edge, a label and an elastic. */
+.journal-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px 10px 10px 3px;
+  background:
+    linear-gradient(to right, rgb(0 0 0 / 0.35), rgb(255 255 255 / 0.08) 5%, transparent 9%),
+    radial-gradient(120% 90% at 30% 20%, rgb(255 255 255 / 0.1), transparent 60%),
+    var(--paper-grain), var(--cover, #2b4a7e);
+  box-shadow:
+    inset 0 0 0 2px var(--cover-edge, #1c3157),
+    inset 0 0 0 7px var(--cover, #2b4a7e),
+    inset 0 0 0 8px rgb(255 255 255 / 0.22);
+}
+
+.journal-closed .journal-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 0.72;
+  --cover: #2b4a7e;
+  --cover-edge: #1c3157;
+  box-shadow:
+    inset 0 0 0 2px var(--cover-edge),
+    inset 0 0 0 7px var(--cover),
+    inset 0 0 0 8px rgb(255 255 255 / 0.22),
+    10px 14px 28px -12px rgb(var(--shadow-color) / 0.6),
+    4px 4px 0 -1px #e9e1cf;
+}
+
+:root:not(.light) .journal-closed .journal-cover {
+  --cover: #6b4226;
+  --cover-edge: #432814;
+}
+
+.journal-cover--back {
+  border-radius: 10px 3px 3px 10px;
+  transform: scaleX(-1);
+}
+
+.journal-label {
+  position: absolute;
+  top: 18%;
+  left: 16%;
+  right: 16%;
+  padding: 9% 8% 8%;
+  text-align: center;
+  background: #f6efdc;
+  border-radius: 3px;
+  box-shadow:
+    0 2px 6px rgb(0 0 0 / 0.3),
+    inset 0 0 0 1px rgb(0 0 0 / 0.08),
+    inset 0 0 0 5px #f6efdc,
+    inset 0 0 0 6px rgb(47 90 168 / 0.3);
+  rotate: -1.5deg;
+}
+
+.journal-strap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 11%;
+  width: 4.5%;
+  background: linear-gradient(to right, #1a1612, #3a322a 45%, #1a1612);
+  box-shadow: 0 0 4px rgb(0 0 0 / 0.4);
+}
+
+/* Desktop page-turn buttons, under the book. */
+.journal-nav {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #f6efe2;
+  color: #2a2723;
+  box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.5);
+  transition:
+    translate 0.2s,
+    opacity 0.2s;
+}
+
+.journal-nav:hover:not(:disabled) {
+  translate: 0 -2px;
+}
+
+.journal-nav:disabled {
+  opacity: 0.35;
+}
+
+/* Phones turn pages by swiping or tapping the page edges. */
+@media (max-width: 767px) {
+  .journal-nav {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journal-leaf,
+  .journal-book {
+    transition: none !important;
+  }
 }
