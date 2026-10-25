@@ -48,7 +48,9 @@
     "pixel": "8-bit",
     "pixelHint": "Retro pixel game",
     "paper": "Paper",
-    "paperHint": "Notebook paper and ink"
+    "paperHint": "Notebook paper and ink",
+    "chess": "Chess",
+    "chessHint": "Board, pieces and opening moves"
   },
   "Explorer": {
     "title": "Explorer",
@@ -284,5 +286,9 @@
     "certificates": "Certificates",
     "visual": "Prefer the visual version?",
     "browse": "Browse the portfolio"
+  },
+  "Chess": {
+    "game": "The Opera Game",
+    "players": "Morphy vs Duke Karl & Count Isouard · Paris, 1858"
   }
 }

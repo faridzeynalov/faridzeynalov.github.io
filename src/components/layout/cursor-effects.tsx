@@ -3,7 +3,7 @@
 import { useMotionValue, useSpring } from "motion/react";
 import * as m from "motion/react-m";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import { CODE_SNIPPETS, createSnippetPicker } from "@/lib/code-snippets";
+import { CHESS_SNIPPETS, CODE_SNIPPETS, createSnippetPicker } from "@/lib/code-snippets";
 import { cn } from "@/lib/utils";
 
 const SNIPPET_MIN_GAP = 30; // a term reappears only after at least this many others
@@ -15,9 +15,10 @@ const INTERACTIVE = "a, button, [role='button'], summary, label, select";
 type Mode = "mouse" | "touch" | null;
 
 /**
- * Code snippets that drift up behind the page as you move, plus (for mice) a theme-aware
- * custom cursor. Touch screens get the snippet trail only where the finger touches and slides,
- * never from the page scrolling by itself. Everything is off with reduced motion.
+ * Code snippets (chess moves in the Chess style) that drift up behind the page as you move, plus
+ * (for mice) a theme-aware custom cursor. Touch screens get the snippet trail only where the
+ * finger touches and slides, never from the page scrolling by itself. Everything is off with
+ * reduced motion.
  */
 export function CursorEffects() {
   const [mode, setMode] = useState<Mode>(null);
@@ -54,17 +55,24 @@ function TrailLayer({ layerRef }: { layerRef: RefObject<HTMLDivElement | null> }
 /** Returns a stable `spawn(x, y, spread)` that drops one snippet near a viewport point. */
 function useSnippetSpawner(layerRef: RefObject<HTMLDivElement | null>, maxSnippets: number) {
   const pickerRef = useRef<(() => string) | null>(null);
+  const chessPickerRef = useRef<(() => string) | null>(null);
 
   return useCallback(
     (px: number, py: number, spread = 1) => {
       const layer = layerRef.current;
       if (!layer) return;
-      pickerRef.current ??= createSnippetPicker(CODE_SNIPPETS, SNIPPET_MIN_GAP);
       while (layer.childElementCount >= maxSnippets) layer.firstElementChild?.remove();
 
       const el = document.createElement("span");
       el.className = "code-trail-snippet";
-      el.textContent = pickerRef.current();
+      // The Chess style scatters moves and openings instead of code.
+      if (document.documentElement.dataset.skin === "chess") {
+        chessPickerRef.current ??= createSnippetPicker(CHESS_SNIPPETS, SNIPPET_MIN_GAP);
+        el.textContent = chessPickerRef.current();
+      } else {
+        pickerRef.current ??= createSnippetPicker(CODE_SNIPPETS, SNIPPET_MIN_GAP);
+        el.textContent = pickerRef.current();
+      }
       el.style.left = `${px + (Math.random() - 0.5) * 140 * spread}px`;
       el.style.top = `${py + (Math.random() - 0.5) * 90 * spread}px`;
       el.style.setProperty("--r", `${(Math.random() - 0.5) * 16}deg`);

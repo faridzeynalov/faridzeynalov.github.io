@@ -2,6 +2,7 @@
 
 import {
   Check,
+  ChessKnight,
   ChevronDown,
   Code2,
   Gamepad2,
@@ -32,10 +33,11 @@ const STYLES = [
   { skin: "dev", icon: Code2, label: "developer", hint: "developerHint" },
   { skin: "pixel", icon: Gamepad2, label: "pixel", hint: "pixelHint" },
   { skin: "paper", icon: NotebookPen, label: "paper", hint: "paperHint" },
+  { skin: "chess", icon: ChessKnight, label: "chess", hint: "chessHint" },
 ] as const satisfies readonly { skin: Skin; icon: LucideIcon; label: string; hint: string }[];
 
 /**
- * Header appearance menu: the site style (Classic / Developer / 8-bit / Paper) and light/dark
+ * Header appearance menu: the site style (Classic / Developer / 8-bit / Paper / Chess) and light/dark
  * mode. Light/dark keeps the circular reveal from the button; a style change crossfades the
  * whole page.
  */
@@ -136,10 +138,11 @@ export function AppearanceMenu({ className }: { className?: string }) {
         {/* Both choices at a glance: the style and the mode. Every icon renders and CSS picks
             from the <html> class and style attribute, so there's no hydration flash. */}
         <span className="relative size-4" aria-hidden>
-          <LayoutTemplate className="absolute inset-0 size-4 text-accent dev:hidden pixel:hidden paper:hidden" />
+          <LayoutTemplate className="absolute inset-0 size-4 text-accent dev:hidden pixel:hidden paper:hidden chess:hidden" />
           <Code2 className="absolute inset-0 hidden size-4 text-accent dev:block" />
           <Gamepad2 className="absolute inset-0 hidden size-4 text-accent pixel:block" />
           <NotebookPen className="absolute inset-0 hidden size-4 text-accent paper:block" />
+          <ChessKnight className="absolute inset-0 hidden size-4 text-accent chess:block" />
         </span>
         <span className="h-4 w-px bg-border-strong" aria-hidden />
         {/* Like the style icon, the current mode: Moon in dark mode, Sun in light mode. */}

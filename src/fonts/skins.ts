@@ -1,8 +1,8 @@
-import { Caveat, Lora, Pixelify_Sans, Press_Start_2P } from "next/font/google";
+import { Caveat, Lora, Pixelify_Sans, Playfair_Display, Press_Start_2P } from "next/font/google";
 import localFont from "next/font/local";
 
-// Fonts for the 8-bit and Paper styles. `preload: false`: they're only downloaded when a page
-// actually uses them (i.e. in that style), so Classic and Developer visitors never fetch them.
+// Fonts for the 8-bit, Paper and Chess styles. `preload: false`: they're only downloaded when a
+// page actually uses them (i.e. in that style), so Classic and Developer visitors never fetch them.
 // Latin-ext covers Azerbaijani and Cyrillic covers Russian.
 
 /** 8-bit headings. */
@@ -35,6 +35,14 @@ export const caveat = Caveat({
   preload: false,
 });
 
+/** Chess style headings and accents: a high-contrast serif, like a chess book's. */
+export const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  style: ["normal", "italic"],
+  preload: false,
+});
+
 // Pixelify Sans has no "ə"/"Ə" and its "2"/"5" read as "Z"/"S": these glyphs are redrawn on
 // its pixel grid (scripts/build-pixel-glyphs.mjs). The supplement sits before Pixelify in the
 // stack and, by unicode-range, only loads on pages that use those characters.
@@ -49,7 +57,31 @@ export const pixelifyFixes = localFont({
   declarations: [{ prop: "unicode-range", value: "U+0259, U+018F, U+0032, U+0035" }],
 });
 
+// Press Start 2P (8-bit headings) has no "ə"/"Ə" and squashes "ç ş Ç Ş Ö Ü Ğ İ": redrawn at full
+// height on its pixel grid (scripts/build-pixel-glyphs.mjs), loaded only where they're used.
+export const pressStartFixes = localFont({
+  src: "./press-start-fixes.otf",
+  variable: "--font-press-start-fixes",
+  weight: "400",
+  adjustFontFallback: false,
+  preload: false,
+  declarations: [
+    {
+      prop: "unicode-range",
+      value: "U+0259, U+018F, U+00E7, U+015F, U+00C7, U+015E, U+00D6, U+00DC, U+011E, U+0130",
+    },
+  ],
+});
+
 /** All the class names that define the style fonts' CSS variables, for <html>. */
-export const skinFontVariables = [pressStart, pixelify, lora, caveat, pixelifyFixes]
+export const skinFontVariables = [
+  pressStart,
+  pressStartFixes,
+  pixelify,
+  lora,
+  caveat,
+  playfair,
+  pixelifyFixes,
+]
   .map((font) => font.variable)
   .join(" ");

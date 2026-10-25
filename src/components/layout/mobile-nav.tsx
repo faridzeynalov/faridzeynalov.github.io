@@ -2,6 +2,7 @@
 
 import {
   ArrowUpRight,
+  ChessKnight,
   ChevronRight,
   CircleCheck,
   Ellipsis,
@@ -171,14 +172,20 @@ function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
                 )}
               >
                 <span>
-                  {/* 8-bit style: a game-menu cursor on the current page. */}
+                  {/* 8-bit style: a game-menu cursor on the current page. Chess: a knight. */}
                   {active === item.href && (
-                    <span
-                      aria-hidden
-                      className="mr-3 hidden animate-[caret-blink_1.06s_steps(1)_infinite] text-accent pixel:inline"
-                    >
-                      ▶
-                    </span>
+                    <>
+                      <span
+                        aria-hidden
+                        className="mr-3 hidden animate-[caret-blink_1.06s_steps(1)_infinite] text-accent pixel:inline"
+                      >
+                        ▶
+                      </span>
+                      <ChessKnight
+                        aria-hidden
+                        className="mr-3 hidden size-7 -translate-y-0.5 align-middle text-accent chess:inline"
+                      />
+                    </>
                   )}
                   {t(item.key)}
                 </span>

@@ -267,6 +267,7 @@ test.describe("theme", () => {
   for (const [skin, heading] of [
     ["pixel", "Press Start 2P"],
     ["paper", "Lora"],
+    ["chess", "Playfair"],
   ] as const) {
     test(`the ${skin} style applies before paint with its own fonts, in light and dark`, async ({
       page,
@@ -280,7 +281,12 @@ test.describe("theme", () => {
           [skin, theme],
         );
         await page.goto("./", { waitUntil: "commit" });
-        await page.waitForSelector(`html[data-skin="${skin}"].${theme}`, { timeout: 2000 });
+        // Attached, not visible: the head script sets these before paint; waiting for
+        // visibility only measures how busy the machine is.
+        await page.waitForSelector(`html[data-skin="${skin}"].${theme}`, {
+          state: "attached",
+          timeout: 2000,
+        });
         await expect(page.locator("h1")).toHaveCSS("font-family", new RegExp(heading));
       }
     });

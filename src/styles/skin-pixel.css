@@ -7,9 +7,9 @@
 
 :root[data-skin="pixel"] {
   --font-body: var(--font-pixelify-fixes), var(--font-pixelify);
-  --font-accent: var(--font-press-start), var(--font-pixelify-fixes);
+  --font-accent: var(--font-press-start-fixes), var(--font-press-start);
   --font-code: var(--font-pixelify-fixes), var(--font-pixelify);
-  --font-display: var(--font-press-start), var(--font-pixelify-fixes);
+  --font-display: var(--font-press-start-fixes), var(--font-press-start);
   --radius-pill: 0px;
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -22,22 +22,6 @@
 /* Heading sizes are multiplied by this (see the `pixel:` size classes in components). */
 :root[data-skin="pixel"] {
   --pixel-scale: 1;
-}
-
-/*
- * Azerbaijani: Press Start 2P draws "a" as an upside-down "e", so its "ə" reads as "a"
- * ("Xidmatlar"). Headings and accents use Pixelify Sans Bold instead, whose "ə" is distinct;
- * it's narrower, so headings are scaled up to fill the same space.
- */
-:root[data-skin="pixel"]:lang(az) {
-  --font-display: var(--font-pixelify-fixes), var(--font-pixelify);
-  --font-accent: var(--font-pixelify-fixes), var(--font-pixelify);
-  --pixel-scale: 1.5;
-}
-
-:root[data-skin="pixel"]:lang(az) :is(h1, h2, .accent-text) {
-  font-weight: 700;
-  line-height: 1.15;
 }
 
 :root[data-skin="pixel"]:not(.light) {
@@ -156,10 +140,16 @@
   background-size: 32px 32px;
 }
 
-/* Page progress: a segmented loading bar, like a game's. */
+/* Page progress: an accent gradient, like the other styles (a pattern would stretch with the
+   bar, which grows by scaling). */
 :root[data-skin="pixel"] .route-bar {
-  background: repeating-linear-gradient(90deg, var(--accent) 0 12px, transparent 12px 16px);
-  box-shadow: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--accent) 45%, var(--bg)),
+    var(--accent) 70%,
+    color-mix(in oklab, var(--accent) 70%, white)
+  );
+  box-shadow: 0 0 10px color-mix(in oklab, var(--accent) 50%, transparent);
 }
 
 :root[data-skin="pixel"] ::selection {

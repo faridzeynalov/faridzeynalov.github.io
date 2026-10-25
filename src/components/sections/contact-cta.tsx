@@ -1,4 +1,5 @@
 import { ArrowUpRight, Mail, Phone } from "lucide-react";
+import { OperaGame } from "@/components/chess/opera-game";
 import { Reveal } from "@/components/motion/reveal";
 import { Accent, SectionEyebrow } from "@/components/sections/section-heading";
 import { CopyButton } from "@/components/ui/copy-button";
@@ -90,6 +91,9 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
                 {profile.phone}
               </a>
             </div>
+
+            {/* Chess style only: "your move", under a board replaying a famous game. */}
+            {!compact && <OperaGame className="mt-16" />}
           </div>
         </Reveal>
       </div>

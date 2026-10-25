@@ -48,7 +48,9 @@
     "pixel": "8-bit",
     "pixelHint": "Retro piksel oyunu",
     "paper": "Kağız",
-    "paperHint": "Dəftər kağızı və mürəkkəb"
+    "paperHint": "Dəftər kağızı və mürəkkəb",
+    "chess": "Şahmat",
+    "chessHint": "Taxta, fiqurlar və gedişlər"
   },
   "Explorer": {
     "title": "Explorer",
@@ -284,5 +286,9 @@
     "certificates": "Sertifikatlar",
     "visual": "Vizual versiyanı üstün tutursunuz?",
     "browse": "Portfolioya baxın"
+  },
+  "Chess": {
+    "game": "Opera oyunu",
+    "players": "Morfi – hersoq Karl və qraf İzuar · Paris, 1858"
   }
 }

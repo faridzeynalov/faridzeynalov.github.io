@@ -1,5 +1,6 @@
 "use client";
 
+import type { Variants } from "motion/react";
 import * as m from "motion/react-m";
 import { useRef, type ReactNode } from "react";
 import { useSkin } from "@/components/layout/use-appearance";
@@ -16,10 +17,23 @@ const steps = (count: number) => (t: number) => Math.min(1, Math.ceil(t * count)
 /**
  * Classic: fade up. Developer: slides in from the left like a line of code being inserted —
  * shorter and snappier. 8-bit: rises in four hard steps. Paper: settles in with a slight tilt,
- * like a sheet being laid down. `data-shown` lets CSS start style-specific effects (typed
- * eyebrows).
+ * like a sheet being laid down. Chess: moves like a knight, in an L: two squares up, then one
+ * across. `data-shown` lets CSS start style-specific effects (typed eyebrows).
  */
-function revealVariants(skin: Skin | null, y: number, delay: number) {
+function revealVariants(skin: Skin | null, y: number, delay: number): Variants {
+  if (skin === "chess") {
+    const x = -Math.round(y * 0.6);
+    return {
+      hidden: { opacity: 0, x, y, rotate: 0, transition: hide },
+      show: {
+        opacity: [0, 1, 1],
+        x: [x, x, 0],
+        y: [y, 0, 0],
+        rotate: 0,
+        transition: { duration: 0.8, delay, times: [0, 0.55, 1], ease: ["circOut", "circOut"] },
+      },
+    };
+  }
   if (skin === "pixel") {
     return {
       hidden: { opacity: 0, x: 0, y: y + 8, rotate: 0, transition: hide },

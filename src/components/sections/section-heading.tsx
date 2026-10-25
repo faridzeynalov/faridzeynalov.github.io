@@ -1,3 +1,12 @@
+import {
+  ChessBishop,
+  ChessKing,
+  ChessKnight,
+  ChessPawn,
+  ChessQueen,
+  ChessRook,
+  Crown,
+} from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
@@ -49,8 +58,12 @@ export function SectionHeading({
 export const sectionTitleClass =
   "text-[clamp(2rem,4.6vw,3.25rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance dev:text-[clamp(1.75rem,3.9vw,2.75rem)] pixel:text-[calc(var(--pixel-scale)*clamp(1.2rem,2.7vw,1.9rem))] pixel:leading-[1.45]";
 
+/** Chess style: each section is marked by a piece, rising in rank down the page to the crown. */
+const PIECES = [ChessPawn, ChessKnight, ChessBishop, ChessRook, ChessQueen, ChessKing, Crown];
+
 /**
- * "02 —— Services". In the Developer style it reads as a code comment: "// 02 · Services".
+ * "02 —— Services". In the Developer style it reads as a code comment: "// 02 · Services"; in
+ * the Chess style it gets its piece, and the rule becomes a strip of board squares.
  */
 export function SectionEyebrow({
   index,
@@ -64,6 +77,7 @@ export function SectionEyebrow({
   // Developer style: the comment types itself out when its section is revealed
   // (`.type-on-reveal`), one step per character of "// 02 · Services".
   const steps = 6 + index.length + (typeof children === "string" ? children.length : 12);
+  const Piece = PIECES[(Number(index) - 1) % PIECES.length] ?? ChessPawn;
   return (
     <p
       className={cn(
@@ -75,8 +89,9 @@ export function SectionEyebrow({
       <span className="hidden dev:inline" aria-hidden>
         {"//"}
       </span>
+      <Piece className="hidden size-4 text-accent chess:block" aria-hidden />
       <span className="text-accent">{index}</span>
-      <span className="h-px w-8 bg-border-strong dev:hidden" aria-hidden />
+      <span className="eyebrow-rule h-px w-8 bg-border-strong dev:hidden" aria-hidden />
       <span className="hidden dev:inline" aria-hidden>
         ·
       </span>
