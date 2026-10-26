@@ -4,21 +4,19 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /**
- * Deployment base path.
- *
- * - Local dev / custom domain / `<user>.github.io` root repo: leave NEXT_PUBLIC_BASE_PATH unset.
- * - GitHub Pages project repo (`<user>.github.io/<repo>`): set NEXT_PUBLIC_BASE_PATH=/<repo>.
- *   The GitHub Actions workflow sets this automatically from `actions/configure-pages`.
+ * Deployment base path. Leave NEXT_PUBLIC_BASE_PATH unset for faridzeynalov.com (served from the
+ * domain root on Vercel); set it only to serve the export from a sub-folder.
  */
 const rawBasePath = process.env.NEXT_PUBLIC_BASE_PATH?.trim() ?? "";
 const basePath =
   rawBasePath && rawBasePath !== "/" ? `/${rawBasePath.replace(/^\/+|\/+$/g, "")}` : "";
 
 const nextConfig: NextConfig = {
-  // Fully static output (`out/`) — GitHub Pages has no Node.js runtime.
+  // Fully static output (`out/`), served from Vercel's CDN: nothing to run. Redirects and
+  // headers live in vercel.json.
   output: "export",
-  // Clean URLs without a trailing slash: `/az/about` -> `az/about.html`, which GitHub Pages
-  // serves for the extensionless path.
+  // Clean URLs without a trailing slash: `/az/about` -> `az/about.html`, which Vercel serves for
+  // the extensionless path (and redirects `/az/about/` to).
   trailingSlash: false,
   basePath,
   assetPrefix: basePath || undefined,

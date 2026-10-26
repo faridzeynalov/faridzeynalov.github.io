@@ -1,0 +1,73 @@
+name: CI
+
+# The site itself is built and deployed by Vercel (faridzeynalov.com) on every push. This
+# workflow checks every push and pull request, and keeps the old GitHub Pages address
+# (faridzeynalov.github.io) redirecting to the new domain.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint, type-check and unit tests
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+
+      - name: Build the static export
+        run: npm run build
+
+      - name: End-to-end tests against the exported site
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
+  # faridzeynalov.github.io -> faridzeynalov.com, page for page.
+  pages-redirect:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare the redirect site
+        run: |
+          mkdir -p redirect
+          cp scripts/pages-redirect/index.html redirect/index.html
+          cp scripts/pages-redirect/index.html redirect/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./redirect
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

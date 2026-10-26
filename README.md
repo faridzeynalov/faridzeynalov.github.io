@@ -1,7 +1,7 @@
 # Farid Zeynalov — Portfolio
 
 Personal portfolio for **Farid Zeynalov**, Front-End Developer (React / Next.js) in Baku.
-Built as a fully static Next.js export for GitHub Pages. Every page in the menu has its own
+Live at **https://faridzeynalov.com**: a fully static Next.js export, hosted on Vercel. Every page in the menu has its own
 signature animation; all of them respect `prefers-reduced-motion` and fall back gracefully on touch.
 
 - **Home** `/` — hero with a live project showcase, selected work, services, skills, AI, experience,
@@ -42,7 +42,7 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-Production build and preview of the exact files GitHub Pages will serve:
+Production build and preview of the exact files Vercel will serve:
 
 ```bash
 npm run build        # writes the static site to out/
@@ -96,55 +96,44 @@ Which capture is used as each project's cover is set in `scripts/optimize-captur
 `palid.az` (SSL error) was unreachable at capture time and shows a
 clearly labelled "Preview unavailable" placeholder instead. `chinarhotel.az` was removed from the portfolio because its live site was not loading content.
 
-## Deploying to GitHub Pages
+## Deploying
 
-The workflow in `.github/workflows/deploy.yml` lints, type-checks, runs the unit tests, builds,
-runs the Playwright suite against the export, and deploys `out/` on every push to `main`.
+The site is live at **https://faridzeynalov.com**, hosted on **Vercel**. Vercel builds and
+deploys every push to `main` (and a preview for every other branch) with the settings in
+`vercel.json`: `npm run build`, serving the static export in `out/`.
 
-1. Push this project to a GitHub repository with `main` as the default branch.
-2. In the repository, go to **Settings → Pages** and set **Source** to **GitHub Actions**.
-3. Push to `main` (or run the workflow manually from the **Actions** tab).
+`.github/workflows/ci.yml` runs on every push and pull request: lint, type-check, unit tests,
+build and the Playwright suite against the export. On `main` it also keeps the old address,
+`faridzeynalov.github.io`, redirecting page for page to the new domain
+(`scripts/pages-redirect/index.html`, deployed as the GitHub Pages site).
 
-The base path is detected automatically from the Pages configuration:
+### Domain and URLs
 
-| Where it's hosted                                           | Base path | What to do                                                |
-| ----------------------------------------------------------- | --------- | --------------------------------------------------------- |
-| `https://<user>.github.io/<repo>/` (project repo)           | `/<repo>` | Nothing                                                   |
-| `https://<user>.github.io/` (repo named `<user>.github.io`) | none      | Nothing                                                   |
-| Custom domain (e.g. `https://www.example.com/`)             | none      | Add the domain under **Settings → Pages → Custom domain** |
-
-To override detection, add repository variables under **Settings → Secrets and variables →
-Actions → Variables**:
-
-- `NEXT_PUBLIC_BASE_PATH` — e.g. `/portfolio` (leave empty for root)
-- `NEXT_PUBLIC_SITE_URL` — the full public URL including the base path, e.g.
-  `https://<user>.github.io/portfolio`. Used for canonical URLs, Open Graph and the sitemap.
-
-To test a sub-path build locally (in Git Bash on Windows, prefix with `MSYS_NO_PATHCONV=1`
-so the path isn't rewritten into a Windows path):
-
-```bash
-NEXT_PUBLIC_BASE_PATH=/portfolio NEXT_PUBLIC_SITE_URL=https://example.github.io/portfolio npm run build
-NEXT_PUBLIC_BASE_PATH=/portfolio npm start   # http://localhost:4173/portfolio/
-```
+- Canonical URLs, Open Graph, `sitemap.xml` and `robots.txt` use `https://faridzeynalov.com`
+  (`PRODUCTION_URL` in `src/lib/site.ts`), on preview deployments too, so previews don't
+  compete with the live site. Set `NEXT_PUBLIC_SITE_URL` in Vercel to override it.
+- `www.faridzeynalov.com` redirects to the apex domain (set in Vercel → Domains).
+- `vercel.json` redirects older link styles (`/en`, `/en/about` → `/`, `/about`) with a 301,
+  and sets security headers and long-lived caching for `/_next/static`. Trailing slashes are
+  dropped (`/about/` → `/about`).
 
 ### How the static setup works
 
-- `output: "export"` and `trailingSlash: true` — every route becomes `route/index.html`,
-  which GitHub Pages serves without rewrites.
-- `basePath` / `assetPrefix` come from `NEXT_PUBLIC_BASE_PATH` (`next.config.ts`). Links use
-  `next/link` and images use static imports, so both pick up the base path automatically.
-  Plain files from `public/` go through `withBasePath()` in `src/lib/site.ts`.
-- `images.unoptimized` — there's no image server, so screenshots are pre-optimized to WebP.
+- `output: "export"` with `trailingSlash: false`: every route becomes `route.html`, which
+  Vercel serves at the clean, extensionless URL. No server functions, nothing to run.
+- `basePath` / `assetPrefix` come from `NEXT_PUBLIC_BASE_PATH` (`next.config.ts`), empty on
+  faridzeynalov.com. It's only needed to serve the export from a sub-folder. Links use
+  `next/link` and images use static imports, so both pick it up; plain files from `public/` go
+  through `withBasePath()` in `src/lib/site.ts`.
+- `images.unoptimized`: screenshots are pre-optimized to WebP at build time.
 - `generateStaticParams` + `dynamicParams = false` generate every project page at build time.
 - `og.png`, `sitemap.xml` and `robots.txt` are generated at build time.
-- `out/404.html` is the custom not-found page; GitHub Pages serves it for unknown URLs.
-- `public/.nojekyll` stops GitHub Pages from ignoring the `_next/` folder.
+- `out/404.html` is the custom not-found page, served for unknown URLs.
 - The theme is applied by a tiny inline script in `<head>` before first paint (no flash) and
   saved in `localStorage`.
 - `scripts/fix-export-segments.mjs` runs after `next build`. It fixes a Windows-only issue in
   Next.js 16's exporter (prefetch files written as nested folders) and does nothing on
-  Linux/macOS, including CI.
+  Linux/macOS, including Vercel and CI.
 
 ### Contact
 
@@ -155,9 +144,11 @@ messages.
 ## Project structure
 
 ```
-.github/workflows/deploy.yml    CI + GitHub Pages deployment
+.github/workflows/ci.yml        Checks + the github.io → faridzeynalov.com redirect
+scripts/pages-redirect/         That redirect page
+vercel.json                     Vercel build, redirects and headers
 e2e/                            Playwright tests (run against out/)
-public/                         CV PDF, .nojekyll
+public/                         CV PDF
 scripts/                        Screenshot capture/optimisation, static server, export fix
 src/
   app/

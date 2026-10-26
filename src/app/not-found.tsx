@@ -23,8 +23,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * GitHub Pages serves this (out/404.html) for every unknown URL. Older link styles keep working:
- * a trailing slash (/portfolio/panorama/) and the /en prefix (/en/about) are dropped.
+ * Served (out/404.html) for every unknown URL. Older link styles are redirected by Vercel before
+ * they get here (vercel.json); this covers any other static host: a trailing slash
+ * (/portfolio/panorama/) and the /en prefix (/en/about) are dropped.
  */
 const legacyRedirect = `(function(){try{var base=${JSON.stringify(basePath)};var p=location.pathname;if(base&&p.indexOf(base)===0)p=p.slice(base.length)||"/";var q=p.replace(/\\/+$/,"")||"/";var d="/"+${JSON.stringify(routing.defaultLocale)};if(q===d)q="/";else if(q.indexOf(d+"/")===0)q=q.slice(d.length);if(q!==p)location.replace(base+(q==="/"&&base?"/":q)+location.search+location.hash);}catch(e){}})();`;
 
