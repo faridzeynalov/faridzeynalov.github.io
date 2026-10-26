@@ -99,8 +99,9 @@ clearly labelled "Preview unavailable" placeholder instead. `chinarhotel.az` was
 ## Deploying
 
 The site is live at **https://faridzeynalov.com**, hosted on **Vercel**. Vercel builds and
-deploys every push to `main` (and a preview for every other branch) with the settings in
-`vercel.json`: `npm run build`, serving the static export in `out/`.
+deploys every push to `main` (and a preview for every other branch). It detects the Next.js
+static export by itself: don't set an Output Directory (in `vercel.json` or the project
+settings), or the build fails looking for `out/routes-manifest.json`.
 
 `.github/workflows/ci.yml` runs on every push and pull request: lint, type-check, unit tests,
 build and the Playwright suite against the export. On `main` it also keeps the old address,
@@ -114,7 +115,7 @@ build and the Playwright suite against the export. On `main` it also keeps the o
   compete with the live site. Set `NEXT_PUBLIC_SITE_URL` in Vercel to override it.
 - `www.faridzeynalov.com` redirects to the apex domain (set in Vercel → Domains).
 - `vercel.json` redirects older link styles (`/en`, `/en/about` → `/`, `/about`) with a 301,
-  and sets security headers and long-lived caching for `/_next/static`. Trailing slashes are
+  and sets security headers (Vercel already caches `/_next/static` for good). Trailing slashes are
   dropped (`/about/` → `/about`).
 
 ### How the static setup works
