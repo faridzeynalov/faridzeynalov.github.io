@@ -18,28 +18,28 @@ export const az: SiteContent = {
     location: "Bakı, Azərbaycan",
     present: "Hazırda",
     summary:
-      "4 ildən artıq real layihə təcrübəsi olan front-end developer. React, Next.js və TypeScript ilə sürətli, responsiv veb tətbiqlər hazırlayıram; 25-dən çox canlı veb sayt və platformanı istifadəyə vermişəm.",
+      "4 ildən artıq kommersiya təcrübəsi olan front-end developer. React, Next.js və TypeScript ilə sürətli və responsiv veb tətbiqlər hazırlayıram; 25-dən çox veb sayt və platformanı istifadəyə vermişəm.",
     about: [
-      "Bakıda yaşayan front-end developerəm. 2022-ci ildən One Studio-da çalışıram və burada otellər, yaşayış kompleksləri, klinikalar, pərakəndə satış şirkətləri və sənaye müəssisələri üçün 25-dən çox real veb sayt hazırlayıb istifadəyə vermişəm.",
-      "Gündəlik işimin əsasını React, Next.js, TypeScript və Tailwind CSS təşkil edir: dizaynları təkrar istifadə oluna bilən komponent sistemlərinə çevirir, onları rezervasiya axınları və kataloqlar kimi funksiyalar üçün REST API-lərə qoşur, nəticənin sürətli yüklənməsinə, axtarışda yaxşı sıralanmasına və hər brauzerdə eyni işləməsinə diqqət yetirirəm.",
-      "Bu işin böyük hissəsi canlı, biznes üçün kritik saytlarda görülür, ona görə dəyişiklikləri ehtiyatla tətbiq etməyə önəm verirəm. Dizaynerlər, backend mühəndisləri və müştərilərlə birbaşa işləyirəm; hazırda daha böyük və mürəkkəb funksionallığa cavabdeh ola biləcəyim mid-level front-end vəzifəsi axtarıram.",
+      "Bakıda yaşayan front-end developerəm. 2022-ci ildən One Studio-da çalışıram; burada otellər, yaşayış kompleksləri, klinikalar, pərakəndə satış və sənaye şirkətləri üçün 25-dən çox veb sayt hazırlayıb istifadəyə vermişəm.",
+      "Gündəlik işimin əsasını React, Next.js, TypeScript və Tailwind CSS təşkil edir. Dizaynları təkrar istifadə olunan komponent sistemlərinə çevirir, rezervasiya və kataloq kimi funksiyaları REST API-lərə qoşuram. Saytların sürətli yüklənməsinə, axtarış sistemlərində yaxşı sıralanmasına və bütün brauzerlərdə eyni işləməsinə xüsusi diqqət yetirirəm.",
+      "Bu işlərin böyük hissəsi biznes üçün kritik olan canlı saytlarda aparılır, ona görə dəyişiklikləri diqqətlə və mərhələli tətbiq edirəm. Dizaynerlər, backend mühəndisləri və müştərilərlə birbaşa işləyirəm. Hazırda daha böyük və mürəkkəb funksionallığa cavabdeh olacağım front-end developer vəzifəsi axtarıram.",
     ],
     industries: ["Qonaqpərvərlik", "Daşınmaz əmlak", "Səhiyyə", "Təhsil", "E-ticarət"],
     cv: {
       title: "Front-End Developer (React / Next.js)",
       summary:
-        "JavaScript, TypeScript, React və Next.js ilə responsiv, yüksək performanslı veb tətbiqlər hazırlamaqda 4 ildən artıq real layihə təcrübəsi olan Front-End Developer. Qonaqpərvərlik, daşınmaz əmlak, səhiyyə, təhsil və e-ticarət sahələrində 25-dən çox canlı veb sayt və veb platforma istifadəyə vermişəm — RESTful API inteqrasiyası və komponent əsaslı arxitekturadan SEO və performans optimallaşdırmasına qədər. State management (Redux Toolkit, RTK Query) və təmiz, təkrar istifadə oluna bilən, asan dəstəklənən kod yazmaqda güclüyəm. React/Next.js təcrübəmi artırmaq və daha böyük, mürəkkəb funksionallığa cavabdeh olmaq üçün mid-level Front-End vəzifəsi axtarıram.",
+        "JavaScript, TypeScript, React və Next.js ilə responsiv və yüksək performanslı veb tətbiqlərin hazırlanmasında 4 ildən artıq kommersiya təcrübəsinə malik Front-End Developer. Qonaqpərvərlik, daşınmaz əmlak, səhiyyə, təhsil və e-ticarət sahələrində 25-dən çox veb sayt və platformanı istifadəyə vermişəm: RESTful API inteqrasiyası və komponent əsaslı arxitekturadan SEO və performans optimallaşdırmasına qədər. State management (Redux Toolkit, RTK Query) və təmiz, təkrar istifadə olunan, asan dəstəklənən kod yazmaq güclü tərəflərimdəndir. React/Next.js üzrə təcrübəmi dərinləşdirəcəyim və daha böyük, mürəkkəb funksionallığa cavabdeh olacağım Front-End Developer vəzifəsi axtarıram.",
     },
     skills: [
       {
         title: "Dillər və markup",
-        description: "Hər şeyin üzərində qurulduğu əsaslar.",
+        description: "Bütün işin təməli.",
         items: ["JavaScript (ES6+)", "TypeScript", "HTML5", "CSS3"],
       },
       {
         title: "Framework və kitabxanalar",
         description:
-          "Proqnozlaşdırıla bilən state və data əldəetmə ilə komponent əsaslı tətbiqlər.",
+          "Proqnozlaşdırılan state idarəetməsi və data sorğuları ilə komponent əsaslı tətbiqlər.",
         items: [
           "React",
           "Next.js (App Router)",
@@ -51,12 +51,12 @@ export const az: SiteContent = {
       },
       {
         title: "Test",
-        description: "Komponentlərin production-a çatmazdan əvvəl etibarlı olması.",
+        description: "Komponentlərin istifadəyə verilməzdən əvvəl etibarlı işləməsi üçün.",
         items: ["Jest", "React Testing Library"],
       },
       {
         title: "Alətlər və təcrübələr",
-        description: "İşin necə istifadəyə verildiyi və sağlam saxlanıldığı.",
+        description: "İşin necə təhvil verildiyi və keyfiyyətinin necə qorunduğu.",
         items: [
           "Git",
           "Docker",
@@ -76,10 +76,10 @@ export const az: SiteContent = {
         location: "Bakı, Azərbaycan",
         highlights: [
           "Qonaqpərvərlik, daşınmaz əmlak, səhiyyə, təhsil və e-ticarət sahələrində 25-dən çox real veb sayt və veb tətbiq hazırlayıb istifadəyə vermişəm — Tabia Group Hotels portfeli də daxil olmaqla.",
-          "React, Next.js, TypeScript və Tailwind CSS ilə responsiv interfeyslər hazırlamış, köhnə markup-ı bir çox müştəri layihəsində istifadə olunan, təkrar istifadəyə yararlı komponent sistemləri ilə əvəz etmişəm.",
+          "React, Next.js, TypeScript və Tailwind CSS ilə responsiv interfeyslər hazırlamış, köhnə markup-ı bir neçə müştəri layihəsində istifadə olunan, təkrar istifadəyə yararlı komponent sistemləri ilə əvəz etmişəm.",
           "Dinamik kontent, rezervasiya sistemləri və interaktiv platformalar üçün RESTful API-ləri inteqrasiya etmişəm.",
-          "SEO-nun ən yaxşı təcrübələrini və performans optimallaşdırmalarını tətbiq etmişəm — code splitting, lazy loading, şəkil optimallaşdırması.",
-          "Canlı, biznes üçün kritik tətbiqləri production trafikini pozmadan dəstəkləmiş və genişləndirmişəm.",
+          "SEO üzrə ən yaxşı təcrübələri və performans optimallaşdırmalarını tətbiq etmişəm: code splitting, lazy loading, şəkil optimallaşdırması.",
+          "Biznes üçün kritik olan canlı tətbiqləri istifadəçi trafikinə təsir etmədən dəstəkləmiş və genişləndirmişəm.",
           "Biznes tələblərini texniki həllərə çevirmək üçün dizaynerlər, backend mühəndisləri və müştərilərlə birbaşa işləmişəm.",
         ],
       },
@@ -100,7 +100,7 @@ export const az: SiteContent = {
       { name: "İngilis dili", level: "Səlis" },
       { name: "Azərbaycan dili", level: "Ana dili" },
       { name: "Türk dili", level: "Səlis" },
-      { name: "Rus dili", level: "Əsas səviyyə" },
+      { name: "Rus dili", level: "Başlanğıc səviyyə" },
     ],
     certificates: [{ name: "IELTS 7.0", period: "2019 – 2021" }],
   },
@@ -109,7 +109,7 @@ export const az: SiteContent = {
       title: "Front-end proqramlaşdırma",
       tagline: "React, Next.js və TypeScript",
       description:
-        "React, Next.js və TypeScript ilə hazırlanmış, istifadəyə hazır veb saytlar və veb tətbiqlər. Sürətli, əlçatan və komandanızın buraxılışdan uzun müddət sonra da asanlıqla genişləndirə biləcəyi təmiz, komponent əsaslı kod.",
+        "React, Next.js və TypeScript ilə hazırlanmış, istifadəyə hazır veb saytlar və veb tətbiqlər. Sürətli, əlçatan və buraxılışdan uzun müddət sonra da komandanızın asanlıqla genişləndirə biləcəyi təmiz, komponent əsaslı kod.",
       deliverables: [
         "React və Next.js (App Router) tətbiqləri",
         "Təkrar istifadə oluna bilən, ciddi tipləşdirilmiş komponent sistemləri",
@@ -121,7 +121,7 @@ export const az: SiteContent = {
       title: "UI dizayn və dizayn sistemləri",
       tagline: "Məqsədyönlü interfeyslər",
       description:
-        "Düşünülmüş görünən və rahat hiss olunan interfeyslər. İlkin ideyaları və ya mövcud dizaynları vahid vizual dilə çevirirəm — boşluqlar, tipoqrafiya, rənglər və hər interaktiv vəziyyət dəqiq işlənir.",
+        "Səliqəli görünən və istifadəsi rahat olan interfeyslər. İlkin ideyaları və ya mövcud dizaynları vahid vizual dilə çevirirəm: boşluqlar, tipoqrafiya, rənglər və hər interaktiv vəziyyət dəqiq işlənir.",
       deliverables: [
         "UI konseptləri, səhifə düzülüşləri və responsiv variantlar",
         "Dizayn tokenləri və komponent kitabxanaları",
@@ -131,9 +131,9 @@ export const az: SiteContent = {
     },
     seo: {
       title: "SEO və performans",
-      tagline: "Sürətli, tapılan, ölçülən",
+      tagline: "Sürətli, görünən, ölçülə bilən",
       description:
-        "Tez yüklənən və asanlıqla tapılan saytlar. Texniki SEO və performans buraxılışdan sonra əlavə edilmir, ilk commit-dən layihəyə daxil edilir — beləliklə həm axtarış sistemləri, həm də real istifadəçilər sürətli təcrübə əldə edir.",
+        "Tez yüklənən və axtarışda asan tapılan saytlar. Texniki SEO və performans sonradan əlavə edilmir — ilk gündən layihənin bir hissəsidir. Nəticədə həm axtarış sistemləri, həm də istifadəçilər sürətli sayt görür.",
       deliverables: [
         "Texniki SEO: metadata, sitemap, Open Graph, semantik HTML",
         "Core Web Vitals və Lighthouse optimallaşdırması",
@@ -145,7 +145,7 @@ export const az: SiteContent = {
       title: "AI inteqrasiyası",
       tagline: "Məhsulunuzda praktik AI",
       description:
-        "İstifadəçilərinizin həqiqətən istifadə edəcəyi AI funksiyaları: müasir LLM API-lərinə qoşulmuş assistentlər, ağıllı axtarış və kontent alətləri — streaming, aydın yüklənmə vəziyyətləri və etibarlı ehtiyat variantları ilə, sürətli və güvənli hiss olunsun deyə.",
+        "İstifadəçilərinizin həqiqətən faydalanacağı AI funksiyaları: müasir LLM API-lərinə qoşulmuş assistentlər, ağıllı axtarış və kontent alətləri. Streaming, aydın yüklənmə vəziyyətləri və etibarlı ehtiyat həllər sayəsində sürətli və etibarlı işləyir.",
       deliverables: [
         "Axınla (streaming) cavab verən chat və assistent interfeysləri",
         "LLM API inteqrasiyası (OpenAI, Anthropic)",
@@ -155,9 +155,9 @@ export const az: SiteContent = {
     },
     integrations: {
       title: "API-lər və veb tətbiqlər",
-      tagline: "Real dataya qoşulmuş",
+      tagline: "Real data ilə işləyən",
       description:
-        "Real dataya qoşulmuş dinamik məhsullar — REST və ya GraphQL API-lərinə bağlanmış rezervasiya axınları, kataloqlar, idarə panelləri və formalar; hər addımda düzgün yüklənmə, boş və xəta vəziyyətləri ilə.",
+        "Real data ilə işləyən dinamik məhsullar: REST və ya GraphQL API-lərinə qoşulmuş rezervasiya axınları, kataloqlar, idarəetmə panelləri və formalar — hər addımda düzgün yüklənmə, boş və xəta vəziyyətləri ilə.",
       deliverables: [
         "REST və GraphQL API inteqrasiyası",
         "Rezervasiya sistemləri, məhsul kataloqları və filtrlər",
@@ -167,9 +167,9 @@ export const az: SiteContent = {
     },
     maintenance: {
       title: "Dəstək və optimallaşdırma",
-      tagline: "Canlı məhsullara qayğı",
+      tagline: "Canlı məhsulların dəstəyi",
       description:
-        "Canlı, biznes üçün kritik saytlara davamlı qayğı. Yeni funksiyalar, düzəlişlər və performans təkmilləşdirmələri onlara bağlı olan trafiki və müştəriləri pozmadan, ehtiyatla tətbiq olunur.",
+        "Biznes üçün kritik olan canlı saytlara davamlı dəstək. Yeni funksiyalar, düzəlişlər və performans təkmilləşdirmələri saytın trafikinə və müştərilərinə təsir etmədən, diqqətlə tətbiq olunur.",
       deliverables: [
         "Mövcud kod bazalarında yeni funksiyaların hazırlanması",
         "Xətaların düzəldilməsi, brauzer və cihaz üzrə yoxlama (QA)",
@@ -187,22 +187,22 @@ export const az: SiteContent = {
     {
       title: "Dizayn",
       description:
-        "Düzülüşlər, komponentlər və hər interaktiv vəziyyət müəyyənləşdirilir — sizin və ya mənim dizayn fayllarımda — responsiv davranış və əlçatanlıq əvvəlcədən nəzərə alınır.",
+        "Səhifə düzülüşləri, komponentlər və hər interaktiv vəziyyət sizin və ya mənim dizayn fayllarımda müəyyənləşdirilir; responsiv davranış və əlçatanlıq əvvəlcədən nəzərə alınır.",
     },
     {
       title: "Hazırlama",
       description:
-        "Tipləşdirilmiş, komponent əsaslı implementasiya və müntəzəm önbaxışlar — irəliləyişi erkən görür və detallar qətiləşmədən istiqaməti dəyişə bilirsiniz.",
+        "Tipləşdirilmiş, komponent əsaslı kod və müntəzəm önbaxışlar: irəliləyişi erkən görür, detallar yekunlaşmadan istiqaməti dəyişə bilirsiniz.",
     },
     {
-      title: "Buraxılış və qayğı",
+      title: "Buraxılış və dəstək",
       description:
-        "Buraxılışdan əvvəl performans, SEO və brauzerlərarası yoxlamalar — sonra isə məhsul böyüdükcə təkmilləşdirmələr, düzəlişlər və yeni funksiyalar.",
+        "Buraxılışdan əvvəl performans, SEO və brauzer uyğunluğu yoxlanılır; sonra isə məhsul böyüdükcə təkmilləşdirmələr, düzəlişlər və yeni funksiyalar gəlir.",
     },
   ],
   ai: {
     intro:
-      "AI alətlərindən hər gün prototip hazırlamaq, kodu refaktor etmək və test etmək üçün istifadə edirəm — həmçinin hazırladığım interfeyslərə AI əsaslı funksiyalar əlavə edirəm. Qərar, yoxlama və son keyfiyyət isə məndə qalır.",
+      "AI alətlərindən hər gün prototip hazırlamaq, kodu refaktorinq etmək və test yazmaq üçün istifadə edirəm, hazırladığım interfeyslərə də AI funksiyaları əlavə edirəm. Qərarlar, yoxlama və yekun keyfiyyət isə həmişə mənim məsuliyyətimdədir.",
     capabilities: [
       {
         title: "AI dəstəkli proqramlaşdırma",
@@ -212,7 +212,7 @@ export const az: SiteContent = {
       {
         title: "LLM inteqrasiyası",
         description:
-          "Front-end-i böyük dil modeli API-lərinə qoşuram: açarları təhlükəsiz saxlayan server tərəfi sorğular, axınla gələn cavablar, təkrar cəhdlər, limitlər və rahat ehtiyat variantları.",
+          "Front-end-i böyük dil modeli API-lərinə qoşuram: açarları təhlükəsiz saxlayan server sorğuları, axınla gələn cavablar, təkrar cəhdlər, limitlər və etibarlı ehtiyat həllər.",
       },
       {
         title: "Söhbət interfeysləri",
@@ -235,15 +235,15 @@ export const az: SiteContent = {
   principles: [
     {
       title: "Təmiz, təkrar istifadə oluna bilən kod",
-      text: "Komandaların oxuya, təkrar istifadə edə və genişləndirə biləcəyi komponent əsaslı arxitektura — birdəfəlik markup-ı layihələr arasında miqyaslanan sistemlərlə əvəz edir.",
+      text: "Komandaların oxuya, təkrar istifadə edə və genişləndirə biləcəyi komponent əsaslı arxitektura: birdəfəlik markup-ı layihədən layihəyə miqyaslanan sistemlərlə əvəz edirəm.",
     },
     {
-      title: "Standart olaraq sürətli və tapılan",
-      text: "Performans və SEO sonradan düşünülən şey deyil, işin bir hissəsidir: code splitting, lazy loading, optimallaşdırılmış şəkillər və düzgün metadata.",
+      title: "Sürət və SEO ilk gündən",
+      text: "Performans və SEO sonradan düşünülən məsələ deyil, işin ayrılmaz hissəsidir: code splitting, lazy loading, optimallaşdırılmış şəkillər və düzgün metadata.",
     },
     {
       title: "Sıx əməkdaşlıq",
-      text: "Biznes tələblərini istifadəyə verilən məhsullara çevirmək üçün dizaynerlər, backend mühəndisləri və müştərilərlə birbaşa işləmək.",
+      text: "Biznes tələblərini işlək məhsullara çevirmək üçün dizaynerlər, backend mühəndisləri və müştərilərlə birbaşa işləyirəm.",
     },
   ],
   industries: {
@@ -519,7 +519,7 @@ export const az: SiteContent = {
     },
     palid: {
       summary: "Korporativ veb sayt.",
-      overview: "One Studio layihələrim sırasında olan korporativ veb sayt.",
+      overview: "One Studio-da hazırladığım korporativ veb sayt.",
       liveFeatures: [],
       unavailableReason:
         "2026-cı ilin oktyabrında ekran görüntüsü çəkməyə çalışarkən canlı sayt SSL xətası (Cloudflare 525) qaytardı, ona görə önbaxış yoxdur.",

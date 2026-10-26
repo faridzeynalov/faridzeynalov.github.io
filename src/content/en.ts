@@ -11,13 +11,13 @@ export const en: SiteContent = {
     about: [
       "I'm a front-end developer based in Baku. Since 2022 I've been at One Studio, where I've built and shipped more than 25 production websites for hotels, residential developments, clinics, retailers and industrial companies.",
       "Most of my day-to-day is React, Next.js, TypeScript and Tailwind CSS: turning designs into reusable component systems, wiring them to REST APIs for things like booking flows and catalogues, and making sure the result loads fast, ranks well and behaves the same in every browser.",
-      "A lot of that work happens on live, business-critical sites, so I care about shipping changes carefully. I work directly with designers, backend engineers and clients, and I'm now looking for a mid-level front-end role where I can own larger, more complex features.",
+      "A lot of that work happens on live, business-critical sites, so I care about shipping changes carefully. I work directly with designers, backend engineers and clients, and I'm now looking for a front-end role where I can own larger, more complex features.",
     ],
     industries: ["Hospitality", "Real estate", "Healthcare", "Education", "E-commerce"],
     cv: {
       title: "Front-End Developer (React / Next.js)",
       summary:
-        "Front-End Developer with 4+ years of production experience building responsive, high-performance web applications with JavaScript, TypeScript, React, and Next.js. Shipped 25+ live websites and web platforms across hospitality, real estate, healthcare, education, and e-commerce, covering everything from RESTful API integration and component-based architecture to SEO and performance optimization. Strong in state management (Redux Toolkit, RTK Query) and writing clean, reusable, maintainable code. Seeking a middle-level Front-End role to keep growing React/Next.js expertise while owning larger, more complex features.",
+        "Front-End Developer with 4+ years of production experience building responsive, high-performance web applications with JavaScript, TypeScript, React, and Next.js. Shipped 25+ live websites and web platforms across hospitality, real estate, healthcare, education, and e-commerce, covering everything from RESTful API integration and component-based architecture to SEO and performance optimization. Strong in state management (Redux Toolkit, RTK Query) and writing clean, reusable, maintainable code. Seeking a Front-End role to keep growing React/Next.js expertise while owning larger, more complex features.",
     },
     skills: [
       {
