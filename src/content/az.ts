@@ -20,9 +20,9 @@ export const az: SiteContent = {
     summary:
       "4 ildən artıq kommersiya təcrübəsi olan front-end developer. React, Next.js və TypeScript ilə sürətli və responsiv veb tətbiqlər hazırlayıram; 25-dən çox veb sayt və platformanı istifadəyə vermişəm.",
     about: [
-      "Bakıda yaşayan front-end developerəm. 2022-ci ildən One Studio-da çalışıram; burada otellər, yaşayış kompleksləri, klinikalar, pərakəndə satış və sənaye şirkətləri üçün 25-dən çox veb sayt hazırlayıb istifadəyə vermişəm.",
-      "Gündəlik işimin əsasını React, Next.js, TypeScript və Tailwind CSS təşkil edir. Dizaynları təkrar istifadə olunan komponent sistemlərinə çevirir, rezervasiya və kataloq kimi funksiyaları REST API-lərə qoşuram. Saytların sürətli yüklənməsinə, axtarış sistemlərində yaxşı sıralanmasına və bütün brauzerlərdə eyni işləməsinə xüsusi diqqət yetirirəm.",
-      "Bu işlərin böyük hissəsi biznes üçün kritik olan canlı saytlarda aparılır, ona görə dəyişiklikləri diqqətlə və mərhələli tətbiq edirəm. Dizaynerlər, backend mühəndisləri və müştərilərlə birbaşa işləyirəm. Hazırda daha böyük və mürəkkəb funksionallığa cavabdeh olacağım front-end developer vəzifəsi axtarıram.",
+      "4 ildən artıq kommersiya təcrübəsi olan front-end developerəm. 2022-ci ildən One Studio-da qonaqpərvərlik, daşınmaz əmlak, səhiyyə, təhsil və e-ticarət sahələri üçün 25-dən çox veb sayt və platforma hazırlayıb istifadəyə vermişəm — korporativ saytlardan Tabia Group Hotels-in otel portfelinə qədər.",
+      "Əsas texnologiyalarım JavaScript (ES6+), TypeScript, React, Next.js (App Router) və Tailwind CSS-dir. State idarəetməsi üçün Redux Toolkit, RTK Query və Zustand-dan istifadə edir, REST və GraphQL API-lərini inteqrasiya edir, komponentləri Jest və React Testing Library ilə test edirəm. Köhnə markup-ı bir neçə layihədə istifadə olunan, təkrar istifadəyə yararlı komponent sistemləri ilə əvəz edirəm.",
+      "SEO və performans optimallaşdırmasına (code splitting, lazy loading, şəkil optimallaşdırması), brauzerlərarası uyğunluğa və təmiz, asan dəstəklənən koda xüsusi diqqət yetirirəm. Biznes üçün kritik olan canlı saytları trafikə təsir etmədən dəstəkləyir, dizaynerlər, backend mühəndisləri və müştərilərlə birbaşa işləyirəm. Hazırda daha böyük və mürəkkəb funksionallığa cavabdeh olacağım front-end developer vəzifəsi axtarıram.",
     ],
     industries: ["Qonaqpərvərlik", "Daşınmaz əmlak", "Səhiyyə", "Təhsil", "E-ticarət"],
     cv: {

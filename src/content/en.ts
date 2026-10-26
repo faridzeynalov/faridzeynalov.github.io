@@ -9,9 +9,9 @@ export const en: SiteContent = {
     summary:
       "Front-end developer with 4+ years of production experience. I build responsive, fast web apps with React, Next.js and TypeScript, and have shipped 25+ live websites and platforms.",
     about: [
-      "I'm a front-end developer based in Baku. Since 2022 I've been at One Studio, where I've built and shipped more than 25 production websites for hotels, residential developments, clinics, retailers and industrial companies.",
-      "Most of my day-to-day is React, Next.js, TypeScript and Tailwind CSS: turning designs into reusable component systems, wiring them to REST APIs for things like booking flows and catalogues, and making sure the result loads fast, ranks well and behaves the same in every browser.",
-      "A lot of that work happens on live, business-critical sites, so I care about shipping changes carefully. I work directly with designers, backend engineers and clients, and I'm now looking for a front-end role where I can own larger, more complex features.",
+      "I'm a front-end developer with 4+ years of production experience. Since 2022 I've built and shipped more than 25 websites and web platforms at One Studio across hospitality, real estate, healthcare, education and e-commerce — from corporate sites to the Tabia Group Hotels portfolio.",
+      "My core stack is JavaScript (ES6+), TypeScript, React, Next.js (App Router) and Tailwind CSS. I manage state with Redux Toolkit, RTK Query and Zustand, integrate REST and GraphQL APIs, test components with Jest and React Testing Library, and replace legacy markup with reusable component systems shared across projects.",
+      "I care about SEO and performance (code splitting, lazy loading, image optimisation), cross-browser compatibility and clean, maintainable code. I maintain live, business-critical sites without disrupting traffic and work directly with designers, backend engineers and clients. I'm now looking for a front-end role where I can own larger, more complex features.",
     ],
     industries: ["Hospitality", "Real estate", "Healthcare", "Education", "E-commerce"],
     cv: {

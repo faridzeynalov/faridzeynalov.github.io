@@ -60,7 +60,7 @@
     "projects": "{count} projects"
   },
   "Footer": {
-    "tagline": "{role} in {location}. Building fast, accessible interfaces with React and Next.js.",
+    "tagline": "{role}. Building fast, accessible interfaces with React and Next.js.",
     "pages": "Pages",
     "elsewhere": "Elsewhere",
     "builtWith": "Built with Next.js & Tailwind CSS · statically exported",

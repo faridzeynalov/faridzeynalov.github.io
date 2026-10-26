@@ -60,7 +60,7 @@
     "projects": "{count, plural, one {# проект} few {# проекта} many {# проектов} other {# проекта}}"
   },
   "Footer": {
-    "tagline": "{role}, {location}. Создаю быстрые и доступные интерфейсы на React и Next.js.",
+    "tagline": "{role}. Создаю быстрые и доступные интерфейсы на React и Next.js.",
     "pages": "Страницы",
     "elsewhere": "Контакты",
     "builtWith": "Сделано на Next.js и Tailwind CSS · статический экспорт",

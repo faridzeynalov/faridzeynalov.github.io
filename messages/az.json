@@ -60,7 +60,7 @@
     "projects": "{count} layihə"
   },
   "Footer": {
-    "tagline": "{location} şəhərində yaşayan {role}. React və Next.js ilə sürətli və əlçatan interfeyslər hazırlayıram.",
+    "tagline": "{role}. React və Next.js ilə sürətli və əlçatan interfeyslər hazırlayıram.",
     "pages": "Səhifələr",
     "elsewhere": "Digər",
     "builtWith": "Next.js və Tailwind CSS ilə hazırlanıb · statik sayt",
@@ -99,7 +99,7 @@
   "SelectedWork": {
     "eyebrow": "Seçilmiş işlər",
     "title": "Real layihələr,",
-    "accent": "canlı və işlək.",
+    "accent": "bu gün də istifadədə.",
     "description": "One Studio-da üzərində işlədiyim saytlardan bəziləri: lüks yaşayış komplekslərindən kurort rezervasiyasına və onlayn satışa qədər.",
     "allProjects": "Bütün {count} layihə"
   },
