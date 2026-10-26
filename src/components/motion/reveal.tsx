@@ -18,25 +18,15 @@ const steps = (count: number) => (t: number) => Math.min(1, Math.ceil(t * count)
  * Classic: fade up. Developer: slides in from the left like a line of code being inserted —
  * shorter and snappier. 8-bit: rises in four hard steps. Paper: settles in with a slight tilt,
  * like a sheet being laid down. Chess: moves like a knight, in an L: two squares up, then one
- * across. Football: drops in like a ball and bounces twice before it settles. `data-shown` lets CSS start style-specific effects (typed eyebrows).
+ * across. Football: runs in from the left, like a winger. `data-shown` lets CSS start
+ * style-specific effects (typed eyebrows).
  */
 function revealVariants(skin: Skin | null, y: number, delay: number): Variants {
   if (skin === "football") {
-    const drop = -(y + 16);
+    // Runs in from the left, like a winger onto a pass: one smooth move, no bounce.
     return {
-      hidden: { opacity: 0, x: 0, y: drop, rotate: 0, transition: hide },
-      show: {
-        opacity: [0, 1, 1, 1, 1, 1],
-        x: 0,
-        y: [drop, 0, -9, 0, -3, 0],
-        rotate: 0,
-        transition: {
-          duration: 0.85,
-          delay,
-          times: [0, 0.42, 0.6, 0.76, 0.88, 1],
-          ease: ["easeIn", "easeOut", "easeIn", "easeOut", "easeIn"],
-        },
-      },
+      hidden: { opacity: 0, x: -40, y: 0, rotate: 0, transition: hide },
+      show: { opacity: 1, x: 0, y: 0, rotate: 0, transition: { duration: 0.6, delay, ease } },
     };
   }
   if (skin === "chess") {

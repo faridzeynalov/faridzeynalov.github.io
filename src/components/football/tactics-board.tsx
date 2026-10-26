@@ -4,65 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useSkin } from "@/components/layout/use-appearance";
 import { cn } from "@/lib/utils";
-
-type Point = readonly [number, number];
-
-/** The home side (attacking left to right), by shirt number, at kick-off. */
-const HOME: Record<number, Point> = {
-  1: [5, 34],
-  2: [22, 58],
-  3: [22, 10],
-  4: [18, 42],
-  5: [18, 26],
-  6: [35, 34],
-  8: [44, 21],
-  10: [46, 46],
-  7: [64, 57],
-  9: [68, 34],
-  11: [64, 11],
-};
-
-/** The away defence, defending the right-hand goal. */
-const AWAY: Record<string, Point> = {
-  gk: [101, 34],
-  cb1: [86, 28],
-  cb2: [86, 40],
-  lb: [84, 14],
-  rb: [84, 54],
-  dm1: [75, 25],
-  dm2: [75, 43],
-};
-
-/**
- * The move, one beat at a time: where the ball goes (and how long it takes), who runs where
- * meanwhile, and who carries the ball. Passes are drawn on the pitch in chalk as they happen.
- */
-const MOVE: {
-  ball: Point;
-  ms: number;
-  runs?: Record<string, Point>;
-  carrier?: number;
-  shot?: boolean;
-}[] = [
-  { ball: [5, 34], ms: 0, carrier: 1 },
-  { ball: [18, 42], ms: 700, carrier: 4, runs: { 6: [33, 37] } },
-  { ball: [33, 37], ms: 650, carrier: 6, runs: { 10: [50, 48], dm2: [70, 44] } },
-  {
-    ball: [50, 48],
-    ms: 650,
-    carrier: 10,
-    runs: { 7: [79, 60], 9: [80, 33], 11: [80, 15], rb: [80, 54], cb1: [84, 30] },
-  },
-  { ball: [79, 60], ms: 750, carrier: 7, runs: { rb: [82, 57], dm2: [72, 48] } },
-  {
-    ball: [91, 57],
-    ms: 900,
-    carrier: 7,
-    runs: { 7: [91, 57], rb: [88, 57], 9: [92, 39], cb2: [89, 44] },
-  },
-  { ball: [93, 38], ms: 600, carrier: 9, runs: { 11: [94, 24], cb1: [91, 33] } },
-  { ball: [105.6, 31.6], ms: 260, shot: true, runs: { gk: [101.5, 40] } },
-];
+import { AWAY, HOME, MOVES, positionsAt, type Point } from "@/components/football/tactics-moves";
 
 /** Pause between beats, and how long a goal, half time and full time are held. */
 const BEAT_MS = 260;
@@ -72,8 +14,9 @@ const KICKOFF_MS = 1400;
 /** Minutes on the clock per beat of a move. */
 const MINUTES_PER_BEAT = 2;
 /**
- * The match: two moves a half, each starting at its minute, so the clock only ever runs on:
- * goals at 17′ and 38′, half time at 45′, then 64′ and 85′, and the whistle at 90′.
+ * The match: two moves a half (MOVES, a different one each time), each starting at its minute,
+ * so the clock only ever runs on: two goals before half time at 45′, two after, and the
+ * whistle at 90′.
  */
 const KICKOFFS = [3, 24, 50, 71];
 
@@ -108,7 +51,7 @@ function nextOf(match: Match): Match {
     case "kickoff":
       return { phase: "play", move: 0, beat: 0 };
     case "play":
-      return match.beat + 1 === MOVE.length - 1
+      return match.beat + 1 === MOVES[match.move].length - 1
         ? { phase: "goal", move: match.move, beat: match.beat + 1 }
         : { ...match, beat: match.beat + 1 };
     case "goal":
@@ -127,7 +70,7 @@ function waitOf(match: Match) {
     case "kickoff":
       return KICKOFF_MS;
     case "play":
-      return MOVE[match.beat].ms + BEAT_MS + (match.beat === 0 ? 600 : 0);
+      return MOVES[match.move][match.beat].ms + BEAT_MS + (match.beat === 0 ? 600 : 0);
     case "goal":
       return CELEBRATE_MS;
     case "half":
@@ -138,7 +81,7 @@ function waitOf(match: Match) {
 
 /**
  * Football style: a tactics board under the contact buttons. A whole match plays out on a chalked
- * pitch: team moves (six passes from the keeper to the back of the net), the net rippling and
+ * pitch: four different team moves (from the keeper to the back of the net, every pass onside), the net rippling and
  * "GOAL!" going up, half time at 45′ and the final whistle at 90′, then a fresh 0–0. It plays
  * while on screen; with reduced motion it shows the final score.
  * Rendered only in the Football style.
@@ -157,7 +100,11 @@ function Board({ className }: { className?: string }) {
   const [visible, setVisible] = useState(false);
   const scored = match.phase === "goal";
   // Between moves (kick-off, the breaks) the players line up at their kick-off positions.
-  const beat = match.phase === "play" || match.phase === "goal" ? match.beat : 0;
+  const playing = match.phase === "play" || match.phase === "goal";
+  const beat = playing ? match.beat : 0;
+  // The move on the board (the next one, lined up, between moves).
+  const moveIndex = playing ? match.move : match.phase === "half" ? 2 : 0;
+  const move = MOVES[moveIndex];
 
   useEffect(() => {
     const element = ref.current;
@@ -176,17 +123,10 @@ function Board({ className }: { className?: string }) {
   }, [visible, still, match]);
 
   // Everyone's position at this beat: kick-off positions, moved by every run so far.
-  const positions = useMemo(() => {
-    const at: Record<string, Point> = {
-      ...Object.fromEntries(Object.entries(HOME)),
-      ...AWAY,
-    };
-    for (const step of MOVE.slice(0, beat + 1)) Object.assign(at, step.runs ?? {});
-    return at;
-  }, [beat]);
+  const positions = useMemo(() => positionsAt(move, beat), [move, beat]);
 
-  const step = MOVE[beat];
-  const trail = MOVE.slice(0, beat + 1).map((item) => item.ball);
+  const step = move[beat];
+  const trail = move.slice(0, beat + 1).map((item) => item.ball);
   const minute = minuteOf(match);
   const goals = goalsOf(match);
   const banner =
