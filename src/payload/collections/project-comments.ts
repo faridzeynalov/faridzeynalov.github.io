@@ -123,6 +123,10 @@ export const ProjectComments: CollectionConfig = {
     group: portalGroup,
     useAsTitle: "body",
     defaultColumns: ["body", "project", "author", "createdAt"],
+    // The list is an inbox of conversations, with a reply box under each.
+    components: {
+      views: { list: { Component: "/payload/components/comments-inbox#CommentsInbox" } },
+    },
   },
   defaultSort: "-createdAt",
   access: { read: ownComments, create: signedIn, update: isAdmin, delete: isAdmin },
