@@ -84,8 +84,8 @@ export async function requestReset(_: ActionState, form: FormData): Promise<Acti
 }
 
 /**
- * Adds the signed-in client's comment to one of their projects and refreshes the page, so it shows
- * up right away.
+ * Adds the signed-in client's comment (or, with `parent`, reply) to one of their projects and
+ * refreshes the page, so it shows up right away.
  */
 export async function addComment(_: ActionState, form: FormData): Promise<ActionState> {
   const locale = localeOf(form);
@@ -93,12 +93,13 @@ export async function addComment(_: ActionState, form: FormData): Promise<Action
   if (!client) redirect(portal(locale, "/login"));
   const project = Number(form.get("project"));
   const body = String(form.get("body") ?? "").trim();
+  const parent = Number(form.get("parent")) || null;
   if (!project || !body || body.length > 5000) return { status: "invalid" };
   const payload = await portalPayload();
   try {
     await payload.create({
       collection: "project-comments",
-      data: { project, body },
+      data: { project, body, parent },
       user: client,
       overrideAccess: false,
     });

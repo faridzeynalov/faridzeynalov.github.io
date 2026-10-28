@@ -497,6 +497,10 @@
     "stageTodo": "To do",
     "stageInProgress": "In progress",
     "stageReview": "In review",
-    "stageDone": "Done"
+    "stageDone": "Done",
+    "reply": "Reply",
+    "replyLabel": "Your reply",
+    "replyPlaceholder": "Write your reply…",
+    "cancel": "Cancel"
   }
 }

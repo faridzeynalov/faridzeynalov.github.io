@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
+import { CommentThread } from "@/components/portal/comment-thread";
 import { CommentForm } from "@/components/portal/forms";
 import { LogoutButton } from "@/components/portal/logout-button";
 import { PortalPage, portalMetadata } from "@/components/portal/portal-page";
@@ -160,21 +161,18 @@ export default async function PortalProjectPage({
             <h2 className="mb-6 text-lg font-semibold tracking-tight">{t("comments")}</h2>
             {threads.length ? (
               <ul className="mb-6 space-y-5">
-                {threads.map((thread) => {
-                  const replies = comments.filter((comment) => parentOf(comment) === thread.id);
-                  return (
-                    <li key={thread.id}>
-                      {bubble(thread)}
-                      {replies.length > 0 && (
-                        <ul className="mt-2 ml-4 space-y-2 border-l-2 border-border pl-4 md:ml-6">
-                          {replies.map((reply) => (
-                            <li key={reply.id}>{bubble(reply)}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
+                {threads.map((thread) => (
+                  <li key={thread.id}>
+                    <CommentThread
+                      project={project.id}
+                      thread={thread.id}
+                      first={bubble(thread)}
+                      replies={comments
+                        .filter((comment) => parentOf(comment) === thread.id)
+                        .map((reply) => ({ id: reply.id, node: bubble(reply) }))}
+                    />
+                  </li>
+                ))}
               </ul>
             ) : (
               <p className="mb-6 text-sm text-fg-muted">{t("noComments")}</p>

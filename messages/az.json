@@ -497,6 +497,10 @@
     "stageTodo": "Gözləyir",
     "stageInProgress": "Davam edir",
     "stageReview": "Yoxlamada",
-    "stageDone": "Hazırdır"
+    "stageDone": "Hazırdır",
+    "reply": "Cavab yaz",
+    "replyLabel": "Cavabınız",
+    "replyPlaceholder": "Cavabınızı yazın…",
+    "cancel": "Ləğv et"
   }
 }

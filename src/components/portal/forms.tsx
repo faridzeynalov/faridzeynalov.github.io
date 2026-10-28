@@ -155,30 +155,65 @@ export function SetPasswordForm({ token }: { token: string }) {
   );
 }
 
-export function CommentForm({ project }: { project: number }) {
+/**
+ * A general comment on the project or, with `parent`, a reply to one: a smaller box with a cancel
+ * button, which closes once the reply is sent.
+ */
+export function CommentForm({
+  project,
+  parent,
+  onClose,
+}: {
+  project: number;
+  parent?: number;
+  onClose?: () => void;
+}) {
   const t = useTranslations("Portal");
   const locale = useAppLocale();
-  const [state, action, pending] = useActionState(addComment, idle);
+  const [state, action, pending] = useActionState(async (previous: ActionState, form: FormData) => {
+    const result = await addComment(previous, form);
+    if (result.status === "sent") onClose?.();
+    return result;
+  }, idle);
   return (
     <form action={action} className="space-y-3">
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="project" value={project} />
+      {parent && <input type="hidden" name="parent" value={parent} />}
       <label className="block">
-        <span className="sr-only">{t("commentLabel")}</span>
+        <span className="sr-only">{parent ? t("replyLabel") : t("commentLabel")}</span>
         <textarea
           name="body"
           required
           maxLength={5000}
-          rows={4}
-          placeholder={t("commentPlaceholder")}
-          className={cn(inputClass, "min-h-28 resize-y leading-relaxed")}
+          rows={parent ? 2 : 4}
+          autoFocus={Boolean(parent)}
+          placeholder={parent ? t("replyPlaceholder") : t("commentPlaceholder")}
+          className={cn(
+            inputClass,
+            "resize-y leading-relaxed",
+            parent ? "min-h-20 text-sm" : "min-h-28",
+          )}
         />
       </label>
       {state.status === "error" && <Message tone="error">{t("commentError")}</Message>}
       {state.status === "invalid" && <Message tone="error">{t("errorInvalid")}</Message>}
-      <div className="flex justify-end">
-        <button type="submit" disabled={pending} className={buttonVariants()}>
-          {pending ? t("working") : t("send")}
+      <div className="flex justify-end gap-2">
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            {t("cancel")}
+          </button>
+        )}
+        <button
+          type="submit"
+          disabled={pending}
+          className={buttonVariants(parent ? { size: "sm" } : {})}
+        >
+          {pending ? t("working") : parent ? t("reply") : t("send")}
         </button>
       </div>
     </form>

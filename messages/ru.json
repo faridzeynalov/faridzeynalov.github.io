@@ -497,6 +497,10 @@
     "stageTodo": "В очереди",
     "stageInProgress": "В работе",
     "stageReview": "На проверке",
-    "stageDone": "Готово"
+    "stageDone": "Готово",
+    "reply": "Ответить",
+    "replyLabel": "Ваш ответ",
+    "replyPlaceholder": "Напишите ответ…",
+    "cancel": "Отмена"
   }
 }
