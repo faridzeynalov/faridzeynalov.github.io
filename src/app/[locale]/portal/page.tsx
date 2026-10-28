@@ -37,6 +37,7 @@ export default async function PortalHome({ params }: PageProps<"/[locale]/portal
 
   return (
     <PortalPage
+      client={client.name.split(" ")[0]}
       eyebrow={t("eyebrow")}
       title={t("hello", { name: client.name.split(" ")[0] })}
       description={t("dashboardText")}

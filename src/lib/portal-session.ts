@@ -5,6 +5,9 @@
  */
 export const PORTAL_USER_COOKIE = "fz-portal-user";
 
+/** Fired on window when the cookie is set from the page, so the header updates at once. */
+export const PORTAL_USER_EVENT = "fz-portal-user";
+
 /** The signed-in client's first name from the cookie, or null (also on the server). */
 export function readPortalUser(): string | null {
   if (typeof document === "undefined") return null;
@@ -17,4 +20,12 @@ export function readPortalUser(): string | null {
   } catch {
     return null;
   }
+}
+
+/** Sets the cookie from the page, for sessions started before it existed. */
+export function writePortalUser(name: string) {
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  // As long as a session lasts (clients.ts: 14 days).
+  document.cookie = `${PORTAL_USER_COOKIE}=${encodeURIComponent(name)}; Path=/; Max-Age=${14 * 24 * 3600}; SameSite=Lax${secure}`;
+  window.dispatchEvent(new Event(PORTAL_USER_EVENT));
 }

@@ -38,7 +38,8 @@
     "portalSignIn": "Sign in to the client portal",
     "portalAccount": "{name} — account menu",
     "portalDashboard": "My dashboard",
-    "portalSignOut": "Sign out"
+    "portalSignOut": "Sign out",
+    "portalHint": "Follow how your project is going"
   },
   "Theme": {
     "appearance": "Appearance",

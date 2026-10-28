@@ -52,6 +52,7 @@ export default async function PortalScreenPage({ params }: Props) {
 
   return (
     <PortalPage
+      client={client.name.split(" ")[0]}
       eyebrow={project.title}
       title={screen.title}
       description={screen.note ?? undefined}

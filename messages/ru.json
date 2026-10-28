@@ -38,7 +38,8 @@
     "portalSignIn": "Войти в клиентский портал",
     "portalAccount": "{name} — меню личного кабинета",
     "portalDashboard": "Личный кабинет",
-    "portalSignOut": "Выйти"
+    "portalSignOut": "Выйти",
+    "portalHint": "Следите за ходом проекта"
   },
   "Theme": {
     "appearance": "Оформление",

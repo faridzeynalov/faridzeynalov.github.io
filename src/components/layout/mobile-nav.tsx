@@ -17,6 +17,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { FootballIcon } from "@/components/football/football-icon";
 import { ExplorerTree } from "@/components/layout/explorer-tree";
 import { LogoMark } from "@/components/layout/logo";
+import { MobilePortalLinks } from "@/components/layout/portal-menu";
 import { useSkin } from "@/components/layout/use-appearance";
 import { useActiveNav } from "@/components/layout/use-active-nav";
 import { useOwner, usePageEnabled } from "@/lib/site-overrides";
@@ -209,6 +210,7 @@ function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { delay: 0.4 } }}
       >
+        <MobilePortalLinks onNavigate={onNavigate} className="mb-7" />
         <p className="font-mono text-xs text-fg-subtle uppercase">{t("getInTouch")}</p>
         <a href={`mailto:${owner.email}`} className="block text-lg text-fg">
           {owner.email}
@@ -285,6 +287,8 @@ function ExplorerPanel({ panelRef, onNavigate, tree }: PanelProps & { tree: Tree
           )}
         </AnimatePresence>
       </nav>
+
+      <MobilePortalLinks onNavigate={onNavigate} className="mx-3 mb-3 shrink-0" />
 
       {/* Status bar */}
       <m.div

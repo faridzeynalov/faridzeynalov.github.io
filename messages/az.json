@@ -38,7 +38,8 @@
     "portalSignIn": "Müştəri portalına daxil ol",
     "portalAccount": "{name} — şəxsi kabinet menyusu",
     "portalDashboard": "Şəxsi kabinet",
-    "portalSignOut": "Çıxış"
+    "portalSignOut": "Çıxış",
+    "portalHint": "Layihənizin gedişatını izləyin"
   },
   "Theme": {
     "appearance": "Görünüş",

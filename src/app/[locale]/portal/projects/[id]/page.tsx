@@ -66,6 +66,7 @@ export default async function PortalProjectPage({
   const stages = project.stages ?? [];
   return (
     <PortalPage
+      client={client.name.split(" ")[0]}
       eyebrow={t("eyebrow")}
       title={project.title}
       description={project.summary ?? undefined}

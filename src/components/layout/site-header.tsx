@@ -86,8 +86,8 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
           >
             {t("letsTalk")}
           </Link>
-          {/* Rightmost on wider screens; on phones, just before the menu button. */}
-          <PortalMenu />
+          {/* Rightmost; phones have it in the menu, where there is room. */}
+          <PortalMenu className="hidden md:block" />
           <MobileNav tree={tree} />
         </div>
       </div>
