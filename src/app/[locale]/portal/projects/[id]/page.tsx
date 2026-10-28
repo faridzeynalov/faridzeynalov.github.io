@@ -50,6 +50,32 @@ export default async function PortalProjectPage({
   const date = (value?: string | null) =>
     value ? format.dateTime(new Date(value), { dateStyle: "medium" }) : null;
   const stages = project.stages ?? [];
+  // Replies sit under the comment they answer; the rest are general comments.
+  const parentOf = (comment: (typeof comments)[number]) =>
+    typeof comment.parent === "object" ? comment.parent?.id : comment.parent;
+  const threads = comments.filter((comment) => !parentOf(comment));
+  const bubble = (comment: (typeof comments)[number]) => {
+    const mine = comment.author?.relationTo === "clients";
+    return (
+      <div
+        className={cn(
+          "w-fit max-w-[92%] rounded-2xl px-4 py-3",
+          mine ? "bg-accent-soft" : "bg-bg-subtle",
+        )}
+      >
+        <p className="mb-1 flex flex-wrap items-baseline gap-x-2 text-xs text-fg-subtle">
+          <span className="font-medium text-fg">{mine ? t("you") : t("me")}</span>
+          <time dateTime={comment.createdAt}>
+            {format.dateTime(new Date(comment.createdAt), {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+          </time>
+        </p>
+        <p className="text-sm text-pretty whitespace-pre-line text-fg">{comment.body}</p>
+      </div>
+    );
+  };
 
   return (
     <PortalPage
@@ -132,30 +158,20 @@ export default async function PortalProjectPage({
             className="scroll-mt-24 rounded-3xl border border-border bg-bg-elevated p-6 md:p-8"
           >
             <h2 className="mb-6 text-lg font-semibold tracking-tight">{t("comments")}</h2>
-            {comments.length ? (
-              <ul className="mb-6 space-y-4">
-                {comments.map((comment) => {
-                  const mine = comment.author?.relationTo === "clients";
+            {threads.length ? (
+              <ul className="mb-6 space-y-5">
+                {threads.map((thread) => {
+                  const replies = comments.filter((comment) => parentOf(comment) === thread.id);
                   return (
-                    <li
-                      key={comment.id}
-                      className={cn(
-                        "max-w-[92%] rounded-2xl px-4 py-3",
-                        mine ? "ml-auto bg-accent-soft" : "bg-bg-subtle",
+                    <li key={thread.id}>
+                      {bubble(thread)}
+                      {replies.length > 0 && (
+                        <ul className="mt-2 ml-4 space-y-2 border-l-2 border-border pl-4 md:ml-6">
+                          {replies.map((reply) => (
+                            <li key={reply.id}>{bubble(reply)}</li>
+                          ))}
+                        </ul>
                       )}
-                    >
-                      <p className="mb-1 flex flex-wrap items-baseline gap-x-2 text-xs text-fg-subtle">
-                        <span className="font-medium text-fg">{mine ? t("you") : t("me")}</span>
-                        <time dateTime={comment.createdAt}>
-                          {format.dateTime(new Date(comment.createdAt), {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })}
-                        </time>
-                      </p>
-                      <p className="text-sm text-pretty whitespace-pre-line text-fg">
-                        {comment.body}
-                      </p>
                     </li>
                   );
                 })}

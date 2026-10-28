@@ -2,6 +2,7 @@ import type {
   Access,
   CollectionAfterChangeHook,
   CollectionBeforeChangeHook,
+  CollectionBeforeDeleteHook,
   CollectionConfig,
 } from "payload";
 import { Forbidden } from "payload";
@@ -22,15 +23,21 @@ const ownComments: Access = ({ req }) => {
 /** Anyone signed in may comment: admins anywhere, clients on their own projects (checked below). */
 const signedIn: Access = ({ req }) => Boolean(req.user);
 
-/** The author is whoever is signed in, and a client may only comment on a project of theirs. */
+const idOf = (value: unknown) =>
+  value && typeof value === "object" ? (value as { id: number }).id : (value as number | null);
+
+/**
+ * The author is whoever is signed in, and a client may only comment on a project of theirs. A reply
+ * hangs off the first comment of its thread (one level, as on Instagram) in the same project.
+ */
 const setAuthor: CollectionBeforeChangeHook = async ({ data, operation, req }) => {
   if (operation !== "create" || !req.user) return data;
+  const projectId = idOf(data.project);
   if (req.user.collection === "clients") {
-    const projectId = typeof data.project === "object" ? data.project?.id : data.project;
     const project = await req.payload
       .findByID({
         collection: "client-projects",
-        id: projectId,
+        id: projectId as number,
         depth: 0,
         req,
         overrideAccess: false,
@@ -38,7 +45,19 @@ const setAuthor: CollectionBeforeChangeHook = async ({ data, operation, req }) =
       .catch(() => null);
     if (!project) throw new Forbidden(req.t);
   }
-  return { ...data, author: { relationTo: req.user.collection, value: req.user.id } };
+  let parent = idOf(data.parent);
+  if (parent) {
+    const replyTo = await req.payload
+      .findByID({ collection: "project-comments", id: parent, depth: 0, req })
+      .catch(() => null);
+    if (!replyTo || idOf(replyTo.project) !== projectId) throw new Forbidden(req.t);
+    parent = idOf(replyTo.parent) ?? replyTo.id;
+  }
+  return {
+    ...data,
+    parent: parent || null,
+    author: { relationTo: req.user.collection, value: req.user.id },
+  };
 };
 
 /** Emails the other side: me when a client writes, the client when I do. */
@@ -61,7 +80,7 @@ const notify: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
         projectTitle: project.title,
         author: client.name,
         body: doc.body,
-        href: `${process.env.NEXT_PUBLIC_SITE_URL || "https://faridzeynalov.com"}/admin/collections/project-comments/${doc.id}`,
+        href: `${process.env.NEXT_PUBLIC_SITE_URL || "https://faridzeynalov.com"}/admin/collections/client-projects/${project.id}#conversation`,
       });
       await req.payload.sendEmail({ to: settings.email || owner.email, ...mail });
     } else {
@@ -81,9 +100,18 @@ const notify: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   return doc;
 };
 
+/** A deleted comment takes its replies with it. */
+const deleteReplies: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  await req.payload.delete({
+    collection: "project-comments",
+    where: { parent: { equals: id } },
+    req,
+  });
+};
+
 /**
- * The conversation on a client project: the client writes in the portal, I answer here (or
- * there). Each side gets an email about the other's comments.
+ * The conversation on a client project: the client writes in the portal, I answer in the project's
+ * conversation in the admin. Each side gets an email about the other's comments.
  */
 export const ProjectComments: CollectionConfig = {
   slug: "project-comments",
@@ -98,7 +126,7 @@ export const ProjectComments: CollectionConfig = {
   },
   defaultSort: "-createdAt",
   access: { read: ownComments, create: signedIn, update: isAdmin, delete: isAdmin },
-  hooks: { beforeChange: [setAuthor], afterChange: [notify] },
+  hooks: { beforeChange: [setAuthor], afterChange: [notify], beforeDelete: [deleteReplies] },
   fields: [
     {
       name: "project",
@@ -107,6 +135,25 @@ export const ProjectComments: CollectionConfig = {
       relationTo: "client-projects",
       required: true,
       index: true,
+    },
+    {
+      name: "parent",
+      label: l("Cavab verilən şərh", "In reply to", "Ответ на комментарий"),
+      type: "relationship",
+      relationTo: "project-comments",
+      index: true,
+      filterOptions: ({ data }) =>
+        data?.project
+          ? { project: { equals: idOf(data.project) }, parent: { exists: false } }
+          : false,
+      admin: {
+        position: "sidebar",
+        description: l(
+          "Boş qalsa, ümumi şərh olur.",
+          "Leave empty for a general comment.",
+          "Если пусто, это общий комментарий.",
+        ),
+      },
     },
     {
       name: "body",

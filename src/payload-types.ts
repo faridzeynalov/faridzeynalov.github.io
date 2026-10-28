@@ -416,6 +416,10 @@ export interface Client {
 export interface ProjectComment {
   id: number;
   project: number | ClientProject;
+  /**
+   * Leave empty for a general comment.
+   */
+  parent?: (number | null) | ProjectComment;
   body: string;
   author?:
     | ({
@@ -783,6 +787,7 @@ export interface ClientProjectsSelect<T extends boolean = true> {
  */
 export interface ProjectCommentsSelect<T extends boolean = true> {
   project?: T;
+  parent?: T;
   body?: T;
   author?: T;
   updatedAt?: T;

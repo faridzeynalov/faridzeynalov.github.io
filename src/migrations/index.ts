@@ -7,6 +7,7 @@ import * as migration_20261028_132615_user_avatar from './20261028_132615_user_a
 import * as migration_20261028_145841_media_and_settings_files from './20261028_145841_media_and_settings_files';
 import * as migration_20261028_160300_three_language_fields from './20261028_160300_three_language_fields';
 import * as migration_20261028_165258_client_portal from './20261028_165258_client_portal';
+import * as migration_20261028_191605_comment_replies from './20261028_191605_comment_replies';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261028_165258_client_portal.up,
     down: migration_20261028_165258_client_portal.down,
-    name: '20261028_165258_client_portal'
+    name: '20261028_165258_client_portal',
+  },
+  {
+    up: migration_20261028_191605_comment_replies.up,
+    down: migration_20261028_191605_comment_replies.down,
+    name: '20261028_191605_comment_replies'
   },
 ];

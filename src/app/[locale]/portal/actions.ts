@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { hasLocale } from "next-intl";
@@ -82,7 +83,10 @@ export async function requestReset(_: ActionState, form: FormData): Promise<Acti
   return { status: "sent" };
 }
 
-/** Adds the signed-in client's comment to one of their projects. */
+/**
+ * Adds the signed-in client's comment to one of their projects and refreshes the page, so it shows
+ * up right away.
+ */
 export async function addComment(_: ActionState, form: FormData): Promise<ActionState> {
   const locale = localeOf(form);
   const client = await getPortalClient();
@@ -101,5 +105,6 @@ export async function addComment(_: ActionState, form: FormData): Promise<Action
   } catch {
     return { status: "error" };
   }
-  redirect(`${portal(locale, `/projects/${project}`)}#comments`);
+  revalidatePath(portal(locale, `/projects/${project}`));
+  return { status: "sent" };
 }

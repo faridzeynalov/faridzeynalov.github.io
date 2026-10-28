@@ -146,5 +146,11 @@ export const ClientProjects: CollectionConfig = {
         },
       ],
     },
+    {
+      // The comments with the client, answered here: reply to one, or write a general one.
+      name: "conversation",
+      type: "ui",
+      admin: { components: { Field: "/payload/components/project-thread#ProjectThread" } },
+    },
   ],
 };
