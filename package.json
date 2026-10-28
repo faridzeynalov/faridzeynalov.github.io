@@ -19,7 +19,8 @@
     "payload": "node --env-file-if-exists=.env.local --import ./scripts/payload-loader.mjs node_modules/payload/bin.js --disable-transpile",
     "generate:types": "npm run payload -- generate:types",
     "generate:importmap": "npm run payload -- generate:importmap",
-    "seed": "node --env-file-if-exists=.env.local --import ./scripts/payload-loader.mjs scripts/seed-content.ts"
+    "seed": "node --env-file-if-exists=.env.local --import ./scripts/payload-loader.mjs scripts/seed-content.ts",
+    "seed:assets": "node --env-file-if-exists=.env.local --import ./scripts/payload-loader.mjs scripts/seed-assets.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.92.1",

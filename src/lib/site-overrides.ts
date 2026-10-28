@@ -1,5 +1,6 @@
 import { useMessages } from "next-intl";
 import { owner } from "@/data/owner";
+import { withBasePath } from "@/lib/site";
 
 /**
  * Identity and contact details filled in under "Sayt ayarları" in the admin panel. Only fields
@@ -18,6 +19,11 @@ export interface SiteOverrides {
   linkedIn?: string;
   github?: string;
   instagram?: string;
+  /** The CV PDF uploaded in the admin. */
+  cvUrl?: string;
+  /** "Buy me a coffee": the link and its QR code. */
+  kofeUrl?: string;
+  kofeQr?: { src: string; width: number; height: number };
   /** Pages and home sections switched on or off under "Səhifələr" (everything on if missing). */
   pages?: {
     pages: Record<"portfolio" | "services" | "about" | "contact" | "cv", boolean>;
@@ -38,6 +44,13 @@ export function linkHandle(href: string) {
 /** Site settings as filled in by the admin, without empty fields. */
 export function useSiteOverrides(): SiteOverrides {
   return (useMessages().Site ?? {}) as SiteOverrides;
+}
+
+/** The CV PDF: the one uploaded under "Sayt ayarları", or the file shipped in public/. */
+export function cvHref(site: SiteOverrides, { download = false } = {}) {
+  if (!site.cvUrl) return withBasePath("/farid-zeynalov-cv.pdf");
+  // Vercel Blob serves the file as a download with this flag (download="" can't, across origins).
+  return download ? `${site.cvUrl}?download=1` : site.cvUrl;
 }
 
 /** Whether a page is switched on in the admin (menus hide the ones that are off). */

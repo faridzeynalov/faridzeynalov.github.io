@@ -192,6 +192,7 @@ export interface Project {
 export interface Media {
   id: number;
   alt?: string | null;
+  blurDataURL?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -487,6 +488,7 @@ export interface TranslationsSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  blurDataURL?: T;
   _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -713,6 +715,17 @@ export interface SiteSetting {
     linkedIn?: string | null;
     github?: string | null;
     instagram?: string | null;
+  };
+  /**
+   * The site's “Download CV” buttons serve this file.
+   */
+  cv?: (number | null) | Media;
+  support?: {
+    url?: string | null;
+    /**
+     * Update the QR code when you change the link.
+     */
+    qr?: (number | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -948,6 +961,13 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         linkedIn?: T;
         github?: T;
         instagram?: T;
+      };
+  cv?: T;
+  support?:
+    | T
+    | {
+        url?: T;
+        qr?: T;
       };
   updatedAt?: T;
   createdAt?: T;

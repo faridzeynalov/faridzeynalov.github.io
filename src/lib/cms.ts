@@ -31,6 +31,12 @@ import type { AiIcon, Faq, ProcessStep, Service, ServiceIcon } from "@/types/con
 import type { Industry, Project, ProjectImages, SiteLanguage } from "@/types/project";
 
 /**
+ * Part of the cache key below. The cache outlives deploys (Vercel keeps it), so bump this when
+ * what loadCms returns changes shape or form (new fields, other file URLs), or old entries stay.
+ */
+const CMS_CACHE_VERSION = "2";
+
+/**
  * Everything edited in the admin panel, in one language. Cached across requests and builds until
  * something is saved there (see revalidate-site.ts). Without a database (CI, a fresh checkout)
  * or when it can't be reached, this is null and the site uses its built-in content.
@@ -47,7 +53,7 @@ const loadCms = unstable_cache(
       const all = { locale, depth: 0, pagination: false, sort: "_order" } as const;
       const [settings, seo, profile, ai, pages, projects, services, process, faq, translations] =
         await Promise.all([
-          payload.findGlobal({ slug: "site-settings", locale, depth: 0 }),
+          payload.findGlobal({ slug: "site-settings", locale, depth: 1 }),
           payload.findGlobal({ slug: "seo", locale, depth: 1 }),
           payload.findGlobal({ slug: "profile", locale, depth: 0 }),
           payload.findGlobal({ slug: "ai", locale, depth: 0 }),
@@ -81,7 +87,7 @@ const loadCms = unstable_cache(
       return null;
     }
   },
-  ["cms"],
+  ["cms", CMS_CACHE_VERSION],
   { tags: [CMS_TAG] },
 );
 
@@ -92,7 +98,9 @@ export const getCms = cache(loadCms);
 /** Only the settings that were filled in. */
 export function toSiteOverrides(settings: SiteSetting | null | undefined): SiteOverrides {
   if (!settings) return {};
-  const values: Record<keyof Omit<SiteOverrides, "pages">, string | null | undefined> = {
+  const cv = typeof settings.cv === "object" ? settings.cv : null;
+  const qr = typeof settings.support?.qr === "object" ? settings.support.qr : null;
+  const values: Record<keyof Omit<SiteOverrides, "pages" | "kofeQr">, string | null | undefined> = {
     name: settings.name,
     role: settings.role,
     location: settings.location,
@@ -103,10 +111,19 @@ export function toSiteOverrides(settings: SiteSetting | null | undefined): SiteO
     linkedIn: settings.links?.linkedIn,
     github: settings.links?.github,
     instagram: settings.links?.instagram,
+    cvUrl: cv?.url,
+    kofeUrl: settings.support?.url,
   };
-  return Object.fromEntries(
-    Object.entries(values).flatMap(([key, value]) => (value?.trim() ? [[key, value.trim()]] : [])),
-  );
+  return {
+    ...Object.fromEntries(
+      Object.entries(values).flatMap(([key, value]) =>
+        value?.trim() ? [[key, value.trim()]] : [],
+      ),
+    ),
+    ...(qr?.url
+      ? { kofeQr: { src: qr.url, width: qr.width ?? 512, height: qr.height ?? 512 } }
+      : {}),
+  };
 }
 
 export async function getSiteOverrides(locale: Locale): Promise<SiteOverrides> {
@@ -353,7 +370,7 @@ export async function getServicesContent(locale: Locale): Promise<{
 
 /* ------------------------------------------------------------------ Projects */
 
-/** Uploaded screenshots have no blur placeholder of their own: a neutral one stands in. */
+/** For uploads saved before blur placeholders were made (see collections/media.ts). */
 const BLUR = "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
 
 function toImage(media: number | Media | null | undefined) {
@@ -362,7 +379,7 @@ function toImage(media: number | Media | null | undefined) {
     src: media.url,
     width: media.width ?? 1440,
     height: media.height ?? 900,
-    blurDataURL: BLUR,
+    blurDataURL: media.blurDataURL || BLUR,
   };
 }
 

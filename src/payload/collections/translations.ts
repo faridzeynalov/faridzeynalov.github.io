@@ -25,7 +25,8 @@ export const Translations: CollectionConfig = {
     ),
   },
   defaultSort: "key",
-  access: { read: () => true },
+  // Rows come from messages/*.json (npm run seed): a key the site doesn't use would do nothing.
+  access: { read: () => true, create: () => false },
   hooks: { afterChange: [revalidateAfterChange], afterDelete: [revalidateAfterDelete] },
   fields: [
     {

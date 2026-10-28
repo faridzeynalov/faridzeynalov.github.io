@@ -1,10 +1,9 @@
-import type { SiteOverrides } from "@/lib/site-overrides";
+import { cvHref, type SiteOverrides } from "@/lib/site-overrides";
 import { getProfile } from "@/data/profile";
 import { getServices } from "@/data/services";
 import { localeNames, routing, type Locale } from "@/i18n/routing";
 import { getIndustryFilters } from "@/lib/industries";
 import { featuredOf, getAllProjects, getIndustryLabels } from "@/lib/projects";
-import { withBasePath } from "@/lib/site";
 import type { Service } from "@/types/content";
 import type { TreeNode } from "@/types/nav";
 import type { Industry, Project } from "@/types/project";
@@ -98,7 +97,7 @@ export function buildNavTree(
         {
           kind: "file",
           name: "farid-zeynalov-cv.pdf",
-          href: withBasePath("/farid-zeynalov-cv.pdf"),
+          href: cvHref(site),
           icon: "pdf",
           download: true,
         },

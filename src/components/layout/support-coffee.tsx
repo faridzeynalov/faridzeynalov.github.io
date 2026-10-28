@@ -7,8 +7,12 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useId, useRef, useState } from "react";
 import qrCode from "@/assets/kofe-qr.png";
+import { useSiteOverrides } from "@/lib/site-overrides";
 
 const KOFE_URL = "https://kofe.al/@faridzeynalov";
+
+/** "kofe.al/@faridzeynalov" from the full link. */
+const shortLink = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
 
 /**
  * "Buy me a coffee": a button fixed to the bottom-left corner (the game button sits level with it
@@ -17,6 +21,9 @@ const KOFE_URL = "https://kofe.al/@faridzeynalov";
  */
 export function SupportCoffee() {
   const t = useTranslations("Support");
+  // Link and QR code from the admin's "Sayt ayarları", or the built-in ones.
+  const site = useSiteOverrides();
+  const kofeUrl = site.kofeUrl ?? KOFE_URL;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -69,15 +76,20 @@ export function SupportCoffee() {
             <p className="mt-1 text-sm text-pretty text-fg-muted">{t("text")}</p>
             {/* The code stays black on white in every style and mode, so it always scans. */}
             <div className="mx-auto mt-4 w-44 rounded-xl bg-white p-2">
-              <Image src={qrCode} alt={t("qr")} sizes="176px" className="h-auto w-full" />
+              <Image
+                src={site.kofeQr ?? qrCode}
+                alt={t("qr")}
+                sizes="176px"
+                className="h-auto w-full"
+              />
             </div>
             <a
-              href={KOFE_URL}
+              href={kofeUrl}
               target="_blank"
               rel="noreferrer"
               className="mt-4 flex items-center justify-center gap-1.5 rounded-pill bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-opacity hover:opacity-90"
             >
-              kofe.al/@faridzeynalov
+              {shortLink(kofeUrl)}
               <ArrowUpRight className="size-4" aria-hidden />
             </a>
           </m.div>

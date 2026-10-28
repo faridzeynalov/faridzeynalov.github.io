@@ -7,10 +7,10 @@ import { LocalTime } from "@/components/layout/local-time";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { CopyButton } from "@/components/ui/copy-button";
-import { getPageSwitches, getSeo, getSiteProfile } from "@/lib/cms";
+import { getPageSwitches, getSeo, getSiteOverrides, getSiteProfile } from "@/lib/cms";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
-import { withBasePath } from "@/lib/site";
+import { cvHref } from "@/lib/site-overrides";
 
 export async function generateMetadata({
   params,
@@ -33,6 +33,8 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
   setRequestLocale(locale);
   // Switched off under "Səhifələr" in the admin panel.
   if (!(await getPageSwitches(locale)).pages.contact) notFound();
+  // The CV uploaded in the admin's "Sayt ayarları", or the one in public/.
+  const cvUrl = cvHref(await getSiteOverrides(locale));
   const t = await getTranslations("ContactPage");
   const tc = await getTranslations("Common");
   const profile = await getSiteProfile(locale);
@@ -137,7 +139,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
               </StaggerItem>
               <StaggerItem as="li">
                 <ContactRow
-                  href={withBasePath("/farid-zeynalov-cv.pdf")}
+                  href={cvUrl}
                   label={t("cv")}
                   value={tc("downloadPdf")}
                   icon={<Download aria-hidden />}

@@ -9,11 +9,17 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { ContactCta } from "@/components/sections/contact-cta";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
-import { getPageSwitches, getPrinciples, getSeo, getSiteProfile } from "@/lib/cms";
+import {
+  getPageSwitches,
+  getPrinciples,
+  getSeo,
+  getSiteOverrides,
+  getSiteProfile,
+} from "@/lib/cms";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
-import { withBasePath } from "@/lib/site";
+import { cvHref } from "@/lib/site-overrides";
 import { toFileName } from "@/lib/utils";
 
 export async function generateMetadata({
@@ -43,6 +49,8 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   setRequestLocale(locale);
   // Switched off under "Səhifələr" in the admin panel.
   if (!(await getPageSwitches(locale)).pages.about) notFound();
+  // The CV uploaded in the admin's "Sayt ayarları", or the one in public/.
+  const cvUrl = cvHref(await getSiteOverrides(locale));
   const t = await getTranslations("AboutPage");
   const tc = await getTranslations("Common");
   const profile = await getSiteProfile(locale);
@@ -211,11 +219,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
           </ol>
 
           <Reveal className="mt-16 flex flex-wrap gap-3">
-            <a
-              href={withBasePath("/farid-zeynalov-cv.pdf")}
-              download
-              className={buttonVariants({ variant: "secondary" })}
-            >
+            <a href={cvUrl} download className={buttonVariants({ variant: "secondary" })}>
               <Download aria-hidden />
               {tc("downloadCv")}
             </a>

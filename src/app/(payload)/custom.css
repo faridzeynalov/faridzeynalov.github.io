@@ -99,14 +99,17 @@ body {
 
 /* ================================================================ Page */
 
-/* A faint grid and accent glow at the top of every page, fading out, as on the site's hero. */
+/*
+ * A faint grid and accent glow at the top of every page, fading out, as on the site's hero. On
+ * ::after: Payload uses the wrapper's ::before itself (to dim the page under the mobile menu).
+ */
 .template-default__wrap {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
 }
 
-.template-default__wrap::before {
+.template-default__wrap::after {
   content: "";
   position: absolute;
   inset: 0 0 auto;
@@ -757,18 +760,30 @@ h1 {
 }
 
 /* "Create new" next to list titles. */
-.list-create-new-doc__create-new-button,
-.btn--style-pill {
+.list-create-new-doc__create-new-button {
   padding-inline: 14px;
   background: var(--fz-accent);
   color: var(--fz-accent-fg);
   font-weight: 600;
 }
 
-.list-create-new-doc__create-new-button:hover,
-.btn--style-pill:hover {
+.list-create-new-doc__create-new-button:hover {
   background: var(--theme-text);
   color: var(--fz-page);
+}
+
+/* Other pill buttons (upload fields' "Create new" / "Choose from existing", …) stay quiet. */
+.btn--style-pill:not(.list-create-new-doc__create-new-button) {
+  padding-inline: 14px;
+  background: var(--fz-card);
+  box-shadow: inset 0 0 0 1px var(--fz-border-strong);
+  color: var(--theme-text);
+  font-weight: 500;
+}
+
+.btn--style-pill:not(.list-create-new-doc__create-new-button):hover {
+  box-shadow: inset 0 0 0 1px var(--fz-accent);
+  color: var(--fz-accent);
 }
 
 .pill {
@@ -1758,7 +1773,7 @@ html[data-theme="dark"]:has([data-fz-style-marker="plain"]) {
   --fz-accent-fg: #0b1220;
 }
 
-html:has([data-fz-style-marker="plain"]) .template-default__wrap::before {
+html:has([data-fz-style-marker="plain"]) .template-default__wrap::after {
   display: none;
 }
 
@@ -1830,7 +1845,7 @@ html[data-theme="dark"]:has([data-fz-style-marker="vscode"]) {
   --theme-input-bg: #313131;
 }
 
-html:has([data-fz-style-marker="vscode"]) .template-default__wrap::before {
+html:has([data-fz-style-marker="vscode"]) .template-default__wrap::after {
   display: none;
 }
 
@@ -1982,5 +1997,429 @@ html:has([data-fz-style-marker="vscode"]) .fz-chart__bar {
     width: 52px;
     height: 52px;
     font-size: 18px;
+  }
+}
+
+/* ================================================================ Phones and tablets */
+
+/* Brand row with the drawer's close button (hidden on desktop, where the sidebar stays open). */
+.fz-nav-head__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fz-nav-head__top .fz-nav-brand {
+  flex: 1;
+  min-width: 0;
+}
+
+.fz-nav-close {
+  display: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  margin-top: 6px;
+  border: 1px solid var(--fz-border);
+  border-radius: 10px;
+  background: var(--fz-card);
+  color: var(--theme-text);
+  cursor: pointer;
+}
+
+.fz-nav-close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.fz-nav-backdrop {
+  display: none;
+}
+
+/*
+ * Up to 1024px the sidebar is a drawer that slides over the page instead of a column beside it:
+ * the page keeps its full width (no squeezing, no sideways scroll), a backdrop dims it and closes
+ * the drawer, and the page underneath doesn't scroll while it's open.
+ */
+@media (max-width: 1024px) {
+  /*
+   * Payload widens tab bars to the screen edges here; kept inside the gutters, with the pill
+   * switcher only as wide as its tabs.
+   */
+  .tabs-field {
+    left: 0;
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  /* Tabs wrap onto a second line rather than scrolling, so the selected one is always seen. */
+  .tabs-field__tabs {
+    flex-wrap: wrap;
+    width: fit-content !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    overflow: visible;
+    border-radius: 18px;
+  }
+
+  /* The breadcrumb shrinks (ending in "…") so the language and account buttons stay on screen. */
+  .app-header__step-nav-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .step-nav {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .step-nav > :last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-header__actions-wrapper,
+  .app-header__actions {
+    flex-shrink: 0;
+  }
+
+  /* "Last modified" and "Created" wrap instead of running off the screen. */
+  .doc-controls__meta {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .template-default,
+  .template-default--nav-open,
+  .template-default--nav-hydrated,
+  .template-default--nav-hydrated.template-default--nav-open {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .template-default .template-default__wrap {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .template-default__wrap::before {
+    display: none;
+  }
+
+  .template-default .nav,
+  .template-default--nav-hydrated .nav {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 200;
+    display: block;
+    width: min(320px, 86vw);
+    height: 100dvh;
+    opacity: 1;
+    border-right: 1px solid var(--fz-border);
+    box-shadow: 24px 0 60px -30px rgb(0 0 0 / 0.5);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition:
+      transform 320ms var(--fz-ease),
+      visibility 0s linear 320ms;
+  }
+
+  .template-default .nav--nav-open {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform 320ms var(--fz-ease),
+      visibility 0s;
+  }
+
+  .nav__scroll {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 16px 14px calc(20px + env(safe-area-inset-bottom));
+  }
+
+  .nav__link,
+  .fz-nav-dashboard {
+    min-height: 42px;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .nav__link.active::after,
+  .nav__link-indicator {
+    left: -14px;
+  }
+
+  .fz-nav-close {
+    display: grid;
+  }
+
+  .fz-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    display: block;
+    border: 0;
+    background: rgb(0 0 0 / 0.45);
+    backdrop-filter: blur(2px);
+    cursor: pointer;
+    animation: fz-fade 200ms ease-out;
+  }
+
+  html:has(.nav--nav-open),
+  html:has(.nav--nav-open) body {
+    overflow: hidden;
+  }
+
+  /* The top bar keeps its own controls; the account and language stay reachable. */
+  .app-header--nav-open .app-header__localizer {
+    display: flex;
+  }
+}
+
+@keyframes fz-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Never a sideways scrollbar on the page itself: wide content (tables) scrolls in its own box. */
+html,
+body {
+  overflow-x: clip;
+}
+
+.collection-list__list-selection-actions,
+.template-default__wrap,
+.collection-list,
+.collection-edit,
+.global-edit,
+.dashboard {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  /* Dashboard */
+  .fz-intro {
+    padding: 22px 20px;
+    border-radius: 20px;
+  }
+
+  .fz-intro h1 {
+    padding-right: 64px;
+    font-size: 32px;
+  }
+
+  .fz-intro p {
+    font-size: 14px;
+  }
+
+  .fz-intro__links {
+    margin-top: 20px;
+  }
+
+  .fz-intro__links a {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .fz-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .fz-kpi {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .fz-kpi strong {
+    font-size: 28px;
+  }
+
+  .fz-kpi__note {
+    font-size: 12px;
+  }
+
+  .fz-panel {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .fz-chart {
+    gap: 4px;
+    height: 160px;
+  }
+
+  .fz-chart__day {
+    font-size: 9.5px;
+  }
+
+  /* Every other day label, so they don't crowd. */
+  .fz-chart li:nth-child(even) .fz-chart__day {
+    visibility: hidden;
+  }
+
+  .fz-bars li:has(.fz-bars__label--wide) {
+    grid-template-columns: 96px 1fr 24px;
+  }
+
+  .fz-recent a {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "kind time"
+      "title title";
+    gap: 6px 10px;
+    padding: 12px 4px;
+  }
+
+  .fz-recent__kind {
+    grid-area: kind;
+  }
+
+  .fz-recent__title {
+    grid-area: title;
+    white-space: normal;
+  }
+
+  .fz-recent time {
+    grid-area: time;
+  }
+
+  .card {
+    min-height: 112px;
+    padding: 16px;
+  }
+
+  /* Lists */
+  .list-header__title {
+    font-size: 30px;
+  }
+
+  .list-header__title-and-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .custom-view-description,
+  .view-description {
+    font-size: 13px;
+  }
+
+  .search-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  .search-bar .search-filter {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .search-bar .search-filter__input,
+  .search-bar input {
+    min-height: 36px;
+    padding-inline: 32px 8px;
+  }
+
+  .search-bar__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 6px;
+  }
+
+  .search-bar__actions .pill,
+  .search-bar__actions .btn {
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+  }
+
+  /* Payload bleeds tables to the screen edges here; as cards they stay inside the gutters. */
+  .table {
+    left: 0;
+    width: 100%;
+    padding-left: 0;
+    border-radius: 14px;
+  }
+
+  .table table tbody td,
+  .table table thead th {
+    padding-block: 12px;
+  }
+
+  .page-controls,
+  .paginator {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Edit views */
+  .doc-header__title {
+    font-size: 26px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .doc-controls__content,
+  .doc-controls__controls-wrapper {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .doc-controls__content {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs-field__tabs {
+    max-width: 100%;
+    margin-bottom: 18px;
+  }
+
+  .tabs-field__tab-button {
+    padding: 7px 14px;
+    font-size: 12.5px;
+  }
+
+  .field-type input,
+  .field-type textarea {
+    font-size: 16px; /* iOS doesn't zoom into fields of 16px and up */
+  }
+
+  .collapsible {
+    border-radius: 14px;
+  }
+
+  .document-fields__sidebar-wrap {
+    border-left: 0;
+    border-top: 1px solid var(--fz-border);
+  }
+
+  /* Top bar */
+  .app-header__actions {
+    gap: 8px;
+  }
+
+  .localizer-button {
+    padding: 4px 10px;
+  }
+
+  .localizer-button__label {
+    display: none;
   }
 }

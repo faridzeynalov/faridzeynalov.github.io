@@ -10,7 +10,7 @@
 // The page draws each stroke from 0 as a mask over the real Caveat outline (ScrollLitText), so
 // the result looks exactly like Caveat, but appears stroke by stroke, with the pen following.
 //
-// Output: src/components/about/handwriting/{en,az,ru}.json, only the letters each text uses.
+// Output: src/components/about/handwriting/{en,az,ru}.json, with every letter of each language.
 // Usage: node scripts/build-handwriting.mjs [path/to/Caveat-Medium.ttf]
 //   (downloads Caveat Medium from Google Fonts when no path is given)
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
@@ -430,11 +430,24 @@ function buildGlyph(font, glyph) {
   };
 }
 
+/*
+ * Every letter of each language's alphabet (plus Latin, digits and punctuation), not only the
+ * ones in today's text: the About story is edited in the admin panel, and a letter missing here
+ * would fall back to the plain font.
+ */
+const LATIN = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const COMMON = `${LATIN}0123456789.,;:!?'"’“”«»()[]-–—/&%+@#*…`;
+const ALPHABETS = {
+  en: COMMON,
+  az: `${COMMON}əğıöşüçƏĞİÖŞÜÇ`,
+  ru: `${COMMON}абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ`,
+};
+
 const font = await loadFont();
 mkdirSync(OUT_DIR, { recursive: true });
 for (const locale of LOCALES) {
   const content = await import(`../src/content/${locale}.ts`);
-  const text = content[locale].profile.about.join(" ");
+  const text = content[locale].profile.about.join(" ") + ALPHABETS[locale];
   const glyphs = {};
   for (const ch of [...new Set([...text.replace(/\s/g, "")])].sort()) {
     const glyph = font.charToGlyph(ch);

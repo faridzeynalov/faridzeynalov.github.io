@@ -8,11 +8,18 @@ import { DrawLine, ReadingProgress } from "@/components/cv/reading-progress";
 import { PromptEyebrow } from "@/components/layout/page-header";
 import { Enter } from "@/components/motion/enter";
 import { buttonVariants } from "@/components/ui/button";
-import { getPageSwitches, getProjects, getSeo, getSiteAi, getSiteProfile } from "@/lib/cms";
+import {
+  getPageSwitches,
+  getProjects,
+  getSeo,
+  getSiteAi,
+  getSiteOverrides,
+  getSiteProfile,
+} from "@/lib/cms";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
-import { withBasePath } from "@/lib/site";
+import { cvHref } from "@/lib/site-overrides";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/cv">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
@@ -34,13 +41,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/cv">): P
   };
 }
 
-const CV_PDF = "/farid-zeynalov-cv.pdf";
-
 export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
   // Switched off under "Səhifələr" in the admin panel.
   if (!(await getPageSwitches(locale)).pages.cv) notFound();
+  // The CV uploaded in the admin's "Sayt ayarları", or the one in public/.
+  const cvUrl = cvHref(await getSiteOverrides(locale), { download: true });
   const t = await getTranslations("CvPage");
   const tc = await getTranslations("Common");
   const profile = await getSiteProfile(locale);
@@ -73,7 +80,7 @@ export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
           </p>
           <div className="flex flex-wrap gap-2">
             <PrintButton />
-            <a href={withBasePath(CV_PDF)} download className={buttonVariants()}>
+            <a href={cvUrl} download className={buttonVariants()}>
               <Download aria-hidden />
               {tc("downloadPdf")}
             </a>

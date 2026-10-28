@@ -5,12 +5,13 @@ import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useProfile } from "@/data/profile";
-import { withBasePath } from "@/lib/site";
+import { cvHref, useSiteOverrides } from "@/lib/site-overrides";
 
 export function About() {
   const t = useTranslations("AboutSection");
   const tc = useTranslations("Common");
   const profile = useProfile();
+  const site = useSiteOverrides();
   return (
     <section id="about" aria-labelledby="about-title" className="py-24 md:py-32">
       <div className="container-page">
@@ -33,11 +34,7 @@ export function About() {
               </p>
             ))}
             <div className="flex flex-wrap gap-3 pt-4">
-              <a
-                href={withBasePath("/farid-zeynalov-cv.pdf")}
-                download
-                className={buttonVariants({ variant: "secondary" })}
-              >
+              <a href={cvHref(site)} download className={buttonVariants({ variant: "secondary" })}>
                 <Download aria-hidden />
                 {tc("downloadCv")}
                 <span className="font-mono text-xs text-fg-subtle">PDF</span>

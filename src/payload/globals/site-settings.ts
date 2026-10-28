@@ -68,5 +68,51 @@ export const SiteSettings: GlobalConfig = {
         { name: "instagram", label: "Instagram", type: "text" },
       ],
     },
+    {
+      name: "cv",
+      label: l("CV faylı (PDF)", "CV file (PDF)", "Файл резюме (PDF)"),
+      type: "upload",
+      relationTo: "media",
+      filterOptions: { mimeType: { equals: "application/pdf" } },
+      admin: {
+        description: l(
+          "Saytdakı “CV-ni yüklə” düymələri bu faylı verir.",
+          "The site's “Download CV” buttons serve this file.",
+          "Кнопки «Скачать резюме» на сайте отдают этот файл.",
+        ),
+      },
+    },
+    {
+      name: "support",
+      label: l("“Mənə kofe al” düyməsi", "“Buy me a coffee” button", "Кнопка «Купи мне кофе»"),
+      type: "group",
+      fields: [
+        {
+          type: "row",
+          fields: [
+            {
+              name: "url",
+              label: l("Link", "Link", "Ссылка"),
+              type: "text",
+              admin: { placeholder: "https://kofe.al/@faridzeynalov" },
+            },
+            {
+              name: "qr",
+              label: l("QR kod", "QR code", "QR-код"),
+              type: "upload",
+              relationTo: "media",
+              filterOptions: { mimeType: { contains: "image" } },
+              admin: {
+                description: l(
+                  "Linki dəyişəndə QR kodu da yeniləyin.",
+                  "Update the QR code when you change the link.",
+                  "Меняя ссылку, обновите и QR-код.",
+                ),
+              },
+            },
+          ],
+        },
+      ],
+    },
   ],
 };
