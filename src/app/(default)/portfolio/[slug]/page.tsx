@@ -5,7 +5,7 @@ import { defaultLocaleProps } from "@/i18n/default-locale";
 
 export { generateStaticParams } from "../../../[locale]/portfolio/[slug]/page";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 interface Props {
   params: Promise<{ slug: string }>;

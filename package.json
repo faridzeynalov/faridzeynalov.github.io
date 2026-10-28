@@ -18,7 +18,8 @@
     "capture:images": "node scripts/optimize-captures.mjs .captures/full .captures/sections && node scripts/generate-image-map.mjs",
     "payload": "node --env-file-if-exists=.env.local --import ./scripts/payload-loader.mjs node_modules/payload/bin.js --disable-transpile",
     "generate:types": "npm run payload -- generate:types",
-    "generate:importmap": "npm run payload -- generate:importmap"
+    "generate:importmap": "npm run payload -- generate:importmap",
+    "seed": "node --env-file-if-exists=.env.local --import ./scripts/payload-loader.mjs scripts/seed-content.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.92.1",
@@ -26,6 +27,7 @@
     "@payloadcms/richtext-lexical": "^3.92.1",
     "@payloadcms/storage-vercel-blob": "^3.92.1",
     "@payloadcms/translations": "^3.92.1",
+    "@payloadcms/ui": "^3.92.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "graphql": "^16.14.2",

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { notFound } from "next/navigation";
 import { CursorEffects } from "@/components/layout/cursor-effects";
@@ -11,12 +11,17 @@ import { ThemeSync } from "@/components/layout/theme-sync";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProvider } from "@/components/motion/motion-provider";
-import { getSeo, getSiteOverrides, getSiteProfile } from "@/lib/cms";
-import { getServices } from "@/data/services";
+import {
+  getIndustryNames,
+  getProjects,
+  getSeo,
+  getServicesContent,
+  getSiteOverrides,
+  getSiteProfile,
+} from "@/lib/cms";
 import { LOCALE_STORAGE_KEY, routing, type Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath, ogLocale } from "@/lib/i18n-metadata";
 import { buildNavTree } from "@/lib/nav-tree";
-import { getAllProjects } from "@/lib/projects";
 import { basePath, siteUrl } from "@/lib/site";
 import { jsonLd, siteStructuredData } from "@/lib/structured-data";
 import { themeInitScript } from "@/lib/theme";
@@ -126,23 +131,29 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   // Enables static rendering for this locale (no request-time data on GitHub Pages).
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Nav" });
+  // Everything but the admin's long-form content, which only Server Components read.
+  const { Content: _serverOnly, ...clientMessages } = await getMessages();
   const tExplorer = await getTranslations({ locale, namespace: "Explorer" });
-  const [{ profile, description, servicesName }, site] = await Promise.all([
-    siteMeta(locale),
-    getSiteOverrides(locale),
-  ]);
+  const [{ profile, description, servicesName }, site, { services }, projects, industries] =
+    await Promise.all([
+      siteMeta(locale),
+      getSiteOverrides(locale),
+      getServicesContent(locale),
+      getProjects(locale),
+      getIndustryNames(locale),
+    ]);
   const structuredData = siteStructuredData({
     locale,
     profile,
     description,
     servicesName,
-    services: getServices(locale),
+    services,
     sameAs: profile.social.filter((link) => link.href.startsWith("http")).map((link) => link.href),
   });
   const tree = buildNavTree(
     locale,
-    { projects: tExplorer("projects", { count: getAllProjects(locale).length }) },
-    site,
+    { projects: tExplorer("projects", { count: projects.length }) },
+    { projects, services, industries, site },
   );
 
   return (
@@ -164,7 +175,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       </head>
       <body className="min-h-dvh">
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData)} />
-        <NextIntlClientProvider>
+        <NextIntlClientProvider messages={clientMessages}>
           <a
             href="#main"
             className="fixed top-3 left-3 z-[100] -translate-y-20 rounded-full bg-fg px-4 py-2 text-sm text-bg transition-transform focus:translate-y-0"

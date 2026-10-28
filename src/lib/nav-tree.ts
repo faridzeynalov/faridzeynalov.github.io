@@ -3,9 +3,11 @@ import { getProfile } from "@/data/profile";
 import { getServices } from "@/data/services";
 import { localeNames, routing, type Locale } from "@/i18n/routing";
 import { getIndustryFilters } from "@/lib/industries";
-import { getAllProjects, getFeaturedProjects, getIndustryLabels } from "@/lib/projects";
+import { featuredOf, getAllProjects, getIndustryLabels } from "@/lib/projects";
 import { withBasePath } from "@/lib/site";
+import type { Service } from "@/types/content";
 import type { TreeNode } from "@/types/nav";
+import type { Industry, Project } from "@/types/project";
 
 /**
  * The mobile menu as a VS Code-style file tree. Built on the server (it reads project data)
@@ -14,13 +16,22 @@ import type { TreeNode } from "@/types/nav";
 export function buildNavTree(
   locale: Locale,
   labels: { projects: string },
-  site: SiteOverrides = {},
+  content: {
+    projects: Project[];
+    services: Service[];
+    industries: Record<Industry, string>;
+    site?: SiteOverrides;
+  } = {
+    projects: getAllProjects(locale),
+    services: getServices(locale),
+    industries: getIndustryLabels(locale),
+  },
 ): TreeNode[] {
-  const projects = getAllProjects(locale);
+  const { projects, services, industries, site = {} } = content;
   const profile = getProfile(locale, site);
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
 
-  return [
+  const tree: TreeNode[] = [
     { kind: "file", name: "home.tsx", href: "/", icon: "react" },
     {
       kind: "folder",
@@ -40,7 +51,7 @@ export function buildNavTree(
           kind: "folder",
           name: "featured",
           icon: "plain",
-          children: getFeaturedProjects(locale).map((project): TreeNode => ({
+          children: featuredOf(projects).map((project): TreeNode => ({
             kind: "file",
             name: `${project.slug}.tsx`,
             href: `/portfolio/${project.slug}`,
@@ -51,15 +62,13 @@ export function buildNavTree(
           kind: "folder",
           name: "industries",
           icon: "plain",
-          children: getIndustryFilters(projects, getIndustryLabels(locale), locale).map(
-            (industry): TreeNode => ({
-              kind: "file",
-              name: industry.id,
-              href: `/portfolio?industry=${industry.id}`,
-              icon: "filter",
-              hint: String(industry.count),
-            }),
-          ),
+          children: getIndustryFilters(projects, industries, locale).map((industry): TreeNode => ({
+            kind: "file",
+            name: industry.id,
+            href: `/portfolio?industry=${industry.id}`,
+            icon: "filter",
+            hint: String(industry.count),
+          })),
         },
       ],
     },
@@ -70,7 +79,7 @@ export function buildNavTree(
       matchPrefix: "/services",
       children: [
         { kind: "file", name: "index.tsx", href: "/services", icon: "react" },
-        ...getServices(locale).map((service): TreeNode => ({
+        ...services.map((service): TreeNode => ({
           kind: "file",
           name: `${service.id}.tsx`,
           href: `/services#${service.id}`,
@@ -158,4 +167,13 @@ export function buildNavTree(
       })),
     },
   ];
+  // Pages switched off in the admin's "Səhifələr" leave the menu too.
+  return tree.filter(
+    (node) =>
+      node.kind !== "folder" ||
+      !node.matchPrefix ||
+      site.pages?.pages[
+        node.matchPrefix.slice(1) as keyof NonNullable<SiteOverrides["pages"]>["pages"]
+      ] !== false,
+  );
 }

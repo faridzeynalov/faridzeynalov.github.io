@@ -1,29 +1,41 @@
 import type { GlobalConfig } from "payload";
+import { groups, l } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
-/** Identity and contact details used across the whole site. Empty fields keep the built-in text. */
+const emptyKeepsBuiltIn = l(
+  "Boş sahələr saytdakı indiki dəyəri saxlayır.",
+  "Empty fields keep the value currently on the site.",
+  "Пустые поля сохраняют текущее значение на сайте.",
+);
+
+/** Identity and contact details used across the whole site. */
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
-  label: "Sayt ayarları",
-  admin: { group: "Ayarlar" },
+  label: l("Sayt ayarları", "Site settings", "Настройки сайта"),
+  admin: { group: groups.settings, description: emptyKeepsBuiltIn },
   access: { read: () => true },
   hooks: { afterChange: [revalidateSite] },
   fields: [
     {
       type: "row",
       fields: [
-        { name: "name", label: "Ad Soyad", type: "text" },
-        { name: "role", label: "Vəzifə", type: "text", localized: true },
+        { name: "name", label: l("Ad Soyad", "Full name", "Имя и фамилия"), type: "text" },
+        {
+          name: "role",
+          label: l("Vəzifə", "Job title", "Должность"),
+          type: "text",
+          localized: true,
+        },
       ],
     },
-    { name: "location", label: "Şəhər", type: "text", localized: true },
+    { name: "location", label: l("Şəhər", "City", "Город"), type: "text", localized: true },
     {
       type: "row",
       fields: [
-        { name: "email", label: "Email", type: "email" },
+        { name: "email", label: l("Email", "Email", "Email"), type: "email" },
         {
           name: "phone",
-          label: "Telefon",
+          label: l("Telefon", "Phone", "Телефон"),
           type: "text",
           admin: { placeholder: "+994 51 306 35 96" },
         },
@@ -34,16 +46,21 @@ export const SiteSettings: GlobalConfig = {
       fields: [
         {
           name: "yearsOfExperience",
-          label: "Təcrübə (il)",
+          label: l("Təcrübə (il)", "Experience (years)", "Опыт (лет)"),
           type: "text",
           admin: { placeholder: "4+" },
         },
-        { name: "sitesShipped", label: "Layihə sayı", type: "text", admin: { placeholder: "25+" } },
+        {
+          name: "sitesShipped",
+          label: l("Layihə sayı", "Projects shipped", "Количество проектов"),
+          type: "text",
+          admin: { placeholder: "25+" },
+        },
       ],
     },
     {
       name: "links",
-      label: "Linklər",
+      label: l("Linklər", "Links", "Ссылки"),
       type: "group",
       fields: [
         { name: "linkedIn", label: "LinkedIn", type: "text" },

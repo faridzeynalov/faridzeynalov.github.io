@@ -9,3 +9,4 @@ src/assets
 src/migrations
 src/payload-types.ts
 src/app/(payload)
+src/components/about/handwriting

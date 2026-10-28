@@ -19,7 +19,7 @@ import { ExplorerTree } from "@/components/layout/explorer-tree";
 import { LogoMark } from "@/components/layout/logo";
 import { useSkin } from "@/components/layout/use-appearance";
 import { useActiveNav } from "@/components/layout/use-active-nav";
-import { useOwner } from "@/lib/site-overrides";
+import { useOwner, usePageEnabled } from "@/lib/site-overrides";
 import { Link, usePathname } from "@/i18n/navigation";
 import { navItems } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -129,6 +129,7 @@ interface PanelProps {
 /** Classic style: large page links that slide in one after another, plus contact details. */
 function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
   const owner = useOwner();
+  const pageEnabled = usePageEnabled();
   const t = useTranslations("Nav");
   const active = useActiveNav();
 
@@ -157,48 +158,50 @@ function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
           animate="show"
           variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } } }}
         >
-          {navItems.map((item, index) => (
-            <m.li
-              key={item.href}
-              variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.6, ease }}
-              className="border-b border-border"
-            >
-              <Link
-                href={item.href}
-                onClick={onNavigate}
-                aria-current={active === item.href ? "page" : undefined}
-                className={cn(
-                  "flex items-baseline justify-between py-5 text-4xl font-medium tracking-tight",
-                  active === item.href ? "text-fg" : "text-fg-muted",
-                )}
+          {navItems
+            .filter((item) => pageEnabled(item.href))
+            .map((item, index) => (
+              <m.li
+                key={item.href}
+                variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.6, ease }}
+                className="border-b border-border"
               >
-                <span>
-                  {/* 8-bit style: a game-menu cursor on the current page. Chess: a knight; Football: a
-                      ball. */}
-                  {active === item.href && (
-                    <>
-                      <span
-                        aria-hidden
-                        className="mr-3 hidden animate-[caret-blink_1.06s_steps(1)_infinite] text-accent pixel:inline"
-                      >
-                        ▶
-                      </span>
-                      <ChessKnight
-                        aria-hidden
-                        className="mr-3 hidden size-7 -translate-y-0.5 align-middle text-accent chess:inline"
-                      />
-                      <FootballIcon className="mr-3 hidden size-7 -translate-y-0.5 animate-[ball-spin_6s_linear_infinite] align-middle text-accent football:inline" />
-                    </>
+                <Link
+                  href={item.href}
+                  onClick={onNavigate}
+                  aria-current={active === item.href ? "page" : undefined}
+                  className={cn(
+                    "flex items-baseline justify-between py-5 text-4xl font-medium tracking-tight",
+                    active === item.href ? "text-fg" : "text-fg-muted",
                   )}
-                  {t(item.key)}
-                </span>
-                <span aria-hidden className="font-mono text-xs text-fg-subtle">
-                  0{index + 1}
-                </span>
-              </Link>
-            </m.li>
-          ))}
+                >
+                  <span>
+                    {/* 8-bit style: a game-menu cursor on the current page. Chess: a knight; Football: a
+                      ball. */}
+                    {active === item.href && (
+                      <>
+                        <span
+                          aria-hidden
+                          className="mr-3 hidden animate-[caret-blink_1.06s_steps(1)_infinite] text-accent pixel:inline"
+                        >
+                          ▶
+                        </span>
+                        <ChessKnight
+                          aria-hidden
+                          className="mr-3 hidden size-7 -translate-y-0.5 align-middle text-accent chess:inline"
+                        />
+                        <FootballIcon className="mr-3 hidden size-7 -translate-y-0.5 animate-[ball-spin_6s_linear_infinite] align-middle text-accent football:inline" />
+                      </>
+                    )}
+                    {t(item.key)}
+                  </span>
+                  <span aria-hidden className="font-mono text-xs text-fg-subtle">
+                    0{index + 1}
+                  </span>
+                </Link>
+              </m.li>
+            ))}
         </m.ul>
       </nav>
       <m.div

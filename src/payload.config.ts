@@ -9,8 +9,16 @@ import { fileURLToPath } from "node:url";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 import { migrations } from "./migrations";
+import { Faq } from "@/payload/collections/faq";
 import { Media } from "@/payload/collections/media";
+import { ProcessSteps } from "@/payload/collections/process-steps";
+import { Projects } from "@/payload/collections/projects";
+import { Services } from "@/payload/collections/services";
+import { Translations } from "@/payload/collections/translations";
 import { Users } from "@/payload/collections/users";
+import { Ai } from "@/payload/globals/ai";
+import { Pages } from "@/payload/globals/pages";
+import { Profile } from "@/payload/globals/profile";
 import { Seo } from "@/payload/globals/seo";
 import { SiteSettings } from "@/payload/globals/site-settings";
 
@@ -25,7 +33,24 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     importMap: { baseDir: dirname },
-    meta: { titleSuffix: " · Admin" },
+    meta: {
+      titleSuffix: " · Farid Zeynalov Admin",
+      icons: [{ rel: "icon", type: "image/svg+xml", url: "/icon.svg" }],
+    },
+    components: {
+      graphics: {
+        Logo: "/payload/components/brand#Logo",
+        Icon: "/payload/components/brand#Icon",
+      },
+      beforeDashboard: ["/payload/components/dashboard-intro#DashboardIntro"],
+      beforeNavLinks: [
+        "/payload/components/nav-extras#NavHeader",
+        "/payload/components/nav-stats#NavBadges",
+      ],
+      afterNavLinks: ["/payload/components/nav-stats#NavFooter"],
+    },
+    theme: "all",
+    avatar: { Component: "/payload/components/avatar#Avatar" },
   },
   i18n: { supportedLanguages: { az, en, ru }, fallbackLanguage: "az" },
   localization: {
@@ -37,8 +62,8 @@ export default buildConfig({
     defaultLocale: "az",
     fallback: false,
   },
-  collections: [Users, Media],
-  globals: [SiteSettings, Seo],
+  collections: [Projects, Services, ProcessSteps, Faq, Translations, Media, Users],
+  globals: [Profile, Ai, SiteSettings, Pages, Seo],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },

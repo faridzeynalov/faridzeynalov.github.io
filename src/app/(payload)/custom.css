@@ -1,0 +1,1986 @@
+/*
+ * The admin panel, dressed like the site (src/app/globals.css): the same warm off-white and
+ * near-black palettes, orange accent, Geist with Instrument Serif italics and Geist Mono labels,
+ * lucide icons, pill buttons and soft cards, laid out like a modern dashboard template. Unlayered,
+ * so it wins over Payload's own styles (which live in the payload-default layer).
+ */
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap");
+
+/* ================================================================ Tokens */
+
+/*
+ * Payload derives every surface, border and text colour from this one scale: light mode reads it
+ * from 0 (page) up to 1000, dark mode from 900 (page) down to 0. Its ends are the site's own
+ * colours: #f7f6f3 / #111113 in light, #0a0a0c / #121215 / #ededef in dark.
+ */
+:root {
+  --color-base-0: #f7f6f3;
+  --color-base-50: #efede8;
+  --color-base-100: #e7e5df;
+  --color-base-150: #dbd9d3;
+  --color-base-200: #cbc9c3;
+  --color-base-250: #b9b7b2;
+  --color-base-300: #a5a39f;
+  --color-base-350: #918f8c;
+  --color-base-400: #7e7d7b;
+  --color-base-450: #6c6c72;
+  --color-base-500: #5d5d64;
+  --color-base-550: #4f4f57;
+  --color-base-600: #43434a;
+  --color-base-650: #37373d;
+  --color-base-700: #2b2b31;
+  --color-base-750: #222227;
+  --color-base-800: #1a1a1e;
+  --color-base-850: #121215;
+  --color-base-900: #0a0a0c;
+  --color-base-950: #060607;
+  --color-base-1000: #000000;
+
+  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --style-radius-s: 8px;
+  --style-radius-m: 12px;
+  --style-radius-l: 18px;
+  --nav-width: 272px;
+
+  --fz-accent: #c2410c;
+  --fz-accent-soft: rgb(194 65 12 / 0.1);
+  --fz-accent-fg: #ffffff;
+  --fz-page: #f7f6f3;
+  --fz-sidebar: #efede8;
+  --fz-card: #ffffff;
+  --fz-muted: #6c6c75;
+  --fz-border: rgb(17 17 19 / 0.08);
+  --fz-border-strong: rgb(17 17 19 / 0.15);
+  --fz-hover: rgb(17 17 19 / 0.045);
+  --fz-grid: rgb(17 17 19 / 0.045);
+  --fz-live: #16a34a;
+  --fz-shadow: 0 1px 2px rgb(30 20 10 / 0.04), 0 10px 30px -18px rgb(30 20 10 / 0.18);
+  --fz-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="dark"] {
+  --fz-accent: #ff8a5b;
+  --fz-accent-soft: rgb(255 138 91 / 0.12);
+  --fz-accent-fg: #160a05;
+  --fz-page: #0a0a0c;
+  --fz-sidebar: #0e0e11;
+  --fz-card: #131316;
+  --fz-muted: #8b8b95;
+  --fz-border: rgb(255 255 255 / 0.07);
+  --fz-border-strong: rgb(255 255 255 / 0.14);
+  --fz-hover: rgb(255 255 255 / 0.05);
+  --fz-grid: rgb(255 255 255 / 0.035);
+  --fz-live: #4ade80;
+  --fz-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 40px -20px rgb(0 0 0 / 0.7);
+  --theme-input-bg: #131316;
+}
+
+html {
+  --theme-bg: var(--fz-page);
+  --theme-border-color: var(--fz-border);
+}
+
+body {
+  font-family: var(--font-body);
+  letter-spacing: -0.005em;
+  font-feature-settings: "ss01", "cv11";
+}
+
+::selection {
+  background: var(--fz-accent-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--fz-accent) !important;
+  outline-offset: 2px;
+}
+
+/* ================================================================ Page */
+
+/* A faint grid and accent glow at the top of every page, fading out, as on the site's hero. */
+.template-default__wrap {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+}
+
+.template-default__wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 460px;
+  background:
+    radial-gradient(60rem 22rem at 75% -6rem, var(--fz-accent-soft), transparent 70%),
+    linear-gradient(var(--fz-grid) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, var(--fz-grid) 1px, transparent 1px) 0 0 / 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  pointer-events: none;
+}
+
+/* ================================================================ Sidebar */
+
+.nav {
+  background: var(--fz-sidebar);
+  border-right: 1px solid var(--fz-border);
+}
+
+.nav__scroll {
+  padding: 18px 14px 20px;
+}
+
+.nav__header {
+  display: none;
+}
+
+.nav__wrap {
+  gap: 2px;
+}
+
+/* Brand block (components/nav-extras.tsx). */
+.fz-nav-head {
+  margin-bottom: 18px;
+}
+
+.fz-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 6px 8px 18px;
+  border-bottom: 1px solid var(--fz-border);
+  color: var(--theme-text);
+  text-decoration: none;
+}
+
+/* The site's FZ monogram (components/brand.tsx), tilting on hover as in the site's header. */
+.fz-nav-brand__mark {
+  width: 40px;
+  height: auto;
+  flex-shrink: 0;
+  color: var(--theme-text);
+  transition: transform 500ms var(--fz-ease);
+}
+
+.fz-nav-brand:hover .fz-nav-brand__mark {
+  transform: rotate(-6deg);
+}
+
+.fz-nav-brand strong {
+  display: block;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.fz-nav-brand em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.12em;
+  color: var(--fz-accent);
+}
+
+.fz-nav-brand small {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+/* Section labels as the site's eyebrows: "/ CONTENT" in mono. */
+.nav-group {
+  margin-top: 14px;
+}
+
+.nav-group__toggle {
+  padding: 4px 10px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+.nav-group__label::before {
+  content: "/ ";
+  color: var(--fz-accent);
+}
+
+.nav-group__indicator {
+  opacity: 0.5;
+}
+
+/*
+ * Links: icon and label, a soft pill when hovered, a raised card with an accent icon and marker
+ * when active (Payload marks the current section by rendering .nav__link-indicator inside it).
+ */
+.nav__link,
+.fz-nav-dashboard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 38px;
+  margin: 1px 0;
+  padding: 0 12px;
+  border-radius: 10px;
+  color: var(--theme-elevation-650);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background 160ms var(--fz-ease),
+    color 160ms var(--fz-ease);
+}
+
+html[data-theme="dark"] .nav__link,
+html[data-theme="dark"] .fz-nav-dashboard {
+  color: var(--theme-elevation-700);
+}
+
+.nav__link::before,
+.fz-nav-dashboard::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background: currentColor;
+  opacity: 0.75;
+  mask: var(--fz-icon) center / contain no-repeat;
+  -webkit-mask: var(--fz-icon) center / contain no-repeat;
+}
+
+.nav__link:hover,
+.fz-nav-dashboard:hover {
+  background: var(--fz-hover);
+  color: var(--theme-text);
+}
+
+.nav__link.active,
+.nav__link:has(> .nav__link-indicator),
+.nav__link[aria-current="page"],
+.fz-nav-dashboard.is-current {
+  background: var(--fz-card);
+  color: var(--theme-text);
+  font-weight: 600;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.06),
+    inset 0 0 0 1px var(--fz-border);
+}
+
+.nav__link.active::before,
+.nav__link:has(> .nav__link-indicator)::before,
+.nav__link[aria-current="page"]::before,
+.fz-nav-dashboard.is-current::before {
+  background: var(--fz-accent);
+  opacity: 1;
+}
+
+/* The marker at the sidebar's edge: Payload's own indicator, which only the current link has. */
+.nav__link-indicator {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: -14px;
+  display: block;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--fz-accent);
+}
+
+/*
+ * Count badges (components/nav-stats.tsx sets --fz-badge per link): muted counts, accented when
+ * something needs attention.
+ */
+.nav__link::after {
+  content: var(--fz-badge, none);
+  min-width: 22px;
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--fz-badge-bg, var(--fz-hover));
+  color: var(--fz-badge-fg, var(--fz-muted));
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.nav__link-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Open the site" card at the bottom of the links. */
+.fz-nav-site {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 12px 14px;
+  border: 1px solid var(--fz-border);
+  border-radius: 14px;
+  background: var(--fz-card);
+  color: var(--theme-text);
+  text-decoration: none;
+  transition:
+    border-color 160ms,
+    transform 160ms var(--fz-ease);
+}
+
+.fz-nav-site:hover {
+  border-color: var(--fz-border-strong);
+  transform: translateY(-1px);
+}
+
+.fz-nav-site strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fz-nav-site small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fz-muted);
+}
+
+.fz-nav-site__dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--fz-live);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--fz-live) 18%, transparent);
+}
+
+.fz-nav-site__arrow {
+  margin-left: auto;
+  color: var(--fz-muted);
+}
+
+.nav__controls {
+  padding-top: 14px;
+  border-top: 1px solid var(--fz-border);
+}
+
+.nav__log-out {
+  border-radius: 10px;
+}
+
+/* ================================================================ Top bar */
+
+.app-header {
+  border-bottom: 1px solid var(--fz-border);
+}
+
+.app-header__bg,
+.app-header--show-bg .app-header__bg {
+  background: color-mix(in srgb, var(--fz-page) 78%, transparent);
+  backdrop-filter: blur(16px);
+  opacity: 1;
+}
+
+.step-nav {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The FZ mark at the start of the breadcrumb. */
+.step-nav__home,
+.step-nav__home > span {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+}
+
+.step-nav__home svg {
+  width: 24px;
+  height: auto;
+}
+
+.step-nav a,
+.step-nav span {
+  color: var(--fz-muted);
+}
+
+.step-nav > *:last-child {
+  color: var(--theme-text);
+}
+
+.localizer-button,
+.app-header__account {
+  border-radius: 999px;
+}
+
+.localizer-button {
+  padding: 5px 12px;
+  border: 1px solid var(--fz-border);
+  background: var(--fz-card);
+  font-size: 12.5px;
+}
+
+.localizer-button__label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+/* ================================================================ Branding (login) */
+
+.fz-mark {
+  color: var(--theme-text);
+  flex-shrink: 0;
+}
+
+.fz-logo__mark {
+  width: 58px;
+  height: auto;
+  flex-shrink: 0;
+  color: var(--theme-text);
+}
+
+.fz-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fz-logo strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.fz-logo em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.1em;
+  color: var(--fz-accent);
+}
+
+.fz-logo small {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+.template-minimal {
+  background:
+    radial-gradient(48rem 26rem at 50% -8%, var(--fz-accent-soft), transparent 70%),
+    linear-gradient(var(--fz-grid) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, var(--fz-grid) 1px, transparent 1px) 0 0 / 48px 48px,
+    var(--fz-page);
+}
+
+.template-minimal__wrap {
+  padding: clamp(28px, 5vw, 44px);
+  border: 1px solid var(--fz-border);
+  border-radius: 24px;
+  background: var(--fz-card);
+  box-shadow: var(--fz-shadow);
+}
+
+.login__brand {
+  margin-bottom: 28px;
+}
+
+/* ================================================================ Headings */
+
+.list-header__title,
+.doc-header__title,
+.render-title,
+h1 {
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.list-header {
+  padding-block: 8px 4px;
+}
+
+.list-header__title {
+  font-size: clamp(30px, 3vw, 40px);
+  line-height: 1.05;
+}
+
+.custom-view-description,
+.view-description {
+  max-width: 70ch;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fz-muted);
+}
+
+.doc-header__title {
+  font-size: clamp(26px, 2.6vw, 36px);
+}
+
+/* ================================================================ Dashboard */
+
+.dashboard__wrap,
+.dashboard {
+  padding-top: 8px;
+}
+
+.fz-intro {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 36px;
+  padding: clamp(24px, 3.5vw, 40px);
+  border: 1px solid var(--fz-border);
+  border-radius: 24px;
+  background:
+    radial-gradient(36rem 18rem at 100% 0%, var(--fz-accent-soft), transparent 70%),
+    var(--fz-card);
+  box-shadow: var(--fz-shadow);
+}
+
+.fz-intro__eyebrow {
+  margin: 0 0 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+.fz-intro__eyebrow span {
+  color: var(--fz-accent);
+}
+
+.fz-intro h1 {
+  margin: 0;
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.fz-intro h1 em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--fz-accent);
+}
+
+.fz-intro p {
+  max-width: 56ch;
+  margin: 14px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fz-muted);
+}
+
+.fz-intro__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 26px;
+}
+
+.fz-intro__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--fz-border-strong);
+  border-radius: 999px;
+  background: var(--fz-card);
+  color: var(--theme-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    border-color 160ms,
+    transform 160ms var(--fz-ease);
+}
+
+.fz-intro__links a:hover {
+  border-color: var(--theme-elevation-400);
+  transform: translateY(-1px);
+}
+
+.fz-intro__links a span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fz-accent);
+}
+
+.fz-intro__links .fz-intro__primary {
+  border-color: transparent;
+  background: var(--theme-text);
+  color: var(--fz-page);
+}
+
+
+
+
+
+/* Group headings over the cards ("Content", "Settings"). */
+.dashboard__label,
+.dashboard h2 {
+  font-family: var(--font-mono);
+  font-size: 11px !important;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+.dashboard__label::before,
+.dashboard h2::before {
+  content: "/ ";
+  color: var(--fz-accent);
+}
+
+/* Section cards: an icon tile, the name and a "+" to create. */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  min-height: 132px;
+  padding: 20px;
+  border: 1px solid var(--fz-border);
+  border-radius: 18px;
+  background: var(--fz-card);
+  box-shadow: none;
+  transition:
+    border-color 180ms,
+    transform 180ms var(--fz-ease),
+    box-shadow 180ms;
+}
+
+.card::before {
+  content: "";
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--fz-accent-soft);
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  top: 31px;
+  left: 31px;
+  width: 18px;
+  height: 18px;
+  background: var(--fz-accent);
+  mask: var(--fz-icon) center / contain no-repeat;
+  -webkit-mask: var(--fz-icon) center / contain no-repeat;
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: var(--fz-border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--fz-shadow);
+}
+
+.card__title {
+  margin: auto 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.card__actions {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+.card__actions .btn {
+  border-color: var(--fz-border-strong);
+}
+
+.widget {
+  border: 1px solid var(--fz-border);
+  border-radius: 18px;
+  background: var(--fz-card);
+}
+
+/* ================================================================ Buttons and pills */
+
+.btn {
+  border-radius: 999px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition:
+    background 160ms,
+    color 160ms,
+    box-shadow 160ms,
+    transform 160ms var(--fz-ease);
+}
+
+.btn--style-primary {
+  background: var(--theme-text);
+  color: var(--fz-page);
+}
+
+.btn--style-primary:hover:not(:disabled) {
+  background: var(--fz-accent);
+  color: var(--fz-accent-fg);
+}
+
+.btn--style-secondary {
+  background: var(--fz-card);
+  box-shadow: inset 0 0 0 1px var(--fz-border-strong);
+}
+
+.btn--style-secondary:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--theme-elevation-400);
+}
+
+/* "Create new" next to list titles. */
+.list-create-new-doc__create-new-button,
+.btn--style-pill {
+  padding-inline: 14px;
+  background: var(--fz-accent);
+  color: var(--fz-accent-fg);
+  font-weight: 600;
+}
+
+.list-create-new-doc__create-new-button:hover,
+.btn--style-pill:hover {
+  background: var(--theme-text);
+  color: var(--fz-page);
+}
+
+.pill {
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ================================================================ Lists */
+
+.list-controls {
+  margin-bottom: 16px;
+}
+
+.search-bar {
+  min-height: 46px;
+  padding-inline: 14px 6px;
+  border: 1px solid var(--fz-border);
+  border-radius: 16px;
+  background: var(--fz-card);
+  box-shadow: var(--fz-shadow);
+}
+
+.search-bar:focus-within {
+  border-color: var(--fz-accent);
+  box-shadow: 0 0 0 4px var(--fz-accent-soft);
+}
+
+.search-bar__actions .pill,
+.list-controls__toggle-columns,
+.list-controls__toggle-where,
+.list-controls__toggle-sort {
+  border: 1px solid var(--fz-border);
+  background: transparent;
+  color: var(--theme-elevation-650);
+}
+
+.table {
+  overflow: auto;
+  border: 1px solid var(--fz-border);
+  border-radius: 18px;
+  background: var(--fz-card);
+  box-shadow: var(--fz-shadow);
+}
+
+.table table {
+  border-collapse: collapse;
+}
+
+/* A thin scrollbar when the table is wider than the screen. */
+.table {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-elevation-250) transparent;
+}
+
+.table table td,
+.table table th {
+  white-space: nowrap;
+}
+
+.table table td:nth-child(3) {
+  white-space: normal;
+  min-width: 180px;
+}
+
+.table table thead th {
+  padding-block: 14px;
+  border-bottom: 1px solid var(--fz-border);
+  background: color-mix(in srgb, var(--fz-page) 60%, var(--fz-card));
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+.table table thead th * {
+  font: inherit;
+  color: inherit;
+}
+
+.table table tbody tr,
+.table table tbody tr:nth-child(odd) {
+  background: transparent;
+  transition: background 120ms;
+}
+
+.table table tbody td {
+  padding-block: 14px;
+  vertical-align: middle;
+}
+
+.table table tbody tr + tr td {
+  border-top: 1px solid var(--fz-border);
+}
+
+.table table tbody tr:hover {
+  background: var(--fz-hover);
+}
+
+.table table tbody td a {
+  color: var(--theme-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.table table tbody td a:hover {
+  color: var(--fz-accent);
+}
+
+/* Pagination as pills. */
+.paginator__page {
+  min-width: 34px;
+  border-radius: 999px;
+}
+
+.paginator__page--is-current {
+  background: var(--theme-text);
+  color: var(--fz-page);
+}
+
+.page-controls__page-info,
+.per-page {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fz-muted);
+}
+
+/* An on/off switch for checkbox columns (components/toggle-cell.tsx). */
+.fz-switch {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: 40px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--theme-elevation-200);
+  box-shadow: inset 0 0 0 1px var(--fz-border);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background 200ms var(--fz-ease);
+}
+
+html[data-theme="dark"] .fz-switch:not(.is-on) {
+  background: var(--theme-elevation-250);
+}
+
+.fz-switch.is-on {
+  background: var(--fz-accent);
+  box-shadow: none;
+}
+
+.fz-switch[aria-busy="true"] {
+  opacity: 0.6;
+}
+
+.fz-switch__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.25),
+    0 0 0 0.5px rgb(0 0 0 / 0.05);
+  transition: transform 220ms var(--fz-ease);
+}
+
+.fz-switch.is-on .fz-switch__thumb {
+  transform: translateX(16px);
+}
+
+/* ================================================================ Edit views */
+
+.doc-controls {
+  border-bottom: 1px solid var(--fz-border);
+  background: color-mix(in srgb, var(--fz-page) 80%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.doc-header {
+  padding-block: 10px 4px;
+}
+
+/* The main fields in a card, the sidebar fields in another. */
+.document-fields__main {
+  padding-top: 12px;
+}
+
+.document-fields__sidebar-wrap {
+  border-left: 1px solid var(--fz-border);
+  background: color-mix(in srgb, var(--fz-sidebar) 55%, transparent);
+}
+
+.document-fields__sidebar-fields {
+  gap: 18px;
+}
+
+.field-type input,
+.field-type textarea,
+.react-select .rs__control {
+  border-radius: 12px;
+  border-color: var(--fz-border-strong);
+  background: var(--fz-card);
+  box-shadow: none;
+  transition:
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.field-type textarea {
+  line-height: 1.6;
+}
+
+.field-type input:hover,
+.field-type textarea:hover {
+  border-color: var(--theme-elevation-300);
+}
+
+.field-type input:focus,
+.field-type textarea:focus,
+.react-select .rs__control--is-focused {
+  border-color: var(--fz-accent);
+  box-shadow: 0 0 0 4px var(--fz-accent-soft);
+}
+
+.field-label {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.field-description {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--fz-muted);
+}
+
+/* Tabs as the site's pill switcher. */
+.tabs-field,
+.tabs-field__tabs-wrap {
+  border: 0;
+}
+
+/* The list's help text ("drag the rows…") isn't about editing one item. */
+.doc-header__after-header .custom-view-description,
+.doc-header__after-header .view-description {
+  display: none;
+}
+
+.tabs-field__tabs {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 4px;
+  margin-bottom: 24px;
+  padding: 4px;
+  border: 1px solid var(--fz-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fz-sidebar) 70%, transparent);
+}
+
+.tabs-field__tabs-wrap,
+.tabs-field__tabs-wrap::after {
+  border: 0;
+}
+
+.tabs-field__tab-button {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fz-muted);
+  transition:
+    background 160ms,
+    color 160ms;
+}
+
+.tabs-field__tab-button:hover {
+  color: var(--theme-text);
+}
+
+.tabs-field__tab-button::after,
+.tabs-field__tab-button--active::after {
+  display: none;
+}
+
+.tabs-field__tab-button--active {
+  background: var(--fz-card);
+  color: var(--theme-text);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.08),
+    inset 0 0 0 1px var(--fz-border);
+}
+
+/* Array rows and groups as cards. */
+.collapsible {
+  overflow: hidden;
+  border: 1px solid var(--fz-border);
+  border-radius: 16px;
+  background: var(--fz-card);
+  transition: border-color 150ms;
+}
+
+.collapsible:hover {
+  border-color: var(--fz-border-strong);
+}
+
+.collapsible__toggle-wrap,
+.collapsible__header-wrap {
+  border-radius: 0;
+}
+
+.array-field__header-content,
+.group-field__title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.fz-row-hidden {
+  opacity: 0.5;
+}
+
+.fz-row-hidden em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fz-muted);
+}
+
+/* Checkboxes in the accent colour. */
+.checkbox-input__input,
+.checkbox-input__icon {
+  border-radius: 6px;
+}
+
+.checkbox-input--checked .checkbox-input__icon,
+.checkbox-input--checked .checkbox-input__input {
+  background: var(--fz-accent);
+  border-color: var(--fz-accent);
+  color: var(--fz-accent-fg);
+}
+
+/* Upload fields. */
+.upload,
+.upload__dropzone,
+.dropzone {
+  border-radius: 14px;
+  border-color: var(--fz-border-strong);
+  background: var(--fz-card);
+}
+
+/* ================================================================ Icons */
+
+/*
+ * Lucide icons (as on the site) for every section, used as masks so they take the colour of the
+ * text: in the sidebar (keyed by the ids Payload gives its links, which stay on the current
+ * section even though it is rendered without a link) and on the dashboard's cards. Built from lucide-react's icon data.
+ */
+:root {
+  --fz-icon-projects: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M12%2012h.01%27%2F%3E%3Cpath%20d%3D%27M16%206V4a2%202%200%200%200-2-2h-4a2%202%200%200%200-2%202v2%27%2F%3E%3Cpath%20d%3D%27M22%2013a18.15%2018.15%200%200%201-20%200%27%2F%3E%3Crect%20width%3D%2720%27%20height%3D%2714%27%20x%3D%272%27%20y%3D%276%27%20rx%3D%272%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-services: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M12.83%202.18a2%202%200%200%200-1.66%200L2.6%206.08a1%201%200%200%200%200%201.83l8.58%203.91a2%202%200%200%200%201.66%200l8.58-3.9a1%201%200%200%200%200-1.83z%27%2F%3E%3Cpath%20d%3D%27M2%2012a1%201%200%200%200%20.58.91l8.6%203.91a2%202%200%200%200%201.65%200l8.58-3.9A1%201%200%200%200%2022%2012%27%2F%3E%3Cpath%20d%3D%27M2%2017a1%201%200%200%200%20.58.91l8.6%203.91a2%202%200%200%200%201.65%200l8.58-3.9A1%201%200%200%200%2022%2017%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-process-steps: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%276%27%20cy%3D%2719%27%20r%3D%273%27%2F%3E%3Cpath%20d%3D%27M9%2019h8.5a3.5%203.5%200%200%200%200-7h-11a3.5%203.5%200%200%201%200-7H15%27%2F%3E%3Ccircle%20cx%3D%2718%27%20cy%3D%275%27%20r%3D%273%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-faq: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%2710%27%2F%3E%3Cpath%20d%3D%27M9.09%209a3%203%200%200%201%205.83%201c0%202-3%203-3%203%27%2F%3E%3Cpath%20d%3D%27M12%2017h.01%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-translations: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27m5%208%206%206%27%2F%3E%3Cpath%20d%3D%27m4%2014%206-6%202-3%27%2F%3E%3Cpath%20d%3D%27M2%205h12%27%2F%3E%3Cpath%20d%3D%27M7%202h1%27%2F%3E%3Cpath%20d%3D%27m22%2022-5-10-5%2010%27%2F%3E%3Cpath%20d%3D%27M14%2018h6%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-media: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20width%3D%2718%27%20height%3D%2718%27%20x%3D%273%27%20y%3D%273%27%20rx%3D%272%27%20ry%3D%272%27%2F%3E%3Ccircle%20cx%3D%279%27%20cy%3D%279%27%20r%3D%272%27%2F%3E%3Cpath%20d%3D%27m21%2015-3.086-3.086a2%202%200%200%200-2.828%200L6%2021%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-users: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%27%2F%3E%3Cpath%20d%3D%27M16%203.128a4%204%200%200%201%200%207.744%27%2F%3E%3Cpath%20d%3D%27M22%2021v-2a4%204%200%200%200-3-3.87%27%2F%3E%3Ccircle%20cx%3D%279%27%20cy%3D%277%27%20r%3D%274%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-profile: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%278%27%20r%3D%275%27%2F%3E%3Cpath%20d%3D%27M20%2021a8%208%200%200%200-16%200%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-ai: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M11.017%202.814a1%201%200%200%201%201.966%200l1.051%205.558a2%202%200%200%200%201.594%201.594l5.558%201.051a1%201%200%200%201%200%201.966l-5.558%201.051a2%202%200%200%200-1.594%201.594l-1.051%205.558a1%201%200%200%201-1.966%200l-1.051-5.558a2%202%200%200%200-1.594-1.594l-5.558-1.051a1%201%200%200%201%200-1.966l5.558-1.051a2%202%200%200%200%201.594-1.594z%27%2F%3E%3Cpath%20d%3D%27M20%202v4%27%2F%3E%3Cpath%20d%3D%27M22%204h-4%27%2F%3E%3Ccircle%20cx%3D%274%27%20cy%3D%2720%27%20r%3D%272%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-site-settings: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M10%205H3%27%2F%3E%3Cpath%20d%3D%27M12%2019H3%27%2F%3E%3Cpath%20d%3D%27M14%203v4%27%2F%3E%3Cpath%20d%3D%27M16%2017v4%27%2F%3E%3Cpath%20d%3D%27M21%2012h-9%27%2F%3E%3Cpath%20d%3D%27M21%2019h-5%27%2F%3E%3Cpath%20d%3D%27M21%205h-7%27%2F%3E%3Cpath%20d%3D%27M8%2010v4%27%2F%3E%3Cpath%20d%3D%27M8%2012H3%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-pages: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20width%3D%2718%27%20height%3D%2718%27%20x%3D%273%27%20y%3D%273%27%20rx%3D%272%27%2F%3E%3Cpath%20d%3D%27M3%209h18%27%2F%3E%3Cpath%20d%3D%27M9%2021V9%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-seo: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27m21%2021-4.34-4.34%27%2F%3E%3Ccircle%20cx%3D%2711%27%20cy%3D%2711%27%20r%3D%278%27%2F%3E%3C%2Fsvg%3E");
+  --fz-icon-dashboard: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%271.75%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20width%3D%277%27%20height%3D%279%27%20x%3D%273%27%20y%3D%273%27%20rx%3D%271%27%2F%3E%3Crect%20width%3D%277%27%20height%3D%275%27%20x%3D%2714%27%20y%3D%273%27%20rx%3D%271%27%2F%3E%3Crect%20width%3D%277%27%20height%3D%279%27%20x%3D%2714%27%20y%3D%2712%27%20rx%3D%271%27%2F%3E%3Crect%20width%3D%277%27%20height%3D%275%27%20x%3D%273%27%20y%3D%2716%27%20rx%3D%271%27%2F%3E%3C%2Fsvg%3E");
+}
+
+#nav-projects,
+.card-projects {
+  --fz-icon: var(--fz-icon-projects);
+}
+
+#nav-services,
+.card-services {
+  --fz-icon: var(--fz-icon-services);
+}
+
+#nav-process-steps,
+.card-process-steps {
+  --fz-icon: var(--fz-icon-process-steps);
+}
+
+#nav-faq,
+.card-faq {
+  --fz-icon: var(--fz-icon-faq);
+}
+
+#nav-translations,
+.card-translations {
+  --fz-icon: var(--fz-icon-translations);
+}
+
+#nav-media,
+.card-media {
+  --fz-icon: var(--fz-icon-media);
+}
+
+#nav-users,
+.card-users {
+  --fz-icon: var(--fz-icon-users);
+}
+
+#nav-global-profile,
+.card-profile {
+  --fz-icon: var(--fz-icon-profile);
+}
+
+#nav-global-ai,
+.card-ai {
+  --fz-icon: var(--fz-icon-ai);
+}
+
+#nav-global-site-settings,
+.card-site-settings {
+  --fz-icon: var(--fz-icon-site-settings);
+}
+
+#nav-global-pages,
+.card-pages {
+  --fz-icon: var(--fz-icon-pages);
+}
+
+#nav-global-seo,
+.card-seo {
+  --fz-icon: var(--fz-icon-seo);
+}
+
+.fz-nav-dashboard {
+  --fz-icon: var(--fz-icon-dashboard);
+}
+
+/* ================================================================ Sidebar extras */
+
+/* The main action, at the top of the sidebar. */
+.fz-nav-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--fz-accent);
+  color: var(--fz-accent-fg);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--fz-accent) 70%, transparent);
+  transition:
+    transform 160ms var(--fz-ease),
+    filter 160ms;
+}
+
+.fz-nav-cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.fz-nav-cta span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.fz-nav-foot {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.fz-nav-foot .fz-nav-site {
+  margin-top: 0;
+}
+
+/* Translation coverage, like a usage meter. */
+.fz-health {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--fz-border);
+  border-radius: 14px;
+  background: var(--fz-card);
+  color: var(--theme-text);
+  text-decoration: none;
+  transition: border-color 160ms;
+}
+
+.fz-health:hover {
+  border-color: var(--fz-border-strong);
+}
+
+.fz-health__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+  font-size: 12px;
+  color: var(--fz-muted);
+}
+
+.fz-health__head strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text);
+}
+
+.fz-health__head strong.is-warn {
+  color: var(--fz-accent);
+}
+
+.fz-health__row {
+  display: grid;
+  grid-template-columns: 22px 1fr 34px;
+  align-items: center;
+  gap: 8px;
+}
+
+.fz-health__code,
+.fz-health__value {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+.fz-health__value {
+  text-align: right;
+}
+
+.fz-health__bar,
+.fz-bars__track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--fz-hover);
+}
+
+.fz-health__bar span,
+.fz-bars__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--fz-accent);
+}
+
+/* Panel style picker. */
+.fz-style {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--fz-border);
+  border-radius: 14px;
+  background: var(--fz-card);
+}
+
+.fz-style__label {
+  font-size: 12px;
+  color: var(--fz-muted);
+}
+
+.fz-style__options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--fz-hover);
+}
+
+.fz-style__option {
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fz-muted);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 150ms,
+    color 150ms;
+}
+
+.fz-style__option:hover {
+  color: var(--theme-text);
+}
+
+.fz-style__option.is-active {
+  background: var(--fz-card);
+  color: var(--theme-text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+}
+
+/* ================================================================ Dashboard panels */
+
+.fz-dash {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.fz-dash .fz-intro {
+  margin-bottom: 0;
+}
+
+/* KPI cards: label, number and a note, as in the HR panel. */
+.fz-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.fz-kpi {
+  display: grid;
+  gap: 6px;
+  padding: 20px;
+  border: 1px solid var(--fz-border);
+  border-radius: 18px;
+  background: var(--fz-card);
+  color: var(--theme-text);
+  text-decoration: none;
+  transition:
+    border-color 180ms,
+    transform 180ms var(--fz-ease),
+    box-shadow 180ms;
+}
+
+.fz-kpi:hover {
+  border-color: var(--fz-border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--fz-shadow);
+}
+
+.fz-kpi__label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fz-muted);
+}
+
+.fz-kpi strong {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.fz-kpi__note {
+  font-size: 12.5px;
+  color: var(--fz-muted);
+}
+
+.fz-kpi__note.is-warn {
+  color: var(--fz-accent);
+  font-weight: 500;
+}
+
+.fz-dash__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fz-panel {
+  padding: 22px;
+  border: 1px solid var(--fz-border);
+  border-radius: 18px;
+  background: var(--fz-card);
+}
+
+.fz-panel--wide {
+  grid-column: span 2;
+}
+
+.fz-panel--full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1100px) {
+  .fz-dash__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fz-panel--wide {
+    grid-column: auto;
+  }
+}
+
+.fz-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.fz-panel__head--spaced {
+  margin-top: 26px;
+}
+
+.fz-panel__head h2 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 15px !important;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--theme-text);
+}
+
+.fz-panel__head h2::before {
+  content: none;
+}
+
+.fz-panel__head p {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--fz-muted);
+}
+
+.fz-panel__head a {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fz-accent);
+  text-decoration: none;
+}
+
+/* Saves per day: columns on a faint baseline grid. */
+.fz-chart {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  align-items: end;
+  gap: 8px;
+  height: 190px;
+  margin: 0;
+  padding: 0 0 26px;
+  list-style: none;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0 calc(25% - 1px),
+    var(--fz-border) calc(25% - 1px) 25%
+  );
+  background-size: 100% calc(100% - 26px);
+  background-repeat: no-repeat;
+}
+
+.fz-chart li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.fz-chart__bar {
+  position: relative;
+  min-height: 3px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--fz-accent) 70%, transparent),
+    var(--fz-accent)
+  );
+  transition: filter 150ms;
+}
+
+.fz-chart li:hover .fz-chart__bar {
+  filter: brightness(1.12);
+}
+
+.fz-chart__value {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fz-muted);
+}
+
+.fz-chart__day {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fz-muted);
+}
+
+/* Horizontal breakdown bars. */
+.fz-bars {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fz-bars li {
+  display: grid;
+  grid-template-columns: 34px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+}
+
+.fz-bars li:has(.fz-bars__label--wide) {
+  grid-template-columns: 120px 1fr 28px;
+}
+
+.fz-bars__label {
+  overflow: hidden;
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fz-bars__value {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  text-align: right;
+  color: var(--fz-muted);
+}
+
+.fz-bars__track {
+  height: 8px;
+}
+
+/* Recent changes. */
+.fz-recent {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fz-recent li + li {
+  border-top: 1px solid var(--fz-border);
+}
+
+.fz-recent a {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 6px;
+  border-radius: 10px;
+  color: var(--theme-text);
+  text-decoration: none;
+  transition: background 120ms;
+}
+
+.fz-recent a:hover {
+  background: var(--fz-hover);
+}
+
+.fz-recent__kind {
+  justify-self: start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--fz-accent-soft);
+  color: var(--fz-accent);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fz-recent__kind--translations,
+.fz-recent__kind--faq {
+  background: var(--fz-hover);
+  color: var(--fz-muted);
+}
+
+.fz-recent__title {
+  overflow: hidden;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fz-recent time {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--fz-muted);
+  white-space: nowrap;
+}
+
+.fz-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fz-muted);
+}
+
+/* ================================================================ Panel styles */
+
+/*
+ * Developer: the site's code-editor style. Everything in Geist Mono, GitHub's palettes and a
+ * terminal-green accent.
+ */
+html:has([data-fz-style-marker="developer"]) {
+  --font-body: "Geist Mono", ui-monospace, monospace;
+  --font-serif: "Geist Mono", ui-monospace, monospace;
+  --fz-accent: #1a7f37;
+  --fz-accent-soft: rgb(26 127 55 / 0.1);
+  --fz-accent-fg: #ffffff;
+  --fz-page: #f6f8fa;
+  --fz-sidebar: #eff2f5;
+  --fz-card: #ffffff;
+  --fz-border: rgb(31 35 40 / 0.1);
+  --fz-border-strong: rgb(31 35 40 / 0.18);
+  --fz-grid: rgb(31 35 40 / 0.05);
+}
+
+html[data-theme="dark"]:has([data-fz-style-marker="developer"]) {
+  --fz-accent: #56d364;
+  --fz-accent-soft: rgb(86 211 100 / 0.12);
+  --fz-accent-fg: #04130a;
+  --fz-page: #0d1117;
+  --fz-sidebar: #010409;
+  --fz-card: #161b22;
+  --fz-border: rgb(240 246 252 / 0.1);
+  --fz-border-strong: rgb(240 246 252 / 0.18);
+  --fz-grid: rgb(240 246 252 / 0.05);
+  --theme-input-bg: #0d1117;
+}
+
+html:has([data-fz-style-marker="developer"]) body {
+  letter-spacing: 0;
+}
+
+html:has([data-fz-style-marker="developer"])
+  :is(.card, .fz-kpi, .fz-panel, .fz-intro, .table, .fz-health, .fz-style, .fz-nav-site) {
+  border-radius: 8px;
+}
+
+html:has([data-fz-style-marker="developer"])
+  :is(.btn, .fz-intro__links a, .fz-nav-cta, .search-bar, .tabs-field__tabs, .tabs-field__tab-button) {
+  border-radius: 6px;
+}
+
+html:has([data-fz-style-marker="developer"]) :is(.fz-intro h1 em, .fz-nav-brand em, .fz-logo em) {
+  font-style: normal;
+  font-size: 1em;
+}
+
+html:has([data-fz-style-marker="developer"]) .fz-intro h1::before {
+  content: "> ";
+  color: var(--fz-accent);
+}
+
+/* Plain: no grid, glow, serif or shadows; quiet surfaces and a neutral blue accent. */
+html:has([data-fz-style-marker="plain"]) {
+  --font-serif: var(--font-body);
+  --fz-accent: #2563eb;
+  --fz-accent-soft: rgb(37 99 235 / 0.08);
+  --fz-accent-fg: #ffffff;
+  --fz-grid: transparent;
+  --fz-shadow: none;
+}
+
+html[data-theme="dark"]:has([data-fz-style-marker="plain"]) {
+  --fz-accent: #60a5fa;
+  --fz-accent-soft: rgb(96 165 250 / 0.12);
+  --fz-accent-fg: #0b1220;
+}
+
+html:has([data-fz-style-marker="plain"]) .template-default__wrap::before {
+  display: none;
+}
+
+html:has([data-fz-style-marker="plain"]) .fz-intro {
+  background: var(--fz-card);
+}
+
+html:has([data-fz-style-marker="plain"]) :is(.fz-intro h1 em, .fz-nav-brand em, .fz-logo em) {
+  font-style: normal;
+  color: inherit;
+}
+
+html:has([data-fz-style-marker="plain"]) :is(.card, .fz-kpi, .fz-nav-site, .fz-intro__links a):hover {
+  transform: none;
+}
+
+/*
+ * Search fields: the bar around the input shows the focus (border and glow), so the input itself
+ * and its wrapper draw no ring, border or background of their own.
+ */
+.search-bar :is(input, .search-filter, .search-filter__input),
+.search-bar :is(input, .search-filter, .search-filter__input):focus,
+.search-bar :is(input, .search-filter, .search-filter__input):focus-visible {
+  border: 0 !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.search-bar:focus-within {
+  outline: none;
+}
+
+/*
+ * VS Code: the editor's Dark+ and Light+ themes. The interface stays in the sans font, with mono
+ * for labels and numbers, square-ish corners, a blue accent and the status bar's blue strip
+ * along the top of the sidebar.
+ */
+html:has([data-fz-style-marker="vscode"]) {
+  --fz-accent: #005fb8;
+  --fz-accent-soft: rgb(0 95 184 / 0.1);
+  --fz-accent-fg: #ffffff;
+  --fz-page: #ffffff;
+  --fz-sidebar: #f8f8f8;
+  --fz-card: #ffffff;
+  --fz-muted: #616161;
+  --fz-border: #e5e5e5;
+  --fz-border-strong: #cecece;
+  --fz-hover: rgb(0 0 0 / 0.045);
+  --fz-grid: transparent;
+  --fz-shadow: none;
+  --font-serif: var(--font-body);
+  --style-radius-s: 4px;
+  --style-radius-m: 4px;
+  --style-radius-l: 6px;
+}
+
+html[data-theme="dark"]:has([data-fz-style-marker="vscode"]) {
+  --fz-accent: #3794ff;
+  --fz-accent-soft: rgb(55 148 255 / 0.14);
+  --fz-accent-fg: #ffffff;
+  --fz-page: #1e1e1e;
+  --fz-sidebar: #181818;
+  --fz-card: #252526;
+  --fz-muted: #9d9d9d;
+  --fz-border: #2b2b2b;
+  --fz-border-strong: #3c3c3c;
+  --fz-hover: rgb(255 255 255 / 0.06);
+  --theme-input-bg: #313131;
+}
+
+html:has([data-fz-style-marker="vscode"]) .template-default__wrap::before {
+  display: none;
+}
+
+html:has([data-fz-style-marker="vscode"]) .nav {
+  box-shadow: inset 0 3px 0 var(--fz-accent);
+}
+
+html:has([data-fz-style-marker="vscode"])
+  :is(
+    .card,
+    .fz-kpi,
+    .fz-panel,
+    .fz-intro,
+    .table,
+    .fz-health,
+    .fz-style,
+    .fz-nav-site,
+    .collapsible
+  ) {
+  border-radius: 6px;
+}
+
+html:has([data-fz-style-marker="vscode"])
+  :is(
+    .btn,
+    .fz-intro__links a,
+    .fz-nav-cta,
+    .search-bar,
+    .tabs-field__tabs,
+    .tabs-field__tab-button,
+    .nav__link,
+    .fz-nav-dashboard,
+    .field-type input,
+    .field-type textarea
+  ) {
+  border-radius: 4px;
+}
+
+/* Tabs as editor tabs: flat, with the active one underlined in the accent. */
+html:has([data-fz-style-marker="vscode"]) .tabs-field__tabs {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--fz-border);
+  border-radius: 0;
+  background: transparent;
+}
+
+html:has([data-fz-style-marker="vscode"]) .tabs-field__tab-button--active {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: inset 0 -2px 0 var(--fz-accent);
+}
+
+/* The current sidebar item as the explorer's selection. */
+html:has([data-fz-style-marker="vscode"])
+  :is(.nav__link:has(> .nav__link-indicator), .fz-nav-dashboard.is-current) {
+  background: var(--fz-accent-soft);
+  box-shadow: none;
+}
+
+html:has([data-fz-style-marker="vscode"]) .nav__link-indicator {
+  top: 0;
+  bottom: 0;
+  left: -14px;
+  border-radius: 0;
+}
+
+html:has([data-fz-style-marker="vscode"])
+  :is(.fz-intro h1 em, .fz-nav-brand em, .fz-logo em) {
+  font-style: normal;
+  font-size: 1em;
+  color: var(--fz-accent);
+}
+
+html:has([data-fz-style-marker="vscode"]) .fz-intro h1 {
+  font-size: clamp(30px, 3.6vw, 44px);
+}
+
+html:has([data-fz-style-marker="vscode"]) :is(.fz-kpi strong, .fz-chart__value, .fz-bars__value) {
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+}
+
+html:has([data-fz-style-marker="vscode"])
+  :is(.card, .fz-kpi, .fz-nav-site, .fz-intro__links a, .fz-nav-cta):hover {
+  transform: none;
+}
+
+html:has([data-fz-style-marker="vscode"]) .fz-chart__bar {
+  border-radius: 2px 2px 0 0;
+  background: var(--fz-accent);
+}
+
+/* ================================================================ Profile photo */
+
+/* The account button (components/avatar.tsx): the photo, or initials on the accent. */
+.fz-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--fz-accent);
+  color: var(--fz-accent-fg);
+  box-shadow:
+    0 0 0 2px var(--fz-page),
+    0 0 0 3px var(--fz-border-strong);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.app-header__account,
+.app-header__account:hover {
+  text-decoration: none;
+}
+
+.fz-avatar img,
+.fz-intro__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The dashboard greeting's photo, in the card's top right corner. */
+.fz-intro__avatar {
+  position: absolute;
+  top: clamp(24px, 3.5vw, 40px);
+  right: clamp(24px, 3.5vw, 40px);
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--fz-accent-soft);
+  color: var(--fz-accent);
+  box-shadow:
+    0 0 0 4px var(--fz-card),
+    0 0 0 5px var(--fz-border-strong);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .fz-intro__avatar {
+    width: 52px;
+    height: 52px;
+    font-size: 18px;
+  }
+}

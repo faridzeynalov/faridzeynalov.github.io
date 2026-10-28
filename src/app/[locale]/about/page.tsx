@@ -1,5 +1,6 @@
 import { ArrowUpRight, Download, GraduationCap, MapPin } from "lucide-react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ScrollLitText } from "@/components/about/scroll-lit-text";
 import { PageHeader } from "@/components/layout/page-header";
@@ -8,8 +9,7 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { ContactCta } from "@/components/sections/contact-cta";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
-import { getContent } from "@/content";
-import { getSeo, getSiteProfile } from "@/lib/cms";
+import { getPageSwitches, getPrinciples, getSeo, getSiteProfile } from "@/lib/cms";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
@@ -41,11 +41,16 @@ export async function generateMetadata({
 export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
+  // Switched off under "Səhifələr" in the admin panel.
+  if (!(await getPageSwitches(locale)).pages.about) notFound();
   const t = await getTranslations("AboutPage");
   const tc = await getTranslations("Common");
   const profile = await getSiteProfile(locale);
   /** Principles drawn from the CV's summary and experience. */
-  const principles = getContent(locale).principles;
+  const [principles, englishPrinciples] = await Promise.all([
+    getPrinciples(locale),
+    getPrinciples("en"),
+  ]);
   const job = profile.experience[0];
   const stats = [
     {
@@ -121,7 +126,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
             {principles.map((principle, index) => (
               <StaggerItem
                 key={principle.title}
-                file={toFileName(getContent("en").principles[index].title, "md")}
+                file={toFileName((englishPrinciples[index] ?? principle).title, "md")}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-bg-elevated p-7 transition-colors hover:border-border-strong dev:pt-15"
               >
                 <span className="font-mono text-xs text-accent">0{index + 1}</span>

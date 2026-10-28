@@ -7,7 +7,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { BrowserFrame, PhoneFrame } from "@/components/projects/device-frames";
 import { Badge } from "@/components/ui/badge";
 import { useAppLocale } from "@/i18n/use-app-locale";
-import { getIndustryLabel } from "@/lib/projects";
+import { industryLabels, useContentOverrides } from "@/lib/content-overrides";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/types/project";
 
@@ -21,6 +21,7 @@ export function FeaturedProject({ project, index }: FeaturedProjectProps) {
   const t = useTranslations("ProjectCard");
   const tc = useTranslations("Common");
   const locale = useAppLocale();
+  const admin = useContentOverrides();
   const reversed = index % 2 === 1;
   const href = `/portfolio/${project.slug}`;
 
@@ -72,7 +73,7 @@ export function FeaturedProject({ project, index }: FeaturedProjectProps) {
         <p className="flex items-center gap-3 font-mono text-xs text-fg-subtle uppercase">
           <span className="text-accent">{String(index + 1).padStart(2, "0")}</span>
           <span className="h-px w-6 bg-border-strong" aria-hidden />
-          {getIndustryLabel(project.industry, locale)}
+          {industryLabels(locale, admin)[project.industry]}
         </p>
         <h3 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-balance md:text-4xl">
           <Link href={href} className="transition-colors hover:text-accent">

@@ -1,11 +1,10 @@
 import { useTranslations } from "next-intl";
-import { useAppLocale } from "@/i18n/use-app-locale";
-import { getAllProjects } from "@/lib/projects";
+import type { Project } from "@/types/project";
 
 /** Slow, pausable ticker of every shipped domain. Static and wrapped for reduced motion. */
-export function DomainMarquee() {
+export function DomainMarquee({ projects }: { projects: Project[] }) {
   const t = useTranslations("Marquee");
-  const domains = getAllProjects(useAppLocale()).map((project) => project.domain);
+  const domains = projects.map((project) => project.domain);
 
   return (
     <section aria-label={t("ariaLabel")} className="border-y border-border bg-bg-subtle/40 py-5">

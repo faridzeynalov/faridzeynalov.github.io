@@ -12,19 +12,19 @@ import { UnavailablePreview } from "@/components/projects/unavailable-preview";
 import { ContactCta } from "@/components/sections/contact-cta";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { getSiteProfile } from "@/lib/cms";
-import { projectSlugs } from "@/data/projects";
+import { getIndustryNames, getPageSwitches, getProjects, getSiteProfile } from "@/lib/cms";
 import { Link } from "@/i18n/navigation";
-import type { Locale } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
-import { getAdjacentProjects, getIndustryLabel, getProjectBySlug } from "@/lib/projects";
+import { adjacentIn } from "@/lib/projects";
 import { withoutBasePath } from "@/lib/site";
 
-// Only the projects in src/data/projects.ts exist — everything is generated at build time.
-export const dynamicParams = false;
+// Every project is generated at build time; one added in the admin later renders on its first
+// visit (an unknown slug is a 404).
+export const dynamicParams = true;
 
-export function generateStaticParams() {
-  return projectSlugs.map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  return (await getProjects(routing.defaultLocale)).map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -32,7 +32,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/portfolio/[slug]">): Promise<Metadata> {
   const { slug, locale: rawLocale } = await params;
   const locale = rawLocale as Locale;
-  const project = getProjectBySlug(slug, locale);
+  const project = (await getProjects(locale)).find((item) => item.slug === slug);
   if (!project) return {};
 
   const t = await getTranslations({ locale, namespace: "Metadata" });
@@ -40,7 +40,7 @@ export async function generateMetadata({
   const tCard = await getTranslations({ locale, namespace: "ProjectCard" });
   const title = t("projectTitle", {
     name: project.name,
-    industry: getIndustryLabel(project.industry, locale),
+    industry: (await getIndustryNames(locale))[project.industry],
   });
   return {
     title,
@@ -68,15 +68,18 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/portf
   const { slug, locale: rawLocale } = await params;
   const locale = rawLocale as Locale;
   setRequestLocale(locale);
-  const project = getProjectBySlug(slug, locale);
+  // Switched off under "Səhifələr" in the admin panel.
+  if (!(await getPageSwitches(locale)).pages.portfolio) notFound();
+  const projects = await getProjects(locale);
+  const project = projects.find((item) => item.slug === slug);
   if (!project) notFound();
 
   const t = await getTranslations("Project");
   const tc = await getTranslations("Common");
   const tLang = await getTranslations("LanguageNames");
-  const adjacent = getAdjacentProjects(project.slug, locale);
+  const adjacent = adjacentIn(projects, project.slug);
   const job = (await getSiteProfile(locale)).experience[0];
-  const industry = getIndustryLabel(project.industry, locale);
+  const industry = (await getIndustryNames(locale))[project.industry];
 
   const meta = [
     { label: t("role"), value: t("roleValue", { role: job.role, company: job.company }) },

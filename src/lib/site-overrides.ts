@@ -18,6 +18,11 @@ export interface SiteOverrides {
   linkedIn?: string;
   github?: string;
   instagram?: string;
+  /** Pages and home sections switched on or off under "Səhifələr" (everything on if missing). */
+  pages?: {
+    pages: Record<"portfolio" | "services" | "about" | "contact" | "cv", boolean>;
+    home: Record<string, boolean>;
+  };
 }
 
 /** `+994 51 306 35 96` -> `+994513063596`, for tel: links. */
@@ -33,6 +38,15 @@ export function linkHandle(href: string) {
 /** Site settings as filled in by the admin, without empty fields. */
 export function useSiteOverrides(): SiteOverrides {
   return (useMessages().Site ?? {}) as SiteOverrides;
+}
+
+/** Whether a page is switched on in the admin (menus hide the ones that are off). */
+export function usePageEnabled() {
+  const pages = useSiteOverrides().pages?.pages;
+  return (href: string) => {
+    const page = href.split("/")[1] as keyof NonNullable<typeof pages>;
+    return !page || pages?.[page] !== false;
+  };
 }
 
 /** The owner's identity with the admin's site settings applied (safe in Client Components). */

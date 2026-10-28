@@ -15,7 +15,7 @@ export async function resolve(specifier, context, next) {
   // next has no "exports" map, so ESM needs the file name: "next/cache" -> "next/cache.js".
   if (/^next\\/[\\w-]+$/.test(specifier)) specifier += ".js";
   const local = specifier.startsWith("file:") || specifier.startsWith(".");
-  if (local && !/\.[cm]?[jt]sx?$/.test(specifier)) {
+  if (local && !/\\.[cm]?[jt]sx?$/.test(specifier)) {
     const base = new URL(specifier, context.parentURL);
     for (const ext of [".ts", ".tsx", "/index.ts"]) {
       const candidate = new URL(base.href + ext);
@@ -27,6 +27,10 @@ export async function resolve(specifier, context, next) {
 
 // Generated migrations import their argument types as values, which type stripping can't drop.
 export async function load(url, context, next) {
+  // Static image imports (project screenshots) only matter to Next.js.
+  if (/\\.(webp|png|jpe?g|svg)$/.test(url)) {
+    return { format: "module", source: "export default {};", shortCircuit: true };
+  }
   const result = await next(url, context);
   if (!url.includes("/src/migrations/") || !result.source) return result;
   const source = String(result.source).replace(

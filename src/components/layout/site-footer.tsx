@@ -5,8 +5,10 @@ import { LogoMark } from "@/components/layout/logo";
 import { useTranslations } from "next-intl";
 import { useProfile } from "@/data/profile";
 import { navItems } from "@/lib/site";
+import { usePageEnabled } from "@/lib/site-overrides";
 
 export function SiteFooter() {
+  const pageEnabled = usePageEnabled();
   const t = useTranslations("Footer");
   const tn = useTranslations("Nav");
   const profile = useProfile();
@@ -30,13 +32,15 @@ export function SiteFooter() {
         <nav aria-label={tn("footer")}>
           <p className="mb-4 font-mono text-xs text-fg-subtle uppercase">{t("pages")}</p>
           <ul className="space-y-2.5 text-sm">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="text-fg-muted transition-colors hover:text-fg">
-                  {tn(item.key)}
-                </Link>
-              </li>
-            ))}
+            {navItems
+              .filter((item) => pageEnabled(item.href))
+              .map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-fg-muted transition-colors hover:text-fg">
+                    {tn(item.key)}
+                  </Link>
+                </li>
+              ))}
           </ul>
         </nav>
 

@@ -31,3 +31,8 @@ export interface AiProfile {
   /** Compact list for the CV page sidebar. */
   skills: string[];
 }
+
+export interface Faq {
+  question: string;
+  answer: string;
+}

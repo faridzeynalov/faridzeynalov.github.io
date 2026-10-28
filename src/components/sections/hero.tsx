@@ -6,21 +6,24 @@ import { buttonVariants } from "@/components/ui/button";
 import { useProfile } from "@/data/profile";
 import { Link } from "@/i18n/navigation";
 import { useAppLocale } from "@/i18n/use-app-locale";
-import { getFeaturedProjects, getIndustryLabel } from "@/lib/projects";
+import { industryLabels, useContentOverrides } from "@/lib/content-overrides";
+import { featuredOf } from "@/lib/projects";
+import type { Project } from "@/types/project";
 
-export function Hero() {
+export function Hero({ projects }: { projects: Project[] }) {
   const locale = useAppLocale();
   const t = useTranslations("Hero");
   const profile = useProfile();
+  const industries = industryLabels(locale, useContentOverrides());
 
-  const showcase: ShowcaseItem[] = getFeaturedProjects(locale).flatMap((project) =>
+  const showcase: ShowcaseItem[] = featuredOf(projects).flatMap((project) =>
     project.images
       ? [
           {
             slug: project.slug,
             name: project.name,
             domain: project.domain,
-            industry: getIndustryLabel(project.industry, locale),
+            industry: industries[project.industry],
             stack: project.stack,
             cover: project.images.cover,
             mobile: project.images.mobile,

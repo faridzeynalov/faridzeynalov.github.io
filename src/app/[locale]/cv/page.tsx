@@ -1,5 +1,6 @@
 import { ArrowUpRight, Download, Link2, Mail, MapPin, Phone } from "lucide-react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PrintButton } from "@/components/cv/print-button";
@@ -7,12 +8,10 @@ import { DrawLine, ReadingProgress } from "@/components/cv/reading-progress";
 import { PromptEyebrow } from "@/components/layout/page-header";
 import { Enter } from "@/components/motion/enter";
 import { buttonVariants } from "@/components/ui/button";
-import { getAi } from "@/data/ai";
-import { getSeo, getSiteProfile } from "@/lib/cms";
+import { getPageSwitches, getProjects, getSeo, getSiteAi, getSiteProfile } from "@/lib/cms";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
-import { getAllProjects } from "@/lib/projects";
 import { withBasePath } from "@/lib/site";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/cv">): Promise<Metadata> {
@@ -40,11 +39,13 @@ const CV_PDF = "/farid-zeynalov-cv.pdf";
 export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
+  // Switched off under "Səhifələr" in the admin panel.
+  if (!(await getPageSwitches(locale)).pages.cv) notFound();
   const t = await getTranslations("CvPage");
   const tc = await getTranslations("Common");
   const profile = await getSiteProfile(locale);
-  const ai = getAi(locale);
-  const projects = getAllProjects(locale);
+  const ai = await getSiteAi(locale);
+  const projects = await getProjects(locale);
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
 
   const contacts = [

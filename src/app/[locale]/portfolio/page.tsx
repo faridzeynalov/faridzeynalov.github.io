@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { PortfolioExplorer } from "@/components/projects/portfolio-explorer";
 import { ContactCta } from "@/components/sections/contact-cta";
 import type { Locale } from "@/i18n/routing";
-import { getSeo } from "@/lib/cms";
+import { getIndustryNames, getPageSwitches, getProjects, getSeo } from "@/lib/cms";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { getIndustryFilters } from "@/lib/industries";
-import { getAllProjects, getIndustryLabels } from "@/lib/projects";
 
 export async function generateMetadata({
   params,
@@ -27,10 +27,12 @@ export async function generateMetadata({
 export default async function PortfolioPage({ params }: PageProps<"/[locale]/portfolio">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
+  // Switched off under "Səhifələr" in the admin panel.
+  if (!(await getPageSwitches(locale)).pages.portfolio) notFound();
   const t = await getTranslations("Portfolio");
   const tCta = await getTranslations("ContactCta");
-  const projects = getAllProjects(locale);
-  const industryLabels = getIndustryLabels(locale);
+  const projects = await getProjects(locale);
+  const industryLabels = await getIndustryNames(locale);
   const stats = [
     { value: projects.length, label: t("statProjects") },
     {

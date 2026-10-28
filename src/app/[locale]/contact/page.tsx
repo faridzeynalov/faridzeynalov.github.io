@@ -1,12 +1,13 @@
 import { ArrowUpRight, Download, Link2, Mail, MapPin, Phone } from "lucide-react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MessageComposer } from "@/components/contact/message-composer";
 import { LocalTime } from "@/components/layout/local-time";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { CopyButton } from "@/components/ui/copy-button";
-import { getSeo, getSiteProfile } from "@/lib/cms";
+import { getPageSwitches, getSeo, getSiteProfile } from "@/lib/cms";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { withBasePath } from "@/lib/site";
@@ -30,6 +31,8 @@ export async function generateMetadata({
 export default async function ContactPage({ params }: PageProps<"/[locale]/contact">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
+  // Switched off under "Səhifələr" in the admin panel.
+  if (!(await getPageSwitches(locale)).pages.contact) notFound();
   const t = await getTranslations("ContactPage");
   const tc = await getTranslations("Common");
   const profile = await getSiteProfile(locale);

@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { ContactCta } from "@/components/sections/contact-cta";
@@ -8,10 +9,9 @@ import { ProcessPath } from "@/components/services/process-path";
 import { ServicesShowcase } from "@/components/services/services-showcase";
 import { buttonVariants } from "@/components/ui/button";
 import { Faq } from "@/components/services/faq";
-import { getFaq, getProcess, getServices } from "@/data/services";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { getSeo } from "@/lib/cms";
+import { getPageSwitches, getSeo, getServicesContent } from "@/lib/cms";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { faqStructuredData, jsonLd } from "@/lib/structured-data";
 
@@ -33,10 +33,11 @@ export async function generateMetadata({
 export default async function ServicesPage({ params }: PageProps<"/[locale]/services">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
+  // Switched off under "Səhifələr" in the admin panel.
+  if (!(await getPageSwitches(locale)).pages.services) notFound();
   const t = await getTranslations("ServicesPage");
   const tc = await getTranslations("Common");
-  const services = getServices(locale);
-  const faq = getFaq(locale);
+  const { services, process, faq } = await getServicesContent(locale);
 
   return (
     <>
@@ -85,7 +86,7 @@ export default async function ServicesPage({ params }: PageProps<"/[locale]/serv
             }
           />
           <div className="mt-16 md:mt-20">
-            <ProcessPath steps={getProcess(locale)} />
+            <ProcessPath steps={process} />
           </div>
         </div>
       </section>

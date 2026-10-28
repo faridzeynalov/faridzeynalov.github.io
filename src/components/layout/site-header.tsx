@@ -11,10 +11,12 @@ import { AppearanceMenu } from "@/components/layout/appearance-menu";
 import { useActiveNav } from "@/components/layout/use-active-nav";
 import { buttonVariants } from "@/components/ui/button";
 import { navItems } from "@/lib/site";
+import { usePageEnabled } from "@/lib/site-overrides";
 import { cn } from "@/lib/utils";
 import type { TreeNode } from "@/types/nav";
 
 export function SiteHeader({ tree }: { tree: TreeNode[] }) {
+  const pageEnabled = usePageEnabled();
   const t = useTranslations("Nav");
   const active = useActiveNav();
   const [scrolled, setScrolled] = useState(false);
@@ -44,31 +46,33 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
 
         <nav aria-label={t("main")} className="hidden md:block">
           <ul className="flex items-center gap-1 rounded-pill border border-border bg-bg-elevated/50 p-1 backdrop-blur">
-            {navItems.map((item) => {
-              const isActive = active === item.href;
-              return (
-                <li key={item.href} className="relative">
-                  {isActive && (
-                    <m.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-pill bg-bg-inset"
-                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      aria-hidden
-                    />
-                  )}
-                  <Link
-                    href={item.href}
-                    aria-current={isActive ? "page" : undefined}
-                    className={cn(
-                      "relative block rounded-pill px-4 py-1.5 text-[13.5px] transition-colors",
-                      isActive ? "text-fg" : "text-fg-muted hover:text-fg",
+            {navItems
+              .filter((item) => pageEnabled(item.href))
+              .map((item) => {
+                const isActive = active === item.href;
+                return (
+                  <li key={item.href} className="relative">
+                    {isActive && (
+                      <m.span
+                        layoutId="nav-pill"
+                        className="absolute inset-0 rounded-pill bg-bg-inset"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        aria-hidden
+                      />
                     )}
-                  >
-                    {t(item.key)}
-                  </Link>
-                </li>
-              );
-            })}
+                    <Link
+                      href={item.href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "relative block rounded-pill px-4 py-1.5 text-[13.5px] transition-colors",
+                        isActive ? "text-fg" : "text-fg-muted hover:text-fg",
+                      )}
+                    >
+                      {t(item.key)}
+                    </Link>
+                  </li>
+                );
+              })}
           </ul>
         </nav>
 

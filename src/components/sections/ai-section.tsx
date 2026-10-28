@@ -4,6 +4,7 @@ import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { useTranslations } from "next-intl";
 import { getContent } from "@/content";
 import { getAi } from "@/data/ai";
+import { useContentOverrides } from "@/lib/content-overrides";
 import { useAppLocale } from "@/i18n/use-app-locale";
 import { toFileName } from "@/lib/utils";
 import type { AiIcon } from "@/types/content";
@@ -17,7 +18,8 @@ const icons: Record<AiIcon, LucideIcon> = {
 
 export function AiSection() {
   const t = useTranslations("AiSection");
-  const ai = getAi(useAppLocale());
+  const locale = useAppLocale();
+  const ai = useContentOverrides().ai ?? getAi(locale);
   return (
     <section id="ai" aria-labelledby="ai-title" className="relative py-24 md:py-32">
       <div className="container-page">

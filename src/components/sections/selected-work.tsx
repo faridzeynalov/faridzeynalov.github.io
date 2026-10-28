@@ -1,17 +1,16 @@
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useAppLocale } from "@/i18n/use-app-locale";
 import { Link } from "@/i18n/navigation";
 import { FeaturedProject } from "@/components/projects/featured-project";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
-import { getAllProjects, getFeaturedProjects } from "@/lib/projects";
+import { featuredOf } from "@/lib/projects";
+import type { Project } from "@/types/project";
 
-export function SelectedWork() {
-  const locale = useAppLocale();
+export function SelectedWork({ projects }: { projects: Project[] }) {
   const t = useTranslations("SelectedWork");
-  const featured = getFeaturedProjects(locale);
-  const total = getAllProjects(locale).length;
+  const featured = featuredOf(projects);
+  const total = projects.length;
 
   return (
     <section aria-labelledby="work-title" className="py-24 md:py-32">

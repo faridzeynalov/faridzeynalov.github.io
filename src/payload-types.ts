@@ -67,8 +67,13 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    projects: Project;
+    services: Service;
+    'process-steps': ProcessStep;
+    faq: Faq;
+    translations: Translation;
     media: Media;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,8 +81,13 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    'process-steps': ProcessStepsSelect<false> | ProcessStepsSelect<true>;
+    faq: FaqSelect<false> | FaqSelect<true>;
+    translations: TranslationsSelect<false> | TranslationsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -88,11 +98,17 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('az' | 'en' | 'ru') | ('az' | 'en' | 'ru')[];
   globals: {
+    profile: Profile;
+    ai: Ai;
     'site-settings': SiteSetting;
+    pages: Page;
     seo: Seo;
   };
   globalsSelect: {
+    profile: ProfileSelect<false> | ProfileSelect<true>;
+    ai: AiSelect<false> | AiSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     seo: SeoSelect<false> | SeoSelect<true>;
   };
   locale: 'az' | 'en' | 'ru';
@@ -124,31 +140,50 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Drag the rows to change the order. Without uploaded screenshots, the existing captures stay.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "projects".
  */
-export interface User {
+export interface Project {
   id: number;
-  name?: string | null;
+  _order?: string | null;
+  name: string;
+  /**
+   * /portfolio/<slug>; Latin letters and hyphens.
+   */
+  slug: string;
+  domain: string;
+  url: string;
+  industry: 'hospitality' | 'real-estate' | 'healthcare' | 'e-commerce' | 'corporate' | 'education';
+  group?: string | null;
+  languages?: ('az' | 'en' | 'ru')[] | null;
+  /**
+   * E.g. #2b3a5c
+   */
+  accent?: string | null;
+  /**
+   * One item per line.
+   */
+  stack?: string | null;
+  summary?: string | null;
+  overview?: string | null;
+  /**
+   * One item per line.
+   */
+  liveFeatures?: string | null;
+  note?: string | null;
+  unavailableReason?: string | null;
+  images?: {
+    cover?: (number | null) | Media;
+    thumb?: (number | null) | Media;
+    mobile?: (number | null) | Media;
+    section?: (number | null) | Media;
+  };
+  active?: boolean | null;
+  featured?: boolean | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -169,6 +204,103 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * Drag the rows to change the order.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  _order?: string | null;
+  title: string;
+  /**
+   * Latin letters; used in the address as #key, e.g. frontend.
+   */
+  key: string;
+  tagline?: string | null;
+  description?: string | null;
+  /**
+   * One item per line.
+   */
+  deliverables?: string | null;
+  icon: 'code' | 'palette' | 'gauge' | 'sparkles' | 'plug' | 'wrench';
+  active?: boolean | null;
+  showOnHome?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "process-steps".
+ */
+export interface ProcessStep {
+  id: number;
+  _order?: string | null;
+  title: string;
+  description?: string | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faq".
+ */
+export interface Faq {
+  id: number;
+  _order?: string | null;
+  question: string;
+  answer?: string | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Buttons, menus, headings and other texts on the site. Keep words in curly braces such as {name} as they are: the site fills them in.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translations".
+ */
+export interface Translation {
+  id: number;
+  key: string;
+  section?: string | null;
+  value?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name?: string | null;
+  /**
+   * Shown at the top right of the admin and on the dashboard. A square photo works best.
+   */
+  avatar?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -195,12 +327,32 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'projects';
+        value: number | Project;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'process-steps';
+        value: number | ProcessStep;
+      } | null)
+    | ({
+        relationTo: 'faq';
+        value: number | Faq;
+      } | null)
+    | ({
+        relationTo: 'translations';
+        value: number | Translation;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -246,27 +398,88 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "projects_select".
  */
-export interface UsersSelect<T extends boolean = true> {
+export interface ProjectsSelect<T extends boolean = true> {
+  _order?: T;
   name?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  resetPasswordRequestedAt?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+  slug?: T;
+  domain?: T;
+  url?: T;
+  industry?: T;
+  group?: T;
+  languages?: T;
+  accent?: T;
+  stack?: T;
+  summary?: T;
+  overview?: T;
+  liveFeatures?: T;
+  note?: T;
+  unavailableReason?: T;
+  images?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
+        cover?: T;
+        thumb?: T;
+        mobile?: T;
+        section?: T;
       };
+  active?: T;
+  featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  key?: T;
+  tagline?: T;
+  description?: T;
+  deliverables?: T;
+  icon?: T;
+  active?: T;
+  showOnHome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "process-steps_select".
+ */
+export interface ProcessStepsSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  description?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faq_select".
+ */
+export interface FaqSelect<T extends boolean = true> {
+  _order?: T;
+  question?: T;
+  answer?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translations_select".
+ */
+export interface TranslationsSelect<T extends boolean = true> {
+  key?: T;
+  section?: T;
+  value?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -286,6 +499,31 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  avatar?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -328,6 +566,137 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * About, CV and the personal sections of the home page. An empty list keeps the content currently on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile".
+ */
+export interface Profile {
+  id: number;
+  summary?: string | null;
+  cvTitle?: string | null;
+  present?: string | null;
+  cvSummary?: string | null;
+  /**
+   * One item per line.
+   */
+  industries?: string | null;
+  about?:
+    | {
+        text?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  principles?:
+    | {
+        title?: string | null;
+        text?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  skills?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        /**
+         * One item per line.
+         */
+        items?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  experience?:
+    | {
+        role?: string | null;
+        company?: string | null;
+        companyUrl?: string | null;
+        location?: string | null;
+        start?: string | null;
+        end?: string | null;
+        /**
+         * One item per line.
+         */
+        highlights?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  education?:
+    | {
+        degree?: string | null;
+        field?: string | null;
+        institution?: string | null;
+        start?: string | null;
+        end?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  languages?:
+    | {
+        name?: string | null;
+        level?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  certificates?:
+    | {
+        name?: string | null;
+        period?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Names shown in the portfolio filters and on project cards.
+   */
+  industryNames?: {
+    hospitality?: string | null;
+    realEstate?: string | null;
+    healthcare?: string | null;
+    eCommerce?: string | null;
+    corporate?: string | null;
+    education?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The AI section on the home page and in the CV.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai".
+ */
+export interface Ai {
+  id: number;
+  intro?: string | null;
+  capabilities?:
+    | {
+        title?: string | null;
+        icon?: ('bot' | 'plug' | 'messages' | 'braces') | null;
+        description?: string | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * One item per line.
+   */
+  tools?: string | null;
+  /**
+   * One item per line.
+   */
+  skills?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Empty fields keep the value currently on the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
@@ -349,78 +718,217 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * A page switched off leaves the menus and the sitemap, and its address returns 404.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  pages?: {
+    portfolio?: boolean | null;
+    services?: boolean | null;
+    about?: boolean | null;
+    contact?: boolean | null;
+    cv?: boolean | null;
+  };
+  home?: {
+    marquee?: boolean | null;
+    selectedWork?: boolean | null;
+    services?: boolean | null;
+    skills?: boolean | null;
+    ai?: boolean | null;
+    experience?: boolean | null;
+    about?: boolean | null;
+    contact?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Empty fields keep the text currently on the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "seo".
  */
 export interface Seo {
   id: number;
   /**
-   * Vergüllə ayırın: sayt hazırlanması, sayt düzəltmək, …
+   * Separate with commas: website development, web design, …
    */
   keywords?: string | null;
   ogImage?: (number | null) | Media;
   home?: {
     /**
-     * Google-da göstərilən başlıq. Təxminən 60 simvol.
+     * The title shown in Google. About 60 characters.
      */
     title?: string | null;
     /**
-     * Axtarış nəticəsində başlığın altındakı mətn. Təxminən 160 simvol.
+     * The text under the title in search results. About 160 characters.
      */
     description?: string | null;
   };
   portfolio?: {
     /**
-     * Google-da göstərilən başlıq. Təxminən 60 simvol.
+     * The title shown in Google. About 60 characters.
      */
     title?: string | null;
     /**
-     * Axtarış nəticəsində başlığın altındakı mətn. Təxminən 160 simvol.
+     * The text under the title in search results. About 160 characters.
      */
     description?: string | null;
   };
   services?: {
     /**
-     * Google-da göstərilən başlıq. Təxminən 60 simvol.
+     * The title shown in Google. About 60 characters.
      */
     title?: string | null;
     /**
-     * Axtarış nəticəsində başlığın altındakı mətn. Təxminən 160 simvol.
+     * The text under the title in search results. About 160 characters.
      */
     description?: string | null;
   };
   about?: {
     /**
-     * Google-da göstərilən başlıq. Təxminən 60 simvol.
+     * The title shown in Google. About 60 characters.
      */
     title?: string | null;
     /**
-     * Axtarış nəticəsində başlığın altındakı mətn. Təxminən 160 simvol.
+     * The text under the title in search results. About 160 characters.
      */
     description?: string | null;
   };
   contact?: {
     /**
-     * Google-da göstərilən başlıq. Təxminən 60 simvol.
+     * The title shown in Google. About 60 characters.
      */
     title?: string | null;
     /**
-     * Axtarış nəticəsində başlığın altındakı mətn. Təxminən 160 simvol.
+     * The text under the title in search results. About 160 characters.
      */
     description?: string | null;
   };
   cv?: {
     /**
-     * Google-da göstərilən başlıq. Təxminən 60 simvol.
+     * The title shown in Google. About 60 characters.
      */
     title?: string | null;
     /**
-     * Axtarış nəticəsində başlığın altındakı mətn. Təxminən 160 simvol.
+     * The text under the title in search results. About 160 characters.
      */
     description?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile_select".
+ */
+export interface ProfileSelect<T extends boolean = true> {
+  summary?: T;
+  cvTitle?: T;
+  present?: T;
+  cvSummary?: T;
+  industries?: T;
+  about?:
+    | T
+    | {
+        text?: T;
+        active?: T;
+        id?: T;
+      };
+  principles?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        active?: T;
+        id?: T;
+      };
+  skills?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        items?: T;
+        active?: T;
+        id?: T;
+      };
+  experience?:
+    | T
+    | {
+        role?: T;
+        company?: T;
+        companyUrl?: T;
+        location?: T;
+        start?: T;
+        end?: T;
+        highlights?: T;
+        active?: T;
+        id?: T;
+      };
+  education?:
+    | T
+    | {
+        degree?: T;
+        field?: T;
+        institution?: T;
+        start?: T;
+        end?: T;
+        active?: T;
+        id?: T;
+      };
+  languages?:
+    | T
+    | {
+        name?: T;
+        level?: T;
+        active?: T;
+        id?: T;
+      };
+  certificates?:
+    | T
+    | {
+        name?: T;
+        period?: T;
+        active?: T;
+        id?: T;
+      };
+  industryNames?:
+    | T
+    | {
+        hospitality?: T;
+        realEstate?: T;
+        healthcare?: T;
+        eCommerce?: T;
+        corporate?: T;
+        education?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai_select".
+ */
+export interface AiSelect<T extends boolean = true> {
+  intro?: T;
+  capabilities?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        description?: T;
+        active?: T;
+        id?: T;
+      };
+  tools?: T;
+  skills?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -440,6 +948,36 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         linkedIn?: T;
         github?: T;
         instagram?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  pages?:
+    | T
+    | {
+        portfolio?: T;
+        services?: T;
+        about?: T;
+        contact?: T;
+        cv?: T;
+      };
+  home?:
+    | T
+    | {
+        marquee?: T;
+        selectedWork?: T;
+        services?: T;
+        skills?: T;
+        ai?: T;
+        experience?: T;
+        about?: T;
+        contact?: T;
       };
   updatedAt?: T;
   createdAt?: T;

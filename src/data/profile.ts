@@ -2,6 +2,7 @@ import { getContent } from "@/content";
 import { owner } from "@/data/owner";
 import type { Locale } from "@/i18n/routing";
 import { useAppLocale } from "@/i18n/use-app-locale";
+import { useContentOverrides, type ProfileText } from "@/lib/content-overrides";
 import { linkHandle, phoneHref, useSiteOverrides, type SiteOverrides } from "@/lib/site-overrides";
 import type { Profile } from "@/types/profile";
 
@@ -28,10 +29,15 @@ const base = {
 } as const;
 
 /**
- * The full profile in one language. `site` holds the settings filled in in the admin panel
- * (useProfile and getSiteProfile pass them); anything not set there keeps the built-in value.
+ * The full profile in one language. `site` and `admin` hold what was filled in in the admin
+ * panel (Sayt ayarları, Profil; useProfile and getSiteProfile pass them); anything not set there
+ * keeps the built-in value.
  */
-export function getProfile(locale: Locale, site: SiteOverrides = {}): Profile {
+export function getProfile(
+  locale: Locale,
+  site: SiteOverrides = {},
+  admin: ProfileText = {},
+): Profile {
   const text = getContent(locale).profile;
   const name = site.name ?? base.name;
   const email = site.email ?? base.email;
@@ -58,7 +64,7 @@ export function getProfile(locale: Locale, site: SiteOverrides = {}): Profile {
     firstName: site.name ? site.name.split(" ")[0] : base.firstName,
     initials: site.name
       ? site.name
-          .split(/s+/)
+          .split(/\s+/)
           .map((part) => part[0])
           .join("")
           .slice(0, 2)
@@ -92,10 +98,14 @@ export function getProfile(locale: Locale, site: SiteOverrides = {}): Profile {
     })),
     languages: text.languages,
     certificates: text.certificates,
+    // Whatever was filled in under "Profil" in the admin panel.
+    ...(Object.fromEntries(
+      Object.entries(admin).filter(([, value]) => value !== undefined),
+    ) as ProfileText),
   };
 }
 
 /** The profile with the admin panel's site settings applied (Server and Client Components). */
 export function useProfile(): Profile {
-  return getProfile(useAppLocale(), useSiteOverrides());
+  return getProfile(useAppLocale(), useSiteOverrides(), useContentOverrides().profile);
 }
