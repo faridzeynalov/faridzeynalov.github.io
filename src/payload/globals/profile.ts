@@ -1,4 +1,5 @@
 import type { ArrayField, GlobalConfig } from "payload";
+import { anyone, isAdmin } from "@/payload/access";
 import { groups, i18nField, i18nLinesField, l, rowActiveField, type Label } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
@@ -39,7 +40,7 @@ export const Profile: GlobalConfig = {
       "Обо мне, резюме и личные разделы главной. Пустой список сохраняет текущий контент сайта.",
     ),
   },
-  access: { read: () => true },
+  access: { read: anyone, update: isAdmin },
   hooks: { afterChange: [revalidateSite] },
   fields: [
     {

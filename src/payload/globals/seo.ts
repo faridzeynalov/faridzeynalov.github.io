@@ -1,4 +1,5 @@
 import type { Field, GlobalConfig } from "payload";
+import { anyone, isAdmin } from "@/payload/access";
 import { groups, i18nField, l, type Label } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
@@ -52,7 +53,7 @@ export const Seo: GlobalConfig = {
       "Пустые поля сохраняют текущий текст сайта.",
     ),
   },
-  access: { read: () => true },
+  access: { read: anyone, update: isAdmin },
   hooks: { afterChange: [revalidateSite] },
   fields: [
     {

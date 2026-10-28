@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/payload/access";
 import { groups, l } from "@/payload/fields";
 
 /** Who can sign in to the admin panel. */
@@ -10,6 +11,7 @@ export const Users: CollectionConfig = {
   },
   admin: { useAsTitle: "email", group: groups.system },
   auth: true,
+  access: adminOnly,
   fields: [
     { name: "name", label: l("Ad", "Name", "Имя"), type: "text" },
     {

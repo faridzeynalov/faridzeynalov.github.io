@@ -1,4 +1,5 @@
 import type { CollectionConfig, TextareaField } from "payload";
+import { publicContent } from "@/payload/access";
 import { groups, l, LANGS } from "@/payload/fields";
 import { revalidateAfterChange, revalidateAfterDelete } from "@/payload/hooks/revalidate-site";
 
@@ -26,7 +27,7 @@ export const Translations: CollectionConfig = {
   },
   defaultSort: "key",
   // Rows come from messages/*.json (npm run seed): a key the site doesn't use would do nothing.
-  access: { read: () => true, create: () => false },
+  access: { ...publicContent, create: () => false },
   hooks: { afterChange: [revalidateAfterChange], afterDelete: [revalidateAfterDelete] },
   fields: [
     {

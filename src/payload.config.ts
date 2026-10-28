@@ -6,12 +6,16 @@ import { en } from "@payloadcms/translations/languages/en";
 import { ru } from "@payloadcms/translations/languages/ru";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resendAdapter } from "@payloadcms/email-resend";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 import { migrations } from "./migrations";
+import { ClientProjects } from "@/payload/collections/client-projects";
+import { Clients } from "@/payload/collections/clients";
 import { Faq } from "@/payload/collections/faq";
 import { Media } from "@/payload/collections/media";
 import { ProcessSteps } from "@/payload/collections/process-steps";
+import { ProjectComments } from "@/payload/collections/project-comments";
 import { Projects } from "@/payload/collections/projects";
 import { Services } from "@/payload/collections/services";
 import { Translations } from "@/payload/collections/translations";
@@ -53,9 +57,29 @@ export default buildConfig({
     avatar: { Component: "/payload/components/avatar#Avatar" },
   },
   i18n: { supportedLanguages: { az, en, ru }, fallbackLanguage: "az" },
-  collections: [Projects, Services, ProcessSteps, Faq, Translations, Media, Users],
+  collections: [
+    Projects,
+    Services,
+    ProcessSteps,
+    Faq,
+    ClientProjects,
+    ProjectComments,
+    Clients,
+    Translations,
+    Media,
+    Users,
+  ],
   globals: [Profile, Ai, SiteSettings, Pages, Seo],
   editor: lexicalEditor(),
+  // Invitations, password resets and comment notifications go out through Resend (without a key,
+  // e.g. locally, Payload prints them to the console instead).
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        apiKey: process.env.RESEND_API_KEY,
+        defaultFromAddress: process.env.EMAIL_FROM || "noreply@faridzeynalov.com",
+        defaultFromName: "Farid Zeynalov",
+      })
+    : undefined,
   secret: process.env.PAYLOAD_SECRET ?? "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
   // Local development uses the same database as the live site, so the schema is never pushed

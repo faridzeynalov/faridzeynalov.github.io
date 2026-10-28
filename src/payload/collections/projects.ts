@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { publicContent } from "@/payload/access";
 import {
   activeField,
   groups,
@@ -32,7 +33,7 @@ export const Projects: CollectionConfig = {
       "Перетащите строки, чтобы изменить порядок. Без загруженных скриншотов остаются текущие.",
     ),
   },
-  access: { read: () => true },
+  access: publicContent,
   hooks: { afterChange: [revalidateAfterChange], afterDelete: [revalidateAfterDelete] },
   fields: [
     {

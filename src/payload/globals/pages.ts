@@ -1,4 +1,5 @@
 import type { CheckboxField, GlobalConfig } from "payload";
+import { anyone, isAdmin } from "@/payload/access";
 import { groups, l, type Label } from "@/payload/fields";
 import { pageLabels } from "@/payload/globals/seo";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
@@ -50,7 +51,7 @@ export const Pages: GlobalConfig = {
       "Отключённая страница пропадает из меню и sitemap, а её адрес возвращает 404.",
     ),
   },
-  access: { read: () => true },
+  access: { read: anyone, update: isAdmin },
   hooks: { afterChange: [revalidateSite] },
   fields: [
     {

@@ -2579,3 +2579,17 @@ body {
 .array-field .fz-i18n.group-field {
   margin-bottom: 16px;
 }
+
+/* Client project stages (components/stage-row-label.tsx): ○ to ● in the status colour. */
+.fz-stage-label > span:first-child {
+  color: var(--fz-muted);
+}
+
+.fz-stage-label--in_progress > span:first-child,
+.fz-stage-label--done > span:first-child {
+  color: var(--fz-accent);
+}
+
+.fz-stage-label--review > span:first-child {
+  color: #d97706;
+}

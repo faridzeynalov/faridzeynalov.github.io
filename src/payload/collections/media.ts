@@ -1,4 +1,5 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from "payload";
+import { publicContent } from "@/payload/access";
 import sharp from "sharp";
 import { groups, l } from "@/payload/fields";
 
@@ -41,7 +42,7 @@ export const Media: CollectionConfig = {
   slug: "media",
   labels: { singular: l("Fayl", "File", "Файл"), plural: l("Media", "Media", "Медиа") },
   admin: { group: groups.system },
-  access: { read: () => true },
+  access: publicContent,
   upload: {
     mimeTypes: ["image/*", "application/pdf"],
     // No resized copies are made, so the image itself is the preview in lists and upload fields.

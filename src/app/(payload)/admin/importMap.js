@@ -1,4 +1,5 @@
 import { ToggleCell as ToggleCell_1c930af05419cc988531c1f8ab20b666 } from '../../../payload/components/toggle-cell'
+import { StageRowLabel as StageRowLabel_9bcb33aac12f6701353125f0dca330a8 } from '../../../payload/components/stage-row-label'
 import { RowLabel as RowLabel_ef96ea64ff52e3d42a3a3b851a7da8a4 } from '../../../payload/components/row-label'
 import { Avatar as Avatar_4c76e2ecc0f6673590f189af165ba1bd } from '../../../payload/components/avatar'
 import { Icon as Icon_eba0478a930fe88d77ce8a44c33d4f45 } from '../../../payload/components/brand'
@@ -13,6 +14,7 @@ import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/payload/components/toggle-cell#ToggleCell": ToggleCell_1c930af05419cc988531c1f8ab20b666,
+  "/payload/components/stage-row-label#StageRowLabel": StageRowLabel_9bcb33aac12f6701353125f0dca330a8,
   "/payload/components/row-label#RowLabel": RowLabel_ef96ea64ff52e3d42a3a3b851a7da8a4,
   "/payload/components/avatar#Avatar": Avatar_4c76e2ecc0f6673590f189af165ba1bd,
   "/payload/components/brand#Icon": Icon_eba0478a930fe88d77ce8a44c33d4f45,

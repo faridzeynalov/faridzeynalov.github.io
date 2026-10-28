@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { anyone, isAdmin } from "@/payload/access";
 import { groups, i18nField, l } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
@@ -13,7 +14,7 @@ export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   label: l("Sayt ayarları", "Site settings", "Настройки сайта"),
   admin: { group: groups.settings, description: emptyKeepsBuiltIn },
-  access: { read: () => true },
+  access: { read: anyone, update: isAdmin },
   hooks: { afterChange: [revalidateSite] },
   fields: [
     { name: "name", label: l("Ad Soyad", "Full name", "Имя и фамилия"), type: "text" },

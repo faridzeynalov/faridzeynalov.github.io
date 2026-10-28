@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { anyone, isAdmin } from "@/payload/access";
 import { groups, i18nField, i18nLinesField, l, linesField, rowActiveField } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
@@ -14,7 +15,7 @@ export const Ai: GlobalConfig = {
       "Раздел об ИИ на главной и в резюме.",
     ),
   },
-  access: { read: () => true },
+  access: { read: anyone, update: isAdmin },
   hooks: { afterChange: [revalidateSite] },
   fields: [
     i18nField("intro", l("Giriş mətni", "Intro", "Вступление"), { long: true }),

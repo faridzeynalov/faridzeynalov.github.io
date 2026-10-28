@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { publicContent } from "@/payload/access";
 import {
   activeField,
   adminTitleField,
@@ -29,7 +30,7 @@ export const Services: CollectionConfig = {
       "Перетащите строки, чтобы изменить порядок.",
     ),
   },
-  access: { read: () => true },
+  access: publicContent,
   hooks: {
     beforeChange: [setAdminTitle("title")],
     afterChange: [revalidateAfterChange],

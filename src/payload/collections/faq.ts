@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { publicContent } from "@/payload/access";
 import {
   activeField,
   adminTitleField,
@@ -22,7 +23,7 @@ export const Faq: CollectionConfig = {
     useAsTitle: "adminTitle",
     defaultColumns: ["adminTitle", "active"],
   },
-  access: { read: () => true },
+  access: publicContent,
   hooks: {
     beforeChange: [setAdminTitle("question")],
     afterChange: [revalidateAfterChange],

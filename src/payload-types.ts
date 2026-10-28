@@ -63,6 +63,7 @@ export type SupportedTimezones =
 
 export interface Config {
   auth: {
+    clients: ClientAuthOperations;
     users: UserAuthOperations;
   };
   blocks: {};
@@ -71,6 +72,9 @@ export interface Config {
     services: Service;
     'process-steps': ProcessStep;
     faq: Faq;
+    'client-projects': ClientProject;
+    'project-comments': ProjectComment;
+    clients: Client;
     translations: Translation;
     media: Media;
     users: User;
@@ -85,6 +89,9 @@ export interface Config {
     services: ServicesSelect<false> | ServicesSelect<true>;
     'process-steps': ProcessStepsSelect<false> | ProcessStepsSelect<true>;
     faq: FaqSelect<false> | FaqSelect<true>;
+    'client-projects': ClientProjectsSelect<false> | ClientProjectsSelect<true>;
+    'project-comments': ProjectCommentsSelect<false> | ProjectCommentsSelect<true>;
+    clients: ClientsSelect<false> | ClientsSelect<true>;
     translations: TranslationsSelect<false> | TranslationsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -115,10 +122,28 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: Client | User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
+  };
+}
+export interface ClientAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
   };
 }
 export interface UserAuthOperations {
@@ -314,18 +339,93 @@ export interface Faq {
   createdAt: string;
 }
 /**
- * Buttons, menus, headings and other texts on the site. Keep words in curly braces such as {name} as they are: the site fills them in.
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "client-projects".
+ */
+export interface ClientProject {
+  id: number;
+  title: string;
+  client: number | Client;
+  status: 'planned' | 'active' | 'paused' | 'done';
+  startDate?: string | null;
+  dueDate?: string | null;
+  /**
+   * The client sees this in the portal.
+   */
+  summary?: string | null;
+  stages?:
+    | {
+        name: string;
+        status: 'todo' | 'in_progress' | 'review' | 'done';
+        dueDate?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * A preview, the design file and so on. The client sees these in the portal.
+   */
+  links?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Adding a client emails them an invitation to the portal, where they set their own password.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "translations".
+ * via the `definition` "clients".
  */
-export interface Translation {
+export interface Client {
   id: number;
-  key: string;
-  section?: string | null;
-  az?: string | null;
-  en?: string | null;
-  ru?: string | null;
+  name: string;
+  company?: string | null;
+  /**
+   * Emails and the portal use this language.
+   */
+  language: 'az' | 'en' | 'ru';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'clients';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-comments".
+ */
+export interface ProjectComment {
+  id: number;
+  project: number | ClientProject;
+  body: string;
+  author?:
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'clients';
+        value: number | Client;
+      } | null);
   updatedAt: string;
   createdAt: string;
 }
@@ -359,6 +459,22 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * Buttons, menus, headings and other texts on the site. Keep words in curly braces such as {name} as they are: the site fills them in.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translations".
+ */
+export interface Translation {
+  id: number;
+  key: string;
+  section?: string | null;
+  az?: string | null;
+  en?: string | null;
+  ru?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -401,6 +517,18 @@ export interface PayloadLockedDocument {
         value: number | Faq;
       } | null)
     | ({
+        relationTo: 'client-projects';
+        value: number | ClientProject;
+      } | null)
+    | ({
+        relationTo: 'project-comments';
+        value: number | ProjectComment;
+      } | null)
+    | ({
+        relationTo: 'clients';
+        value: number | Client;
+      } | null)
+    | ({
         relationTo: 'translations';
         value: number | Translation;
       } | null)
@@ -413,10 +541,15 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'clients';
+        value: number | Client;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -426,10 +559,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'clients';
+        value: number | Client;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
+      };
   key?: string | null;
   value?:
     | {
@@ -608,6 +746,73 @@ export interface FaqSelect<T extends boolean = true> {
   adminTitle?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "client-projects_select".
+ */
+export interface ClientProjectsSelect<T extends boolean = true> {
+  title?: T;
+  client?: T;
+  status?: T;
+  startDate?: T;
+  dueDate?: T;
+  summary?: T;
+  stages?:
+    | T
+    | {
+        name?: T;
+        status?: T;
+        dueDate?: T;
+        note?: T;
+        id?: T;
+      };
+  links?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-comments_select".
+ */
+export interface ProjectCommentsSelect<T extends boolean = true> {
+  project?: T;
+  body?: T;
+  author?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients_select".
+ */
+export interface ClientsSelect<T extends boolean = true> {
+  name?: T;
+  company?: T;
+  language?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

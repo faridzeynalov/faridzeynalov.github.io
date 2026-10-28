@@ -41,6 +41,11 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
+            <li>
+              <Link href="/portal" className="text-fg-muted transition-colors hover:text-fg">
+                {t("portal")}
+              </Link>
+            </li>
           </ul>
         </nav>
 
