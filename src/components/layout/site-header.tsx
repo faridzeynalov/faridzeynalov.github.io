@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Logo } from "@/components/layout/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { PortalMenu } from "@/components/layout/portal-menu";
 import { AppearanceMenu } from "@/components/layout/appearance-menu";
 import { useActiveNav } from "@/components/layout/use-active-nav";
 import { buttonVariants } from "@/components/ui/button";
@@ -85,6 +86,8 @@ export function SiteHeader({ tree }: { tree: TreeNode[] }) {
           >
             {t("letsTalk")}
           </Link>
+          {/* Rightmost on wider screens; on phones, just before the menu button. */}
+          <PortalMenu />
           <MobileNav tree={tree} />
         </div>
       </div>

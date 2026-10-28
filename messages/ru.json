@@ -33,7 +33,12 @@
     "skip": "Перейти к содержимому",
     "language": "Язык",
     "switchLanguage": "Переключить на {language}",
-    "getInTouch": "Связаться"
+    "getInTouch": "Связаться",
+    "portal": "Клиентский портал",
+    "portalSignIn": "Войти в клиентский портал",
+    "portalAccount": "{name} — меню личного кабинета",
+    "portalDashboard": "Личный кабинет",
+    "portalSignOut": "Выйти"
   },
   "Theme": {
     "appearance": "Оформление",

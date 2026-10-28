@@ -33,7 +33,12 @@
     "skip": "Skip to content",
     "language": "Language",
     "switchLanguage": "Switch to {language}",
-    "getInTouch": "Get in touch"
+    "getInTouch": "Get in touch",
+    "portal": "Client portal",
+    "portalSignIn": "Sign in to the client portal",
+    "portalAccount": "{name} — account menu",
+    "portalDashboard": "My dashboard",
+    "portalSignOut": "Sign out"
   },
   "Theme": {
     "appearance": "Appearance",

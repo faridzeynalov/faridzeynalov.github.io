@@ -7,6 +7,7 @@ import { hasLocale } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
 import { localizedPath } from "@/lib/i18n-metadata";
 import { getPortalClient, PORTAL_COOKIE, portalPayload } from "@/lib/portal";
+import { PORTAL_USER_COOKIE } from "@/lib/portal-session";
 
 /**
  * The portal's form actions. Each returns a status the form shows ("error", "sent", …) or
@@ -21,14 +22,17 @@ function localeOf(form: FormData): Locale {
 
 const portal = (locale: Locale, path = "") => localizedPath(locale, `/portal${path}`);
 
-async function startSession(token: string, exp?: number) {
-  (await cookies()).set(PORTAL_COOKIE, token, {
-    httpOnly: true,
+/** The session cookie, and beside it the client's first name for the site header to show. */
+async function startSession(token: string, name: string, exp?: number) {
+  const jar = await cookies();
+  const options = {
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "lax" as const,
     path: "/",
     expires: exp ? new Date(exp * 1000) : undefined,
-  });
+  };
+  jar.set(PORTAL_COOKIE, token, { ...options, httpOnly: true });
+  jar.set(PORTAL_USER_COOKIE, encodeURIComponent(name.split(" ")[0] ?? ""), options);
 }
 
 export async function login(_: ActionState, form: FormData): Promise<ActionState> {
@@ -39,8 +43,8 @@ export async function login(_: ActionState, form: FormData): Promise<ActionState
   const payload = await portalPayload();
   try {
     const result = await payload.login({ collection: "clients", data: { email, password } });
-    if (!result.token) return { status: "error" };
-    await startSession(result.token, result.exp);
+    if (!result.token || !result.user) return { status: "error" };
+    await startSession(result.token, result.user.name, result.exp);
   } catch (error) {
     const locked = error instanceof Error && error.name === "LockedAuth";
     return { status: locked ? "locked" : "error" };
@@ -49,7 +53,9 @@ export async function login(_: ActionState, form: FormData): Promise<ActionState
 }
 
 export async function logout(form: FormData) {
-  (await cookies()).delete(PORTAL_COOKIE);
+  const jar = await cookies();
+  jar.delete(PORTAL_COOKIE);
+  jar.delete(PORTAL_USER_COOKIE);
   redirect(portal(localeOf(form), "/login"));
 }
 
@@ -67,7 +73,7 @@ export async function setPassword(_: ActionState, form: FormData): Promise<Actio
       data: { token, password },
       overrideAccess: true,
     });
-    if (result.token) await startSession(result.token);
+    if (result.token) await startSession(result.token, (result.user as { name: string }).name);
   } catch {
     return { status: "error" };
   }

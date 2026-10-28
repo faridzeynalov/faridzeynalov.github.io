@@ -33,7 +33,12 @@
     "skip": "Əsas məzmuna keç",
     "language": "Dil",
     "switchLanguage": "{language} dilinə keç",
-    "getInTouch": "Əlaqə saxlayın"
+    "getInTouch": "Əlaqə saxlayın",
+    "portal": "Müştəri portalı",
+    "portalSignIn": "Müştəri portalına daxil ol",
+    "portalAccount": "{name} — şəxsi kabinet menyusu",
+    "portalDashboard": "Şəxsi kabinet",
+    "portalSignOut": "Çıxış"
   },
   "Theme": {
     "appearance": "Görünüş",
