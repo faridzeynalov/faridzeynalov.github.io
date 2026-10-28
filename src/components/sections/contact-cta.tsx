@@ -6,8 +6,7 @@ import { Accent, SectionEyebrow } from "@/components/sections/section-heading";
 import { CopyButton } from "@/components/ui/copy-button";
 import { buttonVariants } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { getProfile } from "@/data/profile";
-import { useAppLocale } from "@/i18n/use-app-locale";
+import { useProfile } from "@/data/profile";
 import { cn } from "@/lib/utils";
 
 interface ContactCtaProps {
@@ -19,7 +18,7 @@ interface ContactCtaProps {
 export function ContactCta({ compact = false, title }: ContactCtaProps) {
   const t = useTranslations("ContactCta");
   const tc = useTranslations("Common");
-  const profile = getProfile(useAppLocale());
+  const profile = useProfile();
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
   return (
     <section

@@ -4,14 +4,13 @@ import { Reveal } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { getProfile } from "@/data/profile";
-import { useAppLocale } from "@/i18n/use-app-locale";
+import { useProfile } from "@/data/profile";
 import { withBasePath } from "@/lib/site";
 
 export function About() {
   const t = useTranslations("AboutSection");
   const tc = useTranslations("Common");
-  const profile = getProfile(useAppLocale());
+  const profile = useProfile();
   return (
     <section id="about" aria-labelledby="about-title" className="py-24 md:py-32">
       <div className="container-page">

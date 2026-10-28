@@ -12,7 +12,7 @@ import { UnavailablePreview } from "@/components/projects/unavailable-preview";
 import { ContactCta } from "@/components/sections/contact-cta";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { getProfile } from "@/data/profile";
+import { getSiteProfile } from "@/lib/cms";
 import { projectSlugs } from "@/data/projects";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -75,7 +75,7 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/portf
   const tc = await getTranslations("Common");
   const tLang = await getTranslations("LanguageNames");
   const adjacent = getAdjacentProjects(project.slug, locale);
-  const job = getProfile(locale).experience[0];
+  const job = (await getSiteProfile(locale)).experience[0];
   const industry = getIndustryLabel(project.industry, locale);
 
   const meta = [

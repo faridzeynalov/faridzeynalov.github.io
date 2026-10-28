@@ -3,15 +3,14 @@ import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { useTranslations } from "next-intl";
 import { getContent } from "@/content";
-import { getProfile } from "@/data/profile";
-import { useAppLocale } from "@/i18n/use-app-locale";
+import { useProfile } from "@/data/profile";
 import { cn, toFileName } from "@/lib/utils";
 
 const icons: LucideIcon[] = [Braces, Layers, ShieldCheck, Wrench];
 
 export function Skills() {
   const t = useTranslations("Skills");
-  const profile = getProfile(useAppLocale());
+  const profile = useProfile();
   return (
     <section aria-labelledby="skills-title" className="relative py-24 md:py-32">
       <div className="container-page">

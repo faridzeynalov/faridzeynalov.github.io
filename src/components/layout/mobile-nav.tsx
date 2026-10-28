@@ -19,7 +19,7 @@ import { ExplorerTree } from "@/components/layout/explorer-tree";
 import { LogoMark } from "@/components/layout/logo";
 import { useSkin } from "@/components/layout/use-appearance";
 import { useActiveNav } from "@/components/layout/use-active-nav";
-import { owner } from "@/data/owner";
+import { useOwner } from "@/lib/site-overrides";
 import { Link, usePathname } from "@/i18n/navigation";
 import { navItems } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -128,6 +128,7 @@ interface PanelProps {
 
 /** Classic style: large page links that slide in one after another, plus contact details. */
 function ClassicPanel({ panelRef, onNavigate }: PanelProps) {
+  const owner = useOwner();
   const t = useTranslations("Nav");
   const active = useActiveNav();
 

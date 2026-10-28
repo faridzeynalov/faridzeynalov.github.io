@@ -6,7 +6,7 @@ import { LocalTime } from "@/components/layout/local-time";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { CopyButton } from "@/components/ui/copy-button";
-import { getProfile } from "@/data/profile";
+import { getSeo, getSiteProfile } from "@/lib/cms";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { withBasePath } from "@/lib/site";
@@ -16,9 +16,12 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/contact">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
   const t = await getTranslations({ locale, namespace: "Metadata" });
+  // Set in the admin panel's SEO tab; the title there is used as is, without the name suffix.
+  const seo = await getSeo(locale, "contact");
   return {
-    title: t("contactTitle"),
-    description: t("contactDescription", { name: getProfile(locale).name }),
+    title: seo.title ? { absolute: seo.title } : t("contactTitle"),
+    description:
+      seo.description ?? t("contactDescription", { name: (await getSiteProfile(locale)).name }),
     alternates: localizedAlternates(locale, "/contact"),
     openGraph: { url: localizedPath(locale, "/contact") },
   };
@@ -29,7 +32,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
   setRequestLocale(locale);
   const t = await getTranslations("ContactPage");
   const tc = await getTranslations("Common");
-  const profile = getProfile(locale);
+  const profile = await getSiteProfile(locale);
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
 
   return (

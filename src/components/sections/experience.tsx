@@ -2,13 +2,12 @@ import { ArrowUpRight, Briefcase, GraduationCap } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { useTranslations } from "next-intl";
-import { getProfile } from "@/data/profile";
-import { useAppLocale } from "@/i18n/use-app-locale";
+import { useProfile } from "@/data/profile";
 import { toFileName } from "@/lib/utils";
 
 export function Experience() {
   const t = useTranslations("Experience");
-  const profile = getProfile(useAppLocale());
+  const profile = useProfile();
   return (
     <section aria-labelledby="experience-title" className="py-24 md:py-32">
       <div className="container-page">

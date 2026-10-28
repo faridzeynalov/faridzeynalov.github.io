@@ -15,7 +15,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
-import { owner } from "@/data/owner";
+import { useOwner } from "@/lib/site-overrides";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { Industry, Project } from "@/types/project";
@@ -441,6 +441,7 @@ function Paper({
 }
 
 function Cover({ count }: { count: number }) {
+  const owner = useOwner();
   const t = useTranslations("Portfolio");
   return (
     <div className="journal-cover">

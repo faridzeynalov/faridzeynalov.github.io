@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/fix-export-segments.mjs",
-    "start": "node scripts/serve-static.mjs 4173",
+    "start": "next start -p 4173",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
@@ -16,15 +15,25 @@
     "test:e2e": "playwright test",
     "capture:projects": "node scripts/capture-projects.mjs .captures/full && node scripts/capture-sections.mjs .captures/sections",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
-    "capture:images": "node scripts/optimize-captures.mjs .captures/full .captures/sections && node scripts/generate-image-map.mjs"
+    "capture:images": "node scripts/optimize-captures.mjs .captures/full .captures/sections && node scripts/generate-image-map.mjs",
+    "payload": "node --env-file-if-exists=.env.local --import ./scripts/payload-loader.mjs node_modules/payload/bin.js --disable-transpile",
+    "generate:types": "npm run payload -- generate:types",
+    "generate:importmap": "npm run payload -- generate:importmap"
   },
   "dependencies": {
+    "@payloadcms/db-postgres": "^3.92.1",
+    "@payloadcms/next": "^3.92.1",
+    "@payloadcms/richtext-lexical": "^3.92.1",
+    "@payloadcms/storage-vercel-blob": "^3.92.1",
+    "@payloadcms/translations": "^3.92.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "graphql": "^16.14.2",
     "lucide-react": "^1.61.0",
     "motion": "^14.6.0",
     "next": "16.4.2",
     "next-intl": "^4.14.9",
+    "payload": "^3.92.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "tailwind-merge": "^3.7.0"

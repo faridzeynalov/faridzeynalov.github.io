@@ -11,6 +11,7 @@ import { Faq } from "@/components/services/faq";
 import { getFaq, getProcess, getServices } from "@/data/services";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
+import { getSeo } from "@/lib/cms";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { faqStructuredData, jsonLd } from "@/lib/structured-data";
 
@@ -19,9 +20,11 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/services">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
   const t = await getTranslations({ locale, namespace: "Metadata" });
+  // Set in the admin panel's SEO tab; the title there is used as is, without the name suffix.
+  const seo = await getSeo(locale, "services");
   return {
-    title: t("servicesTitle"),
-    description: t("servicesDescription"),
+    title: seo.title ? { absolute: seo.title } : t("servicesTitle"),
+    description: seo.description ?? t("servicesDescription"),
     alternates: localizedAlternates(locale, "/services"),
     openGraph: { url: localizedPath(locale, "/services") },
   };

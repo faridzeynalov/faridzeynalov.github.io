@@ -8,7 +8,7 @@ import { PromptEyebrow } from "@/components/layout/page-header";
 import { Enter } from "@/components/motion/enter";
 import { buttonVariants } from "@/components/ui/button";
 import { getAi } from "@/data/ai";
-import { getProfile } from "@/data/profile";
+import { getSeo, getSiteProfile } from "@/lib/cms";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
@@ -18,14 +18,18 @@ import { withBasePath } from "@/lib/site";
 export async function generateMetadata({ params }: PageProps<"/[locale]/cv">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  const profile = getProfile(locale);
+  // Set in the admin panel's SEO tab; the title there is used as is, without the name suffix.
+  const seo = await getSeo(locale, "cv");
+  const profile = await getSiteProfile(locale);
   return {
-    title: t("cvTitle"),
-    description: t("cvDescription", {
-      name: profile.name,
-      title: profile.cv.title,
-      location: profile.location,
-    }),
+    title: seo.title ? { absolute: seo.title } : t("cvTitle"),
+    description:
+      seo.description ??
+      t("cvDescription", {
+        name: profile.name,
+        title: profile.cv.title,
+        location: profile.location,
+      }),
     alternates: localizedAlternates(locale, "/cv"),
     openGraph: { url: localizedPath(locale, "/cv") },
   };
@@ -38,7 +42,7 @@ export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
   setRequestLocale(locale);
   const t = await getTranslations("CvPage");
   const tc = await getTranslations("Common");
-  const profile = getProfile(locale);
+  const profile = await getSiteProfile(locale);
   const ai = getAi(locale);
   const projects = getAllProjects(locale);
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");

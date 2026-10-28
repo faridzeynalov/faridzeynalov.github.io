@@ -11,10 +11,9 @@ import { ThemeSync } from "@/components/layout/theme-sync";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProvider } from "@/components/motion/motion-provider";
-import { owner } from "@/data/owner";
-import { getProfile } from "@/data/profile";
+import { getSeo, getSiteOverrides, getSiteProfile } from "@/lib/cms";
 import { getServices } from "@/data/services";
-import { LOCALE_STORAGE_KEY, routing } from "@/i18n/routing";
+import { LOCALE_STORAGE_KEY, routing, type Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath, ogLocale } from "@/lib/i18n-metadata";
 import { buildNavTree } from "@/lib/nav-tree";
 import { getAllProjects } from "@/lib/projects";
@@ -57,19 +56,39 @@ export function generateStaticParams() {
  */
 const savedLocaleRedirect = `(function(){try{var l=localStorage.getItem(${JSON.stringify(LOCALE_STORAGE_KEY)});if(!l||l===${JSON.stringify(routing.defaultLocale)}||${JSON.stringify(routing.locales)}.indexOf(l)<0)return;var base=${JSON.stringify(basePath)};var p=location.pathname.slice(base.length)||"/";location.replace(base+"/"+l+(p==="/"?"":p)+location.search+location.hash);}catch(e){}})();`;
 
+/**
+ * The home page's title, description and keywords, and the share image: from the admin panel's
+ * SEO settings where filled in, otherwise the built-in "Metadata" messages.
+ */
+async function siteMeta(locale: Locale) {
+  const [t, profile, seo] = await Promise.all([
+    getTranslations({ locale, namespace: "Metadata" }),
+    getSiteProfile(locale),
+    getSeo(locale, "home"),
+  ]);
+  return {
+    profile,
+    title: seo.title ?? t("siteTitle", { name: profile.name, role: profile.role }),
+    description:
+      seo.description ??
+      t("siteDescription", {
+        name: profile.name,
+        role: profile.role,
+        location: profile.location,
+        years: profile.yearsOfExperience,
+        sites: profile.sitesShipped,
+      }),
+    // What people type when they look for someone to build a website, in this language.
+    keywords: seo.keywords ?? t("keywords").split(", "),
+    ogImage: seo.ogImage ?? { url: "/og.png", width: 1200, height: 630 },
+    servicesName: t("servicesTitle"),
+  };
+}
+
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
-  const t = await getTranslations({ locale, namespace: "Metadata" });
-  const profile = getProfile(locale);
-  const title = t("siteTitle", { name: profile.name, role: profile.role });
-  const description = t("siteDescription", {
-    name: profile.name,
-    role: profile.role,
-    location: profile.location,
-    years: profile.yearsOfExperience,
-    sites: profile.sitesShipped,
-  });
+  const { profile, title, description, keywords, ogImage } = await siteMeta(locale);
 
   return {
     // Includes the base path; Next.js joins it with the root-relative URLs used in page metadata.
@@ -79,8 +98,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
     applicationName: profile.name,
     authors: [{ name: profile.name }],
     creator: profile.name,
-    // What people type when they look for someone to build a website, in this language.
-    keywords: [...t("keywords").split(", "), profile.name],
+    keywords: [...keywords, profile.name],
     alternates: localizedAlternates(locale, "/"),
     openGraph: {
       type: "website",
@@ -89,9 +107,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
       description,
       url: localizedPath(locale, "/"),
       locale: ogLocale(locale),
-      images: [{ url: "/og.png", width: 1200, height: 630, alt: title }],
+      images: [{ ...ogImage, alt: title }],
     },
-    twitter: { card: "summary_large_image", title, description, images: ["/og.png"] },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage.url] },
   };
 }
 
@@ -109,25 +127,23 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Nav" });
   const tExplorer = await getTranslations({ locale, namespace: "Explorer" });
-  const tMeta = await getTranslations({ locale, namespace: "Metadata" });
-  const profile = getProfile(locale);
+  const [{ profile, description, servicesName }, site] = await Promise.all([
+    siteMeta(locale),
+    getSiteOverrides(locale),
+  ]);
   const structuredData = siteStructuredData({
     locale,
     profile,
-    description: tMeta("siteDescription", {
-      name: profile.name,
-      role: profile.role,
-      location: profile.location,
-      years: profile.yearsOfExperience,
-      sites: profile.sitesShipped,
-    }),
-    servicesName: tMeta("servicesTitle"),
+    description,
+    servicesName,
     services: getServices(locale),
-    sameAs: [owner.linkedIn.href],
+    sameAs: profile.social.filter((link) => link.href.startsWith("http")).map((link) => link.href),
   });
-  const tree = buildNavTree(locale, {
-    projects: tExplorer("projects", { count: getAllProjects(locale).length }),
-  });
+  const tree = buildNavTree(
+    locale,
+    { projects: tExplorer("projects", { count: getAllProjects(locale).length }) },
+    site,
+  );
 
   return (
     // The theme class is added by the inline script before paint, so React must not complain

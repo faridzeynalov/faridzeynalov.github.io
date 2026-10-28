@@ -3,14 +3,13 @@ import { Link } from "@/i18n/navigation";
 import { LocalTime } from "@/components/layout/local-time";
 import { LogoMark } from "@/components/layout/logo";
 import { useTranslations } from "next-intl";
-import { getProfile } from "@/data/profile";
-import { useAppLocale } from "@/i18n/use-app-locale";
+import { useProfile } from "@/data/profile";
 import { navItems } from "@/lib/site";
 
 export function SiteFooter() {
   const t = useTranslations("Footer");
   const tn = useTranslations("Nav");
-  const profile = getProfile(useAppLocale());
+  const profile = useProfile();
   const city = profile.location.split(",")[0];
   const year = new Date().getFullYear();
 

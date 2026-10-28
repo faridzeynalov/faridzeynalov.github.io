@@ -1,6 +1,8 @@
 import { getContent } from "@/content";
 import { owner } from "@/data/owner";
 import type { Locale } from "@/i18n/routing";
+import { useAppLocale } from "@/i18n/use-app-locale";
+import { linkHandle, phoneHref, useSiteOverrides, type SiteOverrides } from "@/lib/site-overrides";
 import type { Profile } from "@/types/profile";
 
 /**
@@ -16,11 +18,6 @@ const base = {
   phoneHref: owner.phoneHref,
   yearsOfExperience: "4+",
   sitesShipped: "25+",
-  social: [
-    { label: "Email", href: `mailto:${owner.email}`, handle: owner.email },
-    { label: "LinkedIn", href: owner.linkedIn.href, handle: owner.linkedIn.handle },
-    { label: "Phone", href: `tel:${owner.phoneHref}`, handle: owner.phone },
-  ],
   experience: [
     { company: "One Studio", companyUrl: "https://one.az/", start: "04/2022", end: null },
   ],
@@ -30,21 +27,51 @@ const base = {
   ],
 } as const;
 
-/** The full profile in one language. */
-export function getProfile(locale: Locale): Profile {
+/**
+ * The full profile in one language. `site` holds the settings filled in in the admin panel
+ * (useProfile and getSiteProfile pass them); anything not set there keeps the built-in value.
+ */
+export function getProfile(locale: Locale, site: SiteOverrides = {}): Profile {
   const text = getContent(locale).profile;
+  const name = site.name ?? base.name;
+  const email = site.email ?? base.email;
+  const phone = site.phone ?? base.phone;
+  const tel = site.phone ? phoneHref(site.phone) : base.phoneHref;
+  const linkedIn = site.linkedIn ?? owner.linkedIn.href;
+  const social = [
+    { label: "Email", href: `mailto:${email}`, handle: email },
+    {
+      label: "LinkedIn",
+      href: linkedIn,
+      handle: site.linkedIn ? linkHandle(linkedIn) : owner.linkedIn.handle,
+    },
+    ...(site.github
+      ? [{ label: "GitHub", href: site.github, handle: linkHandle(site.github) }]
+      : []),
+    ...(site.instagram
+      ? [{ label: "Instagram", href: site.instagram, handle: linkHandle(site.instagram) }]
+      : []),
+    { label: "Phone", href: `tel:${tel}`, handle: phone },
+  ];
   return {
-    name: base.name,
-    firstName: base.firstName,
-    initials: base.initials,
-    email: base.email,
-    phone: base.phone,
-    phoneHref: base.phoneHref,
-    yearsOfExperience: base.yearsOfExperience,
-    sitesShipped: base.sitesShipped,
-    social: base.social.map((link) => ({ ...link })),
-    role: text.role,
-    location: text.location,
+    name,
+    firstName: site.name ? site.name.split(" ")[0] : base.firstName,
+    initials: site.name
+      ? site.name
+          .split(/s+/)
+          .map((part) => part[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()
+      : base.initials,
+    email,
+    phone,
+    phoneHref: tel,
+    yearsOfExperience: site.yearsOfExperience ?? base.yearsOfExperience,
+    sitesShipped: site.sitesShipped ?? base.sitesShipped,
+    social,
+    role: site.role ?? text.role,
+    location: site.location ?? text.location,
     summary: text.summary,
     about: text.about,
     industries: text.industries,
@@ -66,4 +93,9 @@ export function getProfile(locale: Locale): Profile {
     languages: text.languages,
     certificates: text.certificates,
   };
+}
+
+/** The profile with the admin panel's site settings applied (Server and Client Components). */
+export function useProfile(): Profile {
+  return getProfile(useAppLocale(), useSiteOverrides());
 }

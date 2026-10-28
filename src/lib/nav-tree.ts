@@ -1,3 +1,4 @@
+import type { SiteOverrides } from "@/lib/site-overrides";
 import { getProfile } from "@/data/profile";
 import { getServices } from "@/data/services";
 import { localeNames, routing, type Locale } from "@/i18n/routing";
@@ -10,9 +11,13 @@ import type { TreeNode } from "@/types/nav";
  * The mobile menu as a VS Code-style file tree. Built on the server (it reads project data)
  * and passed to the client menu as plain props.
  */
-export function buildNavTree(locale: Locale, labels: { projects: string }): TreeNode[] {
+export function buildNavTree(
+  locale: Locale,
+  labels: { projects: string },
+  site: SiteOverrides = {},
+): TreeNode[] {
   const projects = getAllProjects(locale);
-  const profile = getProfile(locale);
+  const profile = getProfile(locale, site);
   const linkedIn = profile.social.find((link) => link.label === "LinkedIn");
 
   return [

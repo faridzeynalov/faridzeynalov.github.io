@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { LOGO_PATH, LOGO_VIEWBOX } from "@/components/layout/logo-path";
 import { useTranslations } from "next-intl";
-import { owner } from "@/data/owner";
+import { useOwner } from "@/lib/site-overrides";
 import { cn } from "@/lib/utils";
 
 /** The FZ monogram. Uses the current text colour, so it follows the theme. */
@@ -15,6 +15,7 @@ export function LogoMark({ className }: { className?: string }) {
 
 export function Logo({ className }: { className?: string }) {
   const t = useTranslations("Nav");
+  const owner = useOwner();
   return (
     <Link
       href="/"

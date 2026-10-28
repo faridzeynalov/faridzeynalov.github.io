@@ -9,7 +9,7 @@ import { ContactCta } from "@/components/sections/contact-cta";
 import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { getContent } from "@/content";
-import { getProfile } from "@/data/profile";
+import { getSeo, getSiteProfile } from "@/lib/cms";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
@@ -21,14 +21,18 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/about">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  const profile = getProfile(locale);
+  // Set in the admin panel's SEO tab; the title there is used as is, without the name suffix.
+  const seo = await getSeo(locale, "about");
+  const profile = await getSiteProfile(locale);
   return {
-    title: t("aboutTitle"),
-    description: t("aboutDescription", {
-      name: profile.name,
-      role: profile.role,
-      location: profile.location,
-    }),
+    title: seo.title ? { absolute: seo.title } : t("aboutTitle"),
+    description:
+      seo.description ??
+      t("aboutDescription", {
+        name: profile.name,
+        role: profile.role,
+        location: profile.location,
+      }),
     alternates: localizedAlternates(locale, "/about"),
     openGraph: { url: localizedPath(locale, "/about") },
   };
@@ -39,7 +43,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   setRequestLocale(locale);
   const t = await getTranslations("AboutPage");
   const tc = await getTranslations("Common");
-  const profile = getProfile(locale);
+  const profile = await getSiteProfile(locale);
   /** Principles drawn from the CV's summary and experience. */
   const principles = getContent(locale).principles;
   const job = profile.experience[0];

@@ -6,3 +6,6 @@ playwright-report
 test-results
 package-lock.json
 src/assets
+src/migrations
+src/payload-types.ts
+src/app/(payload)

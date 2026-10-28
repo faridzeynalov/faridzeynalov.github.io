@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PortfolioExplorer } from "@/components/projects/portfolio-explorer";
 import { ContactCta } from "@/components/sections/contact-cta";
 import type { Locale } from "@/i18n/routing";
+import { getSeo } from "@/lib/cms";
 import { localizedAlternates, localizedPath } from "@/lib/i18n-metadata";
 import { getIndustryFilters } from "@/lib/industries";
 import { getAllProjects, getIndustryLabels } from "@/lib/projects";
@@ -13,9 +14,11 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/portfolio">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
   const t = await getTranslations({ locale, namespace: "Metadata" });
+  // Set in the admin panel's SEO tab; the title there is used as is, without the name suffix.
+  const seo = await getSeo(locale, "portfolio");
   return {
-    title: t("portfolioTitle"),
-    description: t("portfolioDescription"),
+    title: seo.title ? { absolute: seo.title } : t("portfolioTitle"),
+    description: seo.description ?? t("portfolioDescription"),
     alternates: localizedAlternates(locale, "/portfolio"),
     openGraph: { url: localizedPath(locale, "/portfolio") },
   };

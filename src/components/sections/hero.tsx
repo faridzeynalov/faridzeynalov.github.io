@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { HeroIntro } from "@/components/sections/hero-intro";
 import { HeroShowcase, type ShowcaseItem } from "@/components/sections/hero-showcase";
 import { buttonVariants } from "@/components/ui/button";
-import { getProfile } from "@/data/profile";
+import { useProfile } from "@/data/profile";
 import { Link } from "@/i18n/navigation";
 import { useAppLocale } from "@/i18n/use-app-locale";
 import { getFeaturedProjects, getIndustryLabel } from "@/lib/projects";
@@ -11,7 +11,7 @@ import { getFeaturedProjects, getIndustryLabel } from "@/lib/projects";
 export function Hero() {
   const locale = useAppLocale();
   const t = useTranslations("Hero");
-  const profile = getProfile(locale);
+  const profile = useProfile();
 
   const showcase: ShowcaseItem[] = getFeaturedProjects(locale).flatMap((project) =>
     project.images
