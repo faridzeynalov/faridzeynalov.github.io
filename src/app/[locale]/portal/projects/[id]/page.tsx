@@ -1,8 +1,7 @@
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, MessageCircle } from "lucide-react";
 import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
-import { CommentThread } from "@/components/portal/comment-thread";
-import { CommentForm } from "@/components/portal/forms";
+import { Conversation } from "@/components/portal/conversation";
 import { LogoutButton } from "@/components/portal/logout-button";
 import { PortalPage, portalMetadata } from "@/components/portal/portal-page";
 import { Progress, StatusPill } from "@/components/portal/status";
@@ -19,8 +18,9 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/portal/p
 }
 
 /**
- * One of the client's projects: status, progress, the stages as a timeline, links, and the
- * conversation with a form to add to it. Other clients' projects don't exist here (404).
+ * One of the client's projects: status, progress, the stages as a timeline, its screens (each with
+ * its own comments), links, and the conversation about the project. Other clients' projects don't
+ * exist here (404).
  */
 export default async function PortalProjectPage({
   params,
@@ -39,45 +39,31 @@ export default async function PortalProjectPage({
     .findByID({ collection: "client-projects", id, user: client, overrideAccess: false, depth: 0 })
     .catch(() => null);
   if (!project) notFound();
-  const { docs: comments } = await payload.find({
-    collection: "project-comments",
-    where: { project: { equals: project.id } },
-    user: client,
-    overrideAccess: false,
-    depth: 0,
-    sort: "createdAt",
-    pagination: false,
-  });
+  const [{ docs: comments }, { docs: screens }] = await Promise.all([
+    payload.find({
+      collection: "project-comments",
+      where: { project: { equals: project.id } },
+      user: client,
+      overrideAccess: false,
+      depth: 0,
+      sort: "createdAt",
+      pagination: false,
+    }),
+    payload.find({
+      collection: "project-screens",
+      where: { project: { equals: project.id } },
+      user: client,
+      overrideAccess: false,
+      depth: 0,
+      sort: "createdAt",
+      pagination: false,
+    }),
+  ]);
+  const screenOf = (comment: (typeof comments)[number]) =>
+    typeof comment.screen === "object" ? comment.screen?.id : comment.screen;
   const date = (value?: string | null) =>
     value ? format.dateTime(new Date(value), { dateStyle: "medium" }) : null;
   const stages = project.stages ?? [];
-  // Replies sit under the comment they answer; the rest are general comments.
-  const parentOf = (comment: (typeof comments)[number]) =>
-    typeof comment.parent === "object" ? comment.parent?.id : comment.parent;
-  const threads = comments.filter((comment) => !parentOf(comment));
-  const bubble = (comment: (typeof comments)[number]) => {
-    const mine = comment.author?.relationTo === "clients";
-    return (
-      <div
-        className={cn(
-          "w-fit max-w-[92%] rounded-2xl px-4 py-3",
-          mine ? "bg-accent-soft" : "bg-bg-subtle",
-        )}
-      >
-        <p className="mb-1 flex flex-wrap items-baseline gap-x-2 text-xs text-fg-subtle">
-          <span className="font-medium text-fg">{mine ? t("you") : t("me")}</span>
-          <time dateTime={comment.createdAt}>
-            {format.dateTime(new Date(comment.createdAt), {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
-          </time>
-        </p>
-        <p className="text-sm text-pretty whitespace-pre-line text-fg">{comment.body}</p>
-      </div>
-    );
-  };
-
   return (
     <PortalPage
       eyebrow={t("eyebrow")}
@@ -153,31 +139,59 @@ export default async function PortalProjectPage({
             </ol>
           </section>
 
+          {/* Screens */}
+          {screens.length > 0 && (
+            <section className="rounded-3xl border border-border bg-bg-elevated p-6 md:p-8">
+              <h2 className="text-lg font-semibold tracking-tight">{t("screens")}</h2>
+              <p className="mt-1 mb-6 text-sm text-fg-muted">{t("screensText")}</p>
+              <ul className="grid gap-4 sm:grid-cols-2">
+                {screens.map((screen) => {
+                  const count = comments.filter(
+                    (comment) => screenOf(comment) === screen.id,
+                  ).length;
+                  return (
+                    <li key={screen.id}>
+                      <Link
+                        href={`/portal/projects/${project.id}/screens/${screen.id}`}
+                        className="group block overflow-hidden rounded-2xl border border-border bg-bg transition-[border-color,box-shadow] hover:border-border-strong hover:shadow-float"
+                      >
+                        <span className="block aspect-[16/10] overflow-hidden bg-bg-subtle">
+                          {/* eslint-disable-next-line @next/next/no-img-element -- a private file, served by the portal's own route */}
+                          <img
+                            src={`/api/portal-screens/${screen.id}?size=thumb`}
+                            alt={screen.title}
+                            loading="lazy"
+                            className="size-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+                          />
+                        </span>
+                        <span className="flex items-center justify-between gap-3 px-4 py-3">
+                          <span className="min-w-0 truncate text-sm font-medium text-fg">
+                            {screen.title}
+                          </span>
+                          <span className="inline-flex shrink-0 items-center gap-1 text-xs text-fg-subtle">
+                            <MessageCircle className="size-3.5" aria-hidden />
+                            {count}
+                          </span>
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+
           {/* Comments */}
           <section
             id="comments"
             className="scroll-mt-24 rounded-3xl border border-border bg-bg-elevated p-6 md:p-8"
           >
             <h2 className="mb-6 text-lg font-semibold tracking-tight">{t("comments")}</h2>
-            {threads.length ? (
-              <ul className="mb-6 space-y-5">
-                {threads.map((thread) => (
-                  <li key={thread.id}>
-                    <CommentThread
-                      project={project.id}
-                      thread={thread.id}
-                      first={bubble(thread)}
-                      replies={comments
-                        .filter((comment) => parentOf(comment) === thread.id)
-                        .map((reply) => ({ id: reply.id, node: bubble(reply) }))}
-                    />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mb-6 text-sm text-fg-muted">{t("noComments")}</p>
-            )}
-            <CommentForm project={project.id} />
+            <Conversation
+              comments={comments.filter((comment) => !screenOf(comment))}
+              project={project.id}
+              empty={t("noComments")}
+            />
           </section>
         </div>
 

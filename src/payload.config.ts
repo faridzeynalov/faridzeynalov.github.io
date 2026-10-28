@@ -16,6 +16,7 @@ import { Faq } from "@/payload/collections/faq";
 import { Media } from "@/payload/collections/media";
 import { ProcessSteps } from "@/payload/collections/process-steps";
 import { ProjectComments } from "@/payload/collections/project-comments";
+import { ProjectScreens } from "@/payload/collections/project-screens";
 import { Projects } from "@/payload/collections/projects";
 import { Services } from "@/payload/collections/services";
 import { Translations } from "@/payload/collections/translations";
@@ -63,6 +64,7 @@ export default buildConfig({
     ProcessSteps,
     Faq,
     ClientProjects,
+    ProjectScreens,
     ProjectComments,
     Clients,
     Translations,
@@ -95,8 +97,9 @@ export default buildConfig({
   plugins: [
     vercelBlobStorage({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
-      // Media is public: files are served straight from Blob's CDN, not through the API.
-      collections: { media: { disablePayloadAccessControl: true } },
+      // Media is public: files are served straight from Blob's CDN, not through the API. Project
+      // screens are private: Payload serves them after checking who's asking.
+      collections: { media: { disablePayloadAccessControl: true }, "project-screens": true },
       token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
   ],

@@ -501,6 +501,13 @@
     "reply": "Cavab yaz",
     "replyLabel": "Cavabınız",
     "replyPlaceholder": "Cavabınızı yazın…",
-    "cancel": "Ləğv et"
+    "cancel": "Ləğv et",
+    "screens": "Ekranlar",
+    "screensText": "Dizayn və ekran şəkilləri. Birinə klikləyib baxın və fikrinizi yazın.",
+    "backToProject": "Layihəyə qayıt",
+    "openFull": "Tam ölçüdə aç",
+    "screenComments": "Bu ekran haqqında",
+    "noScreenComments": "Bu ekran haqqında hələ şərh yoxdur.",
+    "screenPlaceholder": "Bu ekran haqqında fikrinizi yazın…"
   }
 }

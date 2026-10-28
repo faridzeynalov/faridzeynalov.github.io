@@ -73,6 +73,7 @@ export interface Config {
     'process-steps': ProcessStep;
     faq: Faq;
     'client-projects': ClientProject;
+    'project-screens': ProjectScreen;
     'project-comments': ProjectComment;
     clients: Client;
     translations: Translation;
@@ -83,13 +84,18 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'client-projects': {
+      screens: 'project-screens';
+    };
+  };
   collectionsSelect: {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     'process-steps': ProcessStepsSelect<false> | ProcessStepsSelect<true>;
     faq: FaqSelect<false> | FaqSelect<true>;
     'client-projects': ClientProjectsSelect<false> | ClientProjectsSelect<true>;
+    'project-screens': ProjectScreensSelect<false> | ProjectScreensSelect<true>;
     'project-comments': ProjectCommentsSelect<false> | ProjectCommentsSelect<true>;
     clients: ClientsSelect<false> | ClientsSelect<true>;
     translations: TranslationsSelect<false> | TranslationsSelect<true>;
@@ -372,6 +378,14 @@ export interface ClientProject {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Designs and screenshots. The client can comment on each in the portal.
+   */
+  screens?: {
+    docs?: (number | ProjectScreen)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -410,6 +424,43 @@ export interface Client {
   collection: 'clients';
 }
 /**
+ * The project's designs and screenshots. The client sees them in the portal and comments.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-screens".
+ */
+export interface ProjectScreen {
+  id: number;
+  project: number | ClientProject;
+  title: string;
+  /**
+   * A short explanation for the client (optional).
+   */
+  note?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumb?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "project-comments".
  */
@@ -420,6 +471,10 @@ export interface ProjectComment {
    * Leave empty for a general comment.
    */
   parent?: (number | null) | ProjectComment;
+  /**
+   * The screen the comment is about. Empty for a comment on the project.
+   */
+  screen?: (number | null) | ProjectScreen;
   body: string;
   author?:
     | ({
@@ -523,6 +578,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'client-projects';
         value: number | ClientProject;
+      } | null)
+    | ({
+        relationTo: 'project-screens';
+        value: number | ProjectScreen;
       } | null)
     | ({
         relationTo: 'project-comments';
@@ -778,8 +837,44 @@ export interface ClientProjectsSelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
+  screens?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-screens_select".
+ */
+export interface ProjectScreensSelect<T extends boolean = true> {
+  project?: T;
+  title?: T;
+  note?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumb?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -788,6 +883,7 @@ export interface ClientProjectsSelect<T extends boolean = true> {
 export interface ProjectCommentsSelect<T extends boolean = true> {
   project?: T;
   parent?: T;
+  screen?: T;
   body?: T;
   author?: T;
   updatedAt?: T;

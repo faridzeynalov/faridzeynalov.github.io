@@ -28,12 +28,13 @@ const idOf = (value: unknown) =>
 
 /**
  * The author is whoever is signed in, and a client may only comment on a project of theirs. A reply
- * hangs off the first comment of its thread (one level, as on Instagram) in the same project.
+ * hangs off the first comment of its thread (one level, as on Instagram) in the same project, and
+ * is about the same screen; a comment on a screen must be on one of the project's.
  */
 const setAuthor: CollectionBeforeChangeHook = async ({ data, operation, req }) => {
-  if (operation !== "create" || !req.user) return data;
+  if (operation !== "create") return data;
   const projectId = idOf(data.project);
-  if (req.user.collection === "clients") {
+  if (req.user?.collection === "clients") {
     const project = await req.payload
       .findByID({
         collection: "client-projects",
@@ -46,17 +47,25 @@ const setAuthor: CollectionBeforeChangeHook = async ({ data, operation, req }) =
     if (!project) throw new Forbidden(req.t);
   }
   let parent = idOf(data.parent);
+  let screen = idOf(data.screen);
   if (parent) {
     const replyTo = await req.payload
       .findByID({ collection: "project-comments", id: parent, depth: 0, req })
       .catch(() => null);
     if (!replyTo || idOf(replyTo.project) !== projectId) throw new Forbidden(req.t);
     parent = idOf(replyTo.parent) ?? replyTo.id;
+    screen = idOf(replyTo.screen);
+  } else if (screen) {
+    const onScreen = await req.payload
+      .findByID({ collection: "project-screens", id: screen, depth: 0, req })
+      .catch(() => null);
+    if (!onScreen || idOf(onScreen.project) !== projectId) throw new Forbidden(req.t);
   }
   return {
     ...data,
     parent: parent || null,
-    author: { relationTo: req.user.collection, value: req.user.id },
+    screen: screen || null,
+    ...(req.user && { author: { relationTo: req.user.collection, value: req.user.id } }),
   };
 };
 
@@ -72,25 +81,30 @@ const notify: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
     });
     const client = typeof project.client === "object" ? project.client : null;
     if (!client) return doc;
+    const screenId = idOf(doc.screen);
+    const screen = screenId
+      ? await req.payload.findByID({ collection: "project-screens", id: screenId, depth: 0, req })
+      : null;
+    const projectTitle = screen ? `${project.title} · ${screen.title}` : project.title;
     const fromClient = doc.author?.relationTo === "clients";
     if (fromClient) {
       const settings = await req.payload.findGlobal({ slug: "site-settings", depth: 0, req });
       const mail = commentEmail({
         locale: "az",
-        projectTitle: project.title,
+        projectTitle,
         author: client.name,
         body: doc.body,
-        href: `${process.env.NEXT_PUBLIC_SITE_URL || "https://faridzeynalov.com"}/admin/collections/client-projects/${project.id}#conversation`,
+        href: `${process.env.NEXT_PUBLIC_SITE_URL || "https://faridzeynalov.com"}/admin/collections/project-comments?project=${project.id}`,
       });
       await req.payload.sendEmail({ to: settings.email || owner.email, ...mail });
     } else {
       const locale = (client.language ?? "az") as Locale;
       const mail = commentEmail({
         locale,
-        projectTitle: project.title,
+        projectTitle,
         author: "Farid Zeynalov",
         body: doc.body,
-        href: portalUrl(locale, `/projects/${project.id}`),
+        href: portalUrl(locale, `/projects/${project.id}${screen ? `/screens/${screen.id}` : ""}`),
       });
       await req.payload.sendEmail({ to: client.email, ...mail });
     }
@@ -156,6 +170,21 @@ export const ProjectComments: CollectionConfig = {
           "Boş qalsa, ümumi şərh olur.",
           "Leave empty for a general comment.",
           "Если пусто, это общий комментарий.",
+        ),
+      },
+    },
+    {
+      name: "screen",
+      label: l("Ekran", "Screen", "Экран"),
+      type: "relationship",
+      relationTo: "project-screens",
+      index: true,
+      admin: {
+        position: "sidebar",
+        description: l(
+          "Şərh bu ekran haqqındadır. Boş qalsa, layihə haqqında ümumi şərhdir.",
+          "The screen the comment is about. Empty for a comment on the project.",
+          "Экран, к которому относится комментарий. Пусто — комментарий к проекту.",
         ),
       },
     },

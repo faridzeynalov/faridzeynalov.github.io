@@ -501,6 +501,13 @@
     "reply": "Reply",
     "replyLabel": "Your reply",
     "replyPlaceholder": "Write your reply…",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "screens": "Screens",
+    "screensText": "Designs and screenshots. Open one to look closer and leave your thoughts.",
+    "backToProject": "Back to the project",
+    "openFull": "Open full size",
+    "screenComments": "About this screen",
+    "noScreenComments": "No comments on this screen yet.",
+    "screenPlaceholder": "What do you think of this screen?"
   }
 }

@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig } from "payload";
+import type { Access, CollectionBeforeDeleteHook, CollectionConfig } from "payload";
 import { isAdmin } from "@/payload/access";
 import { l, type Label } from "@/payload/fields";
 
@@ -40,6 +40,13 @@ const ownProjects: Access = ({ req }) => {
  * Work I'm doing for a client, as they follow it in the portal: overall status, stages (each
  * with its own status and date) and links. Separate from the portfolio's public projects.
  */
+/** A deleted project takes its comments and screens (with their files) with it. */
+const deleteContents: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  const where = { project: { equals: id } };
+  await req.payload.delete({ collection: "project-comments", where, req });
+  await req.payload.delete({ collection: "project-screens", where, req });
+};
+
 export const ClientProjects: CollectionConfig = {
   slug: "client-projects",
   labels: {
@@ -52,6 +59,7 @@ export const ClientProjects: CollectionConfig = {
     defaultColumns: ["title", "client", "status", "dueDate", "updatedAt"],
   },
   access: { read: ownProjects, create: isAdmin, update: isAdmin, delete: isAdmin },
+  hooks: { beforeDelete: [deleteContents] },
   fields: [
     { name: "title", label: l("Layihə", "Project", "Проект"), type: "text", required: true },
     {
@@ -145,6 +153,24 @@ export const ClientProjects: CollectionConfig = {
           ],
         },
       ],
+    },
+    {
+      // Added here (or in Screens); the client sees them in the portal and comments on each.
+      name: "screens",
+      label: l("Ekranlar", "Screens", "Экраны"),
+      type: "join",
+      collection: "project-screens",
+      on: "project",
+      defaultSort: "createdAt",
+      defaultLimit: 50,
+      admin: {
+        defaultColumns: ["filename", "title", "createdAt"],
+        description: l(
+          "Dizayn və ekran şəkilləri. Müştəri portalda hər birinə şərh yaza bilir.",
+          "Designs and screenshots. The client can comment on each in the portal.",
+          "Дизайны и скриншоты. Клиент может комментировать каждый на портале.",
+        ),
+      },
     },
     {
       // The comments with the client, answered here: reply to one, or write a general one.

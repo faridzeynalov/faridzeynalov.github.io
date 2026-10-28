@@ -25,11 +25,13 @@ function ReplyButton({ onClick }: { onClick: () => void }) {
  */
 export function CommentThread({
   project,
+  screen,
   thread,
   first,
   replies,
 }: {
   project: number;
+  screen?: number;
   thread: number;
   first: ReactNode;
   replies: { id: number; node: ReactNode }[];
@@ -50,7 +52,12 @@ export function CommentThread({
           ))}
           {replying && (
             <li className="pt-1">
-              <CommentForm project={project} parent={thread} onClose={() => setReplying(false)} />
+              <CommentForm
+                project={project}
+                screen={screen}
+                parent={thread}
+                onClose={() => setReplying(false)}
+              />
             </li>
           )}
         </ul>

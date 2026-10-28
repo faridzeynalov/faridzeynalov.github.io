@@ -156,16 +156,20 @@ export function SetPasswordForm({ token }: { token: string }) {
 }
 
 /**
- * A general comment on the project or, with `parent`, a reply to one: a smaller box with a cancel
- * button, which closes once the reply is sent.
+ * A comment on the project (or, with `screen`, on one of its screens) or, with `parent`, a reply
+ * to one: a smaller box with a cancel button, which closes once the reply is sent.
  */
 export function CommentForm({
   project,
+  screen,
   parent,
+  placeholder,
   onClose,
 }: {
   project: number;
+  screen?: number;
   parent?: number;
+  placeholder?: string;
   onClose?: () => void;
 }) {
   const t = useTranslations("Portal");
@@ -179,6 +183,7 @@ export function CommentForm({
     <form action={action} className="space-y-3">
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="project" value={project} />
+      {screen && <input type="hidden" name="screen" value={screen} />}
       {parent && <input type="hidden" name="parent" value={parent} />}
       <label className="block">
         <span className="sr-only">{parent ? t("replyLabel") : t("commentLabel")}</span>
@@ -188,7 +193,7 @@ export function CommentForm({
           maxLength={5000}
           rows={parent ? 2 : 4}
           autoFocus={Boolean(parent)}
-          placeholder={parent ? t("replyPlaceholder") : t("commentPlaceholder")}
+          placeholder={parent ? t("replyPlaceholder") : (placeholder ?? t("commentPlaceholder"))}
           className={cn(
             inputClass,
             "resize-y leading-relaxed",

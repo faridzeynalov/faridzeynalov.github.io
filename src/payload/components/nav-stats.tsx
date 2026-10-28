@@ -1,4 +1,5 @@
-import type { Payload } from "payload";
+import type { Payload, TypedUser } from "payload";
+import { countNew, SEEN_KEY, type Seen } from "@/payload/comments-seen";
 import { getAdminStats, LOCALES } from "@/payload/components/admin-stats";
 import { PanelStylePicker } from "@/payload/components/panel-style";
 import { PANEL_STYLE_COOKIE, toPanelStyle } from "@/payload/components/panel-style-shared";
@@ -26,7 +27,32 @@ const copy = {
   },
 } as const;
 
-type Props = { payload: Payload; i18n: { language: string } };
+type Props = { payload: Payload; i18n: { language: string }; user?: TypedUser | null };
+
+/** Client comments the signed-in admin hasn't seen yet (see comments-seen.ts). */
+async function newComments(payload: Payload, user?: TypedUser | null) {
+  if (user?.collection !== "users") return 0;
+  const [{ docs: preference }, { docs: comments }] = await Promise.all([
+    payload.find({
+      collection: "payload-preferences",
+      where: {
+        key: { equals: SEEN_KEY },
+        "user.value": { equals: user.id },
+        "user.relationTo": { equals: "users" },
+      },
+      depth: 0,
+      limit: 1,
+    }),
+    payload.find({
+      collection: "project-comments",
+      where: { "author.relationTo": { equals: "clients" } },
+      select: { project: true, author: true, createdAt: true },
+      depth: 0,
+      pagination: false,
+    }),
+  ]);
+  return countNew(comments, preference[0]?.value as Seen | undefined).total;
+}
 
 /**
  * Count badges for the sidebar links, as CSS custom properties on each link's id (Payload renders
@@ -34,8 +60,8 @@ type Props = { payload: Payload; i18n: { language: string } };
  * the chosen panel style as a marker element that custom.css reads with :has(), so it is there
  * with the first paint without any script.
  */
-export async function NavBadges({ payload }: Props) {
-  const stats = await getAdminStats(payload);
+export async function NavBadges({ payload, user }: Props) {
+  const [stats, unread] = await Promise.all([getAdminStats(payload), newComments(payload, user)]);
   const empty = Object.values(stats.emptyTranslations).reduce((sum, count) => sum + count, 0);
   const badges: [string, number, boolean][] = [
     ["nav-projects", stats.projects, false],
@@ -43,6 +69,8 @@ export async function NavBadges({ payload }: Props) {
     ["nav-process-steps", stats.process, false],
     ["nav-faq", stats.faq, false],
     ["nav-translations", empty || stats.translations, empty > 0],
+    // Only when there is something new.
+    ...(unread ? [["nav-project-comments", unread, true] as [string, number, boolean]] : []),
   ];
   const css = badges
     .map(

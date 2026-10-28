@@ -8,6 +8,7 @@ import * as migration_20261028_145841_media_and_settings_files from './20261028_
 import * as migration_20261028_160300_three_language_fields from './20261028_160300_three_language_fields';
 import * as migration_20261028_165258_client_portal from './20261028_165258_client_portal';
 import * as migration_20261028_191605_comment_replies from './20261028_191605_comment_replies';
+import * as migration_20261028_205237_project_screens from './20261028_205237_project_screens';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261028_191605_comment_replies.up,
     down: migration_20261028_191605_comment_replies.down,
-    name: '20261028_191605_comment_replies'
+    name: '20261028_191605_comment_replies',
+  },
+  {
+    up: migration_20261028_205237_project_screens.up,
+    down: migration_20261028_205237_project_screens.down,
+    name: '20261028_205237_project_screens'
   },
 ];

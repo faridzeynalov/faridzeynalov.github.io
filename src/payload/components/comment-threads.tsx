@@ -1,7 +1,9 @@
 "use client";
 
-import { useConfig, useTranslation } from "@payloadcms/ui";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useConfig, usePreferences, useTranslation } from "@payloadcms/ui";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { SEEN_KEY, type Seen } from "@/payload/comments-seen";
 
 /** The shared pieces of the comment conversations: one in each project, all of them in the list. */
 
@@ -13,6 +15,7 @@ export type Comment = {
   createdAt: string;
   project: Ref<{ title?: string; client?: Ref<{ name?: string }> }>;
   parent?: Ref<object>;
+  screen?: Ref<{ title?: string }>;
   author?: { relationTo: "users" | "clients"; value: Ref<{ name?: string | null }> } | null;
 };
 
@@ -22,12 +25,10 @@ const copy = {
   az: {
     comments: "Şərhlər",
     conversation: "Söhbət",
-    intro: "Müştərilərin şərhləri. Hər şərhin altına birbaşa cavab yaza bilərsiniz.",
+    screen: "Ekran",
     unsaved: "Layihəni yadda saxlayandan sonra söhbət burada görünəcək.",
     empty: "Hələ şərh yoxdur.",
-    emptyWaiting: "Cavab gözləyən şərh yoxdur.",
     waiting: "Cavab gözləyir",
-    all: "Hamısı",
     me: "Siz",
     client: "Müştəri",
     replyPlaceholder: "Cavab yazın…",
@@ -38,16 +39,21 @@ const copy = {
     confirmDelete: "Bu şərh (və cavabları) silinsin?",
     error: "Alınmadı, yenidən cəhd edin.",
     loading: "Yüklənir…",
+    gridIntro: "Müştəri layihələri. Söhbəti açmaq üçün layihəyə klikləyin.",
+    allProjects: "Bütün layihələr",
+    openProject: "Layihəni aç",
+    newCount: (n: number) => `${n} yeni`,
+    count: (n: number) => `${n} şərh`,
+    noConversation: "Hələ yazışma yoxdur",
+    noProjects: "Hələ müştəri layihəsi yoxdur.",
   },
   en: {
     comments: "Comments",
     conversation: "Conversation",
-    intro: "Your clients' comments. Reply right under each one.",
+    screen: "Screen",
     unsaved: "The conversation shows here once the project is saved.",
     empty: "No comments yet.",
-    emptyWaiting: "Nothing is waiting for a reply.",
     waiting: "Awaiting reply",
-    all: "All",
     me: "You",
     client: "Client",
     replyPlaceholder: "Write a reply…",
@@ -58,16 +64,21 @@ const copy = {
     confirmDelete: "Delete this comment (and its replies)?",
     error: "That didn't work, try again.",
     loading: "Loading…",
+    gridIntro: "Client projects. Click one to open its conversation.",
+    allProjects: "All projects",
+    openProject: "Open the project",
+    newCount: (n: number) => `${n} new`,
+    count: (n: number) => (n === 1 ? "1 comment" : `${n} comments`),
+    noConversation: "No messages yet",
+    noProjects: "No client projects yet.",
   },
   ru: {
     comments: "Комментарии",
     conversation: "Переписка",
-    intro: "Комментарии клиентов. Отвечайте прямо под каждым.",
+    screen: "Экран",
     unsaved: "Переписка появится здесь после сохранения проекта.",
     empty: "Комментариев пока нет.",
-    emptyWaiting: "Нет комментариев без ответа.",
     waiting: "Ждёт ответа",
-    all: "Все",
     me: "Вы",
     client: "Клиент",
     replyPlaceholder: "Напишите ответ…",
@@ -78,6 +89,13 @@ const copy = {
     confirmDelete: "Удалить этот комментарий (и ответы)?",
     error: "Не получилось, попробуйте ещё раз.",
     loading: "Загрузка…",
+    gridIntro: "Проекты клиентов. Нажмите на проект, чтобы открыть переписку.",
+    allProjects: "Все проекты",
+    openProject: "Открыть проект",
+    newCount: (n: number) => `${n} новых`,
+    count: (n: number) => `Комментариев: ${n}`,
+    noConversation: "Переписки пока нет",
+    noProjects: "Проектов клиентов пока нет.",
   },
 };
 
@@ -91,17 +109,14 @@ export function useCopy() {
 export const idOf = (ref: Ref<object>) => (ref && typeof ref === "object" ? ref.id : ref);
 export const fromClient = (comment: Comment) => comment.author?.relationTo === "clients";
 
-/** Groups comments into threads (a comment and its replies), newest activity first if asked. */
-export function toThreads(comments: Comment[], newestFirst = false): Thread[] {
-  const threads = comments
+/** Groups comments (oldest first) into threads: a comment and its replies. */
+export function toThreads(comments: Comment[]): Thread[] {
+  return comments
     .filter((comment) => !idOf(comment.parent))
     .map((first) => {
       const replies = comments.filter((comment) => idOf(comment.parent) === first.id);
       return { first, replies, last: replies.at(-1) ?? first };
     });
-  return newestFirst
-    ? threads.sort((a, b) => b.last.createdAt.localeCompare(a.last.createdAt))
-    : threads;
 }
 
 /** Loads comments (oldest first) through the REST API, with a reload for after a change. */
@@ -263,11 +278,17 @@ export function ThreadCard({
   onDelete: (comment: Comment) => void;
 }) {
   const waiting = fromClient(thread.last);
+  const screen = thread.first.screen;
   return (
     <article className={`fz-card${waiting ? "fz-card--waiting" : ""}`}>
-      {(header || waiting) && (
+      {(header || waiting || screen) && (
         <header className="fz-card__header">
           {header}
+          {screen && (
+            <span className="fz-card__screen">
+              {text.screen}: {(typeof screen === "object" && screen.title) || `#${screen}`}
+            </span>
+          )}
           {waiting && <span className="fz-card__badge">{text.waiting}</span>}
         </header>
       )}
@@ -287,5 +308,88 @@ export function ThreadCard({
       )}
       <ReplyBox text={text} placeholder={text.replyPlaceholder} onSend={onReply} />
     </article>
+  );
+}
+
+/**
+ * The admin's "seen up to" per project (see comments-seen.ts), and a way to move it forward, which
+ * also refreshes the sidebar's count.
+ */
+export function useSeen() {
+  const { getPreference, setPreference } = usePreferences();
+  const router = useRouter();
+  const [seen, setSeen] = useState<Seen | null>(null);
+
+  useEffect(() => {
+    let current = true;
+    void getPreference<Seen | null>(SEEN_KEY).then((value) => {
+      if (current) setSeen(value ?? {});
+    });
+    return () => {
+      current = false;
+    };
+  }, [getPreference]);
+
+  const markSeen = useCallback(
+    async (project: number, latest: string) => {
+      setSeen((previous) => ({ ...previous, [project]: latest }));
+      await setPreference<Seen>(SEEN_KEY, { [project]: latest }, true);
+      router.refresh();
+    },
+    [router, setPreference],
+  );
+
+  return { seen, markSeen };
+}
+
+/**
+ * One project's conversation: its threads in order, each with a reply box, and a box for a general
+ * comment. Opening it marks its comments as seen.
+ */
+export function ProjectConversation({
+  project,
+  comments,
+  post,
+  remove,
+  markSeen,
+}: {
+  project: number;
+  comments: Comment[] | null;
+  post: (project: number, body: string, parent?: number) => Promise<boolean>;
+  remove: (comment: Comment) => Promise<void>;
+  markSeen: (project: number, latest: string) => Promise<void>;
+}) {
+  const { text, language } = useCopy();
+  const marked = useRef<string | null>(null);
+  const latest = comments?.reduce<string | null>(
+    (max, comment) => (!max || comment.createdAt > max ? comment.createdAt : max),
+    null,
+  );
+
+  useEffect(() => {
+    if (!latest || marked.current === latest) return;
+    marked.current = latest;
+    void markSeen(project, latest);
+  }, [latest, markSeen, project]);
+
+  return (
+    <>
+      {comments && !comments.length && <p className="fz-inbox__empty">{text.empty}</p>}
+      <div className="fz-inbox__list">
+        {toThreads(comments ?? []).map((thread) => (
+          <ThreadCard
+            key={thread.first.id}
+            thread={thread}
+            text={text}
+            language={language}
+            onReply={(body) => post(project, body, thread.first.id)}
+            onDelete={(comment) => void remove(comment)}
+          />
+        ))}
+      </div>
+      <div className="fz-inbox__general">
+        <ReplyBox text={text} placeholder={text.general} onSend={(body) => post(project, body)} />
+      </div>
+    </>
   );
 }
