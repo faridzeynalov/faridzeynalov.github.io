@@ -1,18 +1,19 @@
 {
   "Metadata": {
-    "siteTitle": "{name} — {role}",
-    "siteDescription": "{location} şəhərində yaşayan {role}. React, Next.js və TypeScript ilə sürətli və responsiv veb saytlar hazırlayıram: {years} il təcrübə, istifadəyə verilmiş {sites} layihə.",
+    "siteTitle": "Sayt hazırlanması Bakıda, veb sayt düzəltmək — {name}",
+    "siteDescription": "Sayt hazırlatmaq istəyirsiniz? {name}, Bakıda {role}. Korporativ sayt, landing page və e-ticarət: sürətli, mobil uyğun və SEO-ya hazır veb saytlar. {years} il təcrübə, {sites} layihə.",
     "portfolioTitle": "Portfolio",
     "portfolioDescription": "One Studio-da hazırladığım real veb saytlar: otel və kurortlar, yaşayış kompleksləri, səhiyyə, e-ticarət və sənaye şirkətləri.",
-    "servicesTitle": "Xidmətlər",
-    "servicesDescription": "Farid Zeynalov: front-end proqramlaşdırma, UI dizayn, SEO və performans, AI inteqrasiyası, API əsaslı veb tətbiqlər və davamlı texniki dəstək.",
+    "servicesTitle": "Sayt hazırlanması xidmətləri",
+    "servicesDescription": "Sayt hazırlanması və veb sayt düzəltmək xidmətləri: front-end proqramlaşdırma, UI dizayn, SEO və performans, AI inteqrasiyası, API əsaslı veb tətbiqlər və texniki dəstək. Qiymət və müddət haqqında suallar.",
     "aboutTitle": "Haqqımda",
     "aboutDescription": "{name} haqqında: {location} şəhərində yaşayan {role}.",
     "contactTitle": "Əlaqə",
     "contactDescription": "Front-end vəzifələri və frilans layihələr üçün {name} ilə əlaqə saxlayın.",
     "cvTitle": "CV",
     "cvDescription": "{name} — {title}, {location}. CV.",
-    "projectTitle": "{name} — {industry}"
+    "projectTitle": "{name} — {industry}",
+    "keywords": "sayt hazırlanması, sayt hazırlamaq, veb sayt hazırlanması, vebsayt hazırlanması, sayt düzəltmək, sayt yaratmaq, sayt sifarişi, sayt hazırlanması Bakı, korporativ sayt, landing page, e-ticarət saytı, veb dizayn, front-end developer, React, Next.js"
   },
   "Nav": {
     "home": "Ana səhifə",
@@ -260,7 +261,11 @@
     "processEyebrow": "Necə işləyirəm",
     "processTitle": "Dörd addım,",
     "processAccent": "aydın nəticə.",
-    "processDescription": "İlk görüşdən buraxılışa qədər aydın iş ritmi — hər mərhələnin sonunda baxıb yoxlaya biləcəyiniz nəticə."
+    "processDescription": "İlk görüşdən buraxılışa qədər aydın iş ritmi — hər mərhələnin sonunda baxıb yoxlaya biləcəyiniz nəticə.",
+    "faqEyebrow": "Tez-tez verilən suallar",
+    "faqTitle": "Sayt hazırlatmaq",
+    "faqAccent": "haqqında suallar",
+    "faqDescription": "Qiymət, müddət və iş prosesi barədə ən çox soruşulanlar."
   },
   "AboutPage": {
     "eyebrow": "haqqımda",

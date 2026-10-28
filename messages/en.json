@@ -1,18 +1,19 @@
 {
   "Metadata": {
-    "siteTitle": "{name} — {role}",
-    "siteDescription": "{role} in {location} with {years} years of experience building fast, responsive websites with React, Next.js and TypeScript. {sites} production sites shipped.",
+    "siteTitle": "Website Development in Baku — {name}, {role}",
+    "siteDescription": "Need a website? {name}, {role} in Baku, builds fast, mobile-friendly, SEO-ready websites: business sites, landing pages and online stores. {years} years of experience, {sites} projects shipped.",
     "portfolioTitle": "Portfolio",
     "portfolioDescription": "Production websites built at One Studio — hotels and resorts, residential developments, healthcare, e-commerce and industrial companies.",
-    "servicesTitle": "Services",
-    "servicesDescription": "Front-end development, UI design, SEO & performance, AI integration, API-driven web apps and ongoing maintenance — by Farid Zeynalov.",
+    "servicesTitle": "Website Development Services",
+    "servicesDescription": "Website development services: front-end development, UI design, SEO & performance, AI integration, API-driven web apps and maintenance — plus answers on what a website costs and how long it takes.",
     "aboutTitle": "About",
     "aboutDescription": "About {name} — {role} in {location}.",
     "contactTitle": "Contact",
     "contactDescription": "Get in touch with {name} about front-end roles and freelance projects.",
     "cvTitle": "CV",
     "cvDescription": "CV of {name}, {title} in {location}.",
-    "projectTitle": "{name} — {industry}"
+    "projectTitle": "{name} — {industry}",
+    "keywords": "website development, web design, build a website, website developer Baku, web developer Azerbaijan, landing page, business website, online store, front-end developer, React, Next.js, TypeScript"
   },
   "Nav": {
     "home": "Home",
@@ -260,7 +261,11 @@
     "processEyebrow": "How I work",
     "processTitle": "Four steps,",
     "processAccent": "no surprises.",
-    "processDescription": "A clear rhythm from first call to launch, with something you can click at every stage."
+    "processDescription": "A clear rhythm from first call to launch, with something you can click at every stage.",
+    "faqEyebrow": "FAQ",
+    "faqTitle": "Questions about",
+    "faqAccent": "getting a website",
+    "faqDescription": "Cost, timelines and process: what clients ask most."
   },
   "AboutPage": {
     "eyebrow": "about",

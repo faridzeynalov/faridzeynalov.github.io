@@ -26,6 +26,8 @@ export interface SiteContent {
     { title: string; tagline: string; description: string; deliverables: string[] }
   >;
   process: { title: string; description: string }[];
+  /** Common questions about getting a website made, on the Services page (and as FAQPage data). */
+  faq: { question: string; answer: string }[];
   ai: {
     intro: string;
     capabilities: { title: string; description: string }[];

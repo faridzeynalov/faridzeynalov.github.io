@@ -205,6 +205,38 @@ export const en: SiteContent = {
         "Performance, SEO and cross-browser checks before launch — then improvements, fixes and new features as the product grows.",
     },
   ],
+  faq: [
+    {
+      question: "How much does a website cost?",
+      answer:
+        "It depends on the scope: the number of pages, whether the design is ready, languages, and features like online payments or an admin panel. Describe your project briefly and I'll send you a free quote and timeline.",
+    },
+    {
+      question: "How long does it take to build a website?",
+      answer:
+        "A one-page landing page usually takes 1–2 weeks and a business website 3–6 weeks; an online store or a custom web app takes longer. We agree on the exact timeline after a first call.",
+    },
+    {
+      question: "What kinds of websites do you build?",
+      answer:
+        "Business and corporate websites, landing pages, hotel and real estate sites, online stores, portfolios and API-driven web apps. You can see 25+ real projects in the portfolio.",
+    },
+    {
+      question: "Will the website work on mobile phones?",
+      answer:
+        "Yes. Every site is built responsive for phones, tablets and desktops, and tested across browsers.",
+    },
+    {
+      question: "Will my website show up on Google?",
+      answer:
+        "Every site is built with technical SEO: fast loading, proper titles and meta descriptions, a sitemap, structured data and language versions. That's a solid foundation for ranking well on Google.",
+    },
+    {
+      question: "Can you update or fix my existing website?",
+      answer:
+        "Yes. I move old sites to a modern stack, refresh the design, fix bugs, make them faster and provide ongoing maintenance.",
+    },
+  ],
   ai: {
     intro:
       "I use AI tools every day to prototype, refactor and test faster — and I build AI-powered features into the interfaces I ship. The judgment, the review and the final quality stay with me.",

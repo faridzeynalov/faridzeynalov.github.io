@@ -1,18 +1,19 @@
 {
   "Metadata": {
-    "siteTitle": "{name} — {role}",
-    "siteDescription": "{role}, {location}. Более {years} лет опыта создания быстрых адаптивных сайтов на React, Next.js и TypeScript. Запущено {sites} проектов.",
+    "siteTitle": "Создание сайтов в Баку — {name}, {role}",
+    "siteDescription": "Нужен сайт? {name}, {role} в Баку. Создаю быстрые, адаптивные и SEO-оптимизированные сайты: корпоративные, лендинги, интернет-магазины. Опыт {years} года, {sites} проектов.",
     "portfolioTitle": "Портфолио",
     "portfolioDescription": "Сайты, созданные в One Studio, — отели и курорты, жилые комплексы, медицина, электронная коммерция и промышленные компании.",
-    "servicesTitle": "Услуги",
-    "servicesDescription": "Front-end разработка, UI-дизайн, SEO и производительность, интеграция ИИ, веб-приложения на API и поддержка — Farid Zeynalov.",
+    "servicesTitle": "Услуги по созданию сайтов",
+    "servicesDescription": "Создание и разработка сайтов под ключ: front-end, UI-дизайн, SEO и скорость, интеграция ИИ, веб-приложения на API и поддержка. Ответы о стоимости и сроках.",
     "aboutTitle": "Обо мне",
     "aboutDescription": "Обо мне: {name} — {role}, {location}.",
     "contactTitle": "Контакты",
     "contactDescription": "Свяжитесь с {name} по поводу front-end вакансий и фриланс-проектов.",
     "cvTitle": "Резюме",
     "cvDescription": "Резюме: {name}, {title}, {location}.",
-    "projectTitle": "{name} — {industry}"
+    "projectTitle": "{name} — {industry}",
+    "keywords": "создание сайтов, разработка сайтов, сделать сайт, заказать сайт, создание сайтов Баку, разработка сайтов Азербайджан, веб-дизайн, лендинг, корпоративный сайт, интернет-магазин, front-end разработчик, React, Next.js"
   },
   "Nav": {
     "home": "Главная",
@@ -260,7 +261,11 @@
     "processEyebrow": "Как я работаю",
     "processTitle": "Четыре шага,",
     "processAccent": "без сюрпризов.",
-    "processDescription": "Понятный ритм от первого созвона до запуска — с результатом, который можно открыть и проверить на каждом этапе."
+    "processDescription": "Понятный ритм от первого созвона до запуска — с результатом, который можно открыть и проверить на каждом этапе.",
+    "faqEyebrow": "Частые вопросы",
+    "faqTitle": "Вопросы о",
+    "faqAccent": "создании сайта",
+    "faqDescription": "Стоимость, сроки и процесс: о чём спрашивают чаще всего."
   },
   "AboutPage": {
     "eyebrow": "обо мне",

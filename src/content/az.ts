@@ -200,6 +200,38 @@ export const az: SiteContent = {
         "Buraxılışdan əvvəl performans, SEO və brauzer uyğunluğu yoxlanılır; sonra isə məhsul böyüdükcə təkmilləşdirmələr, düzəlişlər və yeni funksiyalar gəlir.",
     },
   ],
+  faq: [
+    {
+      question: "Sayt hazırlamaq neçəyə başa gəlir?",
+      answer:
+        "Qiymət saytın həcmindən asılıdır: səhifələrin sayı, dizaynın hazır olub-olmaması, dillər, onlayn ödəniş və ya admin panel kimi funksiyalar. Layihənizi qısaca yazın, sizə pulsuz qiymət və müddət təklifi göndərim.",
+    },
+    {
+      question: "Veb sayt neçə günə hazır olur?",
+      answer:
+        "Bir səhifəlik landing page adətən 1–2 həftəyə, korporativ sayt 3–6 həftəyə hazır olur; e-ticarət saytı və ya fərdi veb tətbiq isə daha çox vaxt aparır. Dəqiq müddəti ilk görüşdən sonra razılaşırıq.",
+    },
+    {
+      question: "Hansı növ saytlar hazırlayırsınız?",
+      answer:
+        "Korporativ və biznes saytları, landing page-lər, otel və yaşayış kompleksi saytları, e-ticarət, portfolio saytları və API ilə işləyən veb tətbiqlər. 25-dən çox real layihəni portfolioda görə bilərsiniz.",
+    },
+    {
+      question: "Sayt mobil telefonda düzgün görünəcək?",
+      answer:
+        "Bəli. Hər sayt telefon, planşet və kompüter üçün responsiv hazırlanır və müxtəlif brauzerlərdə yoxlanılır.",
+    },
+    {
+      question: "Saytım Google-da çıxacaq?",
+      answer:
+        "Sayt texniki SEO ilə hazırlanır: sürətli yüklənmə, düzgün başlıqlar və meta təsvirlər, sitemap, strukturlaşdırılmış data və dil versiyaları. Bu, Google-da yaxşı sıralanmaq üçün möhkəm təməldir.",
+    },
+    {
+      question: "Mövcud saytımı yeniləyə və ya düzəldə bilərsiniz?",
+      answer:
+        "Bəli. Köhnə saytı müasir texnologiyaya köçürür, dizaynını yeniləyir, xətaları düzəldir, sürətini artırır və davamlı texniki dəstək verirəm.",
+    },
+  ],
   ai: {
     intro:
       "AI alətlərindən hər gün prototip hazırlamaq, kodu refaktorinq etmək və test yazmaq üçün istifadə edirəm, hazırladığım interfeyslərə də AI funksiyaları əlavə edirəm. Qərarlar, yoxlama və yekun keyfiyyət isə həmişə mənim məsuliyyətimdədir.",

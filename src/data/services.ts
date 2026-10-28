@@ -26,3 +26,8 @@ export function getServices(locale: Locale): Service[] {
 export function getProcess(locale: Locale): ProcessStep[] {
   return getContent(locale).process;
 }
+
+/** Common questions about getting a website made, answered on the Services page. */
+export function getFaq(locale: Locale) {
+  return getContent(locale).faq;
+}

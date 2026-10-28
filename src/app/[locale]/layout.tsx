@@ -11,12 +11,15 @@ import { ThemeSync } from "@/components/layout/theme-sync";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MotionProvider } from "@/components/motion/motion-provider";
+import { owner } from "@/data/owner";
 import { getProfile } from "@/data/profile";
+import { getServices } from "@/data/services";
 import { LOCALE_STORAGE_KEY, routing } from "@/i18n/routing";
 import { localizedAlternates, localizedPath, ogLocale } from "@/lib/i18n-metadata";
 import { buildNavTree } from "@/lib/nav-tree";
 import { getAllProjects } from "@/lib/projects";
 import { basePath, siteUrl } from "@/lib/site";
+import { jsonLd, siteStructuredData } from "@/lib/structured-data";
 import { themeInitScript } from "@/lib/theme";
 import { instrumentSerifSchwa } from "@/fonts/schwa";
 import { skinFontVariables } from "@/fonts/skins";
@@ -61,6 +64,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const profile = getProfile(locale);
   const title = t("siteTitle", { name: profile.name, role: profile.role });
   const description = t("siteDescription", {
+    name: profile.name,
     role: profile.role,
     location: profile.location,
     years: profile.yearsOfExperience,
@@ -75,16 +79,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
     applicationName: profile.name,
     authors: [{ name: profile.name }],
     creator: profile.name,
-    keywords: [
-      "Front-End Developer",
-      "React",
-      "Next.js",
-      "TypeScript",
-      "Tailwind CSS",
-      "Baku",
-      "Azerbaijan",
-      profile.name,
-    ],
+    // What people type when they look for someone to build a website, in this language.
+    keywords: [...t("keywords").split(", "), profile.name],
     alternates: localizedAlternates(locale, "/"),
     openGraph: {
       type: "website",
@@ -113,6 +109,22 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Nav" });
   const tExplorer = await getTranslations({ locale, namespace: "Explorer" });
+  const tMeta = await getTranslations({ locale, namespace: "Metadata" });
+  const profile = getProfile(locale);
+  const structuredData = siteStructuredData({
+    locale,
+    profile,
+    description: tMeta("siteDescription", {
+      name: profile.name,
+      role: profile.role,
+      location: profile.location,
+      years: profile.yearsOfExperience,
+      sites: profile.sitesShipped,
+    }),
+    servicesName: tMeta("servicesTitle"),
+    services: getServices(locale),
+    sameAs: [owner.linkedIn.href],
+  });
   const tree = buildNavTree(locale, {
     projects: tExplorer("projects", { count: getAllProjects(locale).length }),
   });
@@ -135,6 +147,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         )}
       </head>
       <body className="min-h-dvh">
+        <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData)} />
         <NextIntlClientProvider>
           <a
             href="#main"
