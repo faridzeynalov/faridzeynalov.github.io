@@ -2423,3 +2423,56 @@ body {
     display: none;
   }
 }
+
+/* ================================================================ Image previews */
+
+/*
+ * Upload fields show the picked image as a real preview: a wide thumbnail (screenshots are
+ * landscape) instead of Payload's small square, cropped to fill, on a checkerboard for PNGs.
+ */
+.upload-relationship-details__imageAndDetails {
+  align-items: center;
+  gap: 14px;
+}
+
+.upload-relationship-details__thumbnail.thumbnail {
+  width: 120px;
+  height: 76px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--fz-border);
+  border-radius: 10px;
+  background:
+    conic-gradient(var(--fz-hover) 25%, transparent 0 50%, var(--fz-hover) 0 75%, transparent 0) 0
+      0 / 12px 12px,
+    var(--fz-card);
+}
+
+.upload-relationship-details__thumbnail.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Media list and grid: thumbnails as rounded tiles. */
+.thumbnail {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.thumbnail img {
+  object-fit: cover;
+}
+
+.cell-filename .thumbnail,
+.file-details .thumbnail {
+  border: 1px solid var(--fz-border);
+}
+
+@media (max-width: 768px) {
+  .upload-relationship-details__thumbnail.thumbnail {
+    width: 84px;
+    height: 56px;
+  }
+}

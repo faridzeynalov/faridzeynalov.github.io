@@ -19,7 +19,8 @@ import ru from "../messages/ru.json" with { type: "json" };
 const locales: Locale[] = ["en", "az", "ru"];
 const messages = { en, az, ru };
 const root = process.cwd();
-// Seeding writes outside a Next.js request: nothing to revalidate.
+// Seeding writes outside a Next.js request: nothing to revalidate. Every call gets its own copy:
+// the storage plugin marks the context after an upload, and a shared one would skip the rest.
 const context = { disableRevalidate: true };
 const payload = await getPayload({ config });
 
@@ -28,7 +29,7 @@ async function upload(file: string, alt?: Record<Locale, string>) {
   const doc = await payload.create({
     collection: "media",
     locale: "en",
-    context,
+    context: { ...context },
     filePath: file,
     data: { alt: alt?.en },
   });
@@ -38,7 +39,7 @@ async function upload(file: string, alt?: Record<Locale, string>) {
         collection: "media",
         id: doc.id,
         locale,
-        context,
+        context: { ...context },
         data: { alt: alt[locale] },
       });
     }
@@ -74,7 +75,7 @@ async function seedProjectScreenshots() {
       await payload.update({
         collection: "projects",
         id: project.id,
-        context,
+        context: { ...context },
         data: { images: { ...project.images, ...images } } as never,
       });
     }
@@ -111,7 +112,7 @@ async function seedSiteSettings() {
     await payload.updateGlobal({
       slug: "site-settings",
       locale,
-      context,
+      context: { ...context },
       data: {
         ...(locale === "en" ? data : {}),
         name: fill(existing.name, profile.name),
@@ -186,7 +187,12 @@ async function seedSeo() {
       };
     }
     if (locale === "en") data.ogImage = ogImage;
-    await payload.updateGlobal({ slug: "seo", locale, context, data: data as never });
+    await payload.updateGlobal({
+      slug: "seo",
+      locale,
+      context: { ...context },
+      data: data as never,
+    });
   }
   payload.logger.info("SEO: filled in");
 }
@@ -220,7 +226,7 @@ async function updateChangedTexts() {
           collection: "translations",
           id: docs[0].id,
           locale,
-          context,
+          context: { ...context },
           data: { value: perLocale[locale].to },
         });
       }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CollectionSlug, Payload, TypedUser } from "payload";
 import { getAdminStats, LOCALES } from "@/payload/components/admin-stats";
 
@@ -287,9 +288,9 @@ export async function DashboardIntro({
         </h1>
         <p>{copy.lead}</p>
         <nav className="fz-intro__links">
-          <a href={`${admin}/collections/projects/create`} className="fz-intro__primary">
+          <Link href={`${admin}/collections/projects/create`} className="fz-intro__primary">
             + {copy.newProject}
-          </a>
+          </Link>
           <a href="/" target="_blank" rel="noreferrer">
             {copy.site} ↗
           </a>
@@ -298,11 +299,11 @@ export async function DashboardIntro({
 
       <section className="fz-kpis">
         {kpis.map((kpi) => (
-          <a key={kpi.href} href={`${admin}/${kpi.href}`} className="fz-kpi">
+          <Link key={kpi.href} href={`${admin}/${kpi.href}`} className="fz-kpi">
             <span className="fz-kpi__label">{kpi.label}</span>
             <strong>{kpi.value}</strong>
             <span className={kpi.warn ? "fz-kpi__note is-warn" : "fz-kpi__note"}>{kpi.note}</span>
-          </a>
+          </Link>
         ))}
       </section>
 
@@ -362,13 +363,13 @@ export async function DashboardIntro({
         <section className="fz-panel fz-panel--full">
           <header className="fz-panel__head">
             <h2>{copy.recent}</h2>
-            <a href={`${admin}/collections/projects`}>{copy.viewAll} →</a>
+            <Link href={`${admin}/collections/projects`}>{copy.viewAll} →</Link>
           </header>
           {activity.recent.length ? (
             <ul className="fz-recent">
               {activity.recent.map((item) => (
                 <li key={`${item.collection}-${item.id}`}>
-                  <a href={`${admin}/collections/${item.collection}/${item.id}`}>
+                  <Link href={`${admin}/collections/${item.collection}/${item.id}`}>
                     <span className={`fz-recent__kind fz-recent__kind--${item.collection}`}>
                       {copy.kinds[item.collection]}
                     </span>
@@ -376,7 +377,7 @@ export async function DashboardIntro({
                     <time dateTime={item.updatedAt}>
                       {timeFormat.format(new Date(item.updatedAt))}
                     </time>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

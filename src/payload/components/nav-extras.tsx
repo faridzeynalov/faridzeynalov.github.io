@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { SiteLogoMark } from "@/payload/components/brand";
+import Link from "next/link";
 
 const labels = {
   az: { dashboard: "İdarə paneli", newProject: "Yeni layihə", close: "Menyunu bağla" },
@@ -56,7 +57,7 @@ export function NavHeader() {
   return (
     <div className="fz-nav-head">
       <div className="fz-nav-head__top">
-        <a href={admin} className="fz-nav-brand">
+        <Link href={admin} className="fz-nav-brand">
           <SiteLogoMark className="fz-nav-brand__mark" />
           <span>
             <strong>
@@ -64,7 +65,7 @@ export function NavHeader() {
             </strong>
             <small>Content studio</small>
           </span>
-        </a>
+        </Link>
         <button
           type="button"
           className="fz-nav-close"
@@ -76,10 +77,10 @@ export function NavHeader() {
           </svg>
         </button>
       </div>
-      <a href={`${admin}/collections/projects/create`} className="fz-nav-cta">
+      <Link href={`${admin}/collections/projects/create`} className="fz-nav-cta">
         <span aria-hidden>+</span> {copy.newProject}
-      </a>
-      <a
+      </Link>
+      <Link
         href={admin}
         className={
           onDashboard ? "nav__link fz-nav-dashboard is-current" : "nav__link fz-nav-dashboard"
@@ -88,7 +89,7 @@ export function NavHeader() {
       >
         {onDashboard && <span className="nav__link-indicator" />}
         <span className="nav__link-label">{copy.dashboard}</span>
-      </a>
+      </Link>
       {drawer &&
         navOpen &&
         createPortal(

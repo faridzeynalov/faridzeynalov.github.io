@@ -3,6 +3,7 @@ import { getAdminStats, LOCALES } from "@/payload/components/admin-stats";
 import { PanelStylePicker } from "@/payload/components/panel-style";
 import { PANEL_STYLE_COOKIE, toPanelStyle } from "@/payload/components/panel-style-shared";
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 const copy = {
   az: {
@@ -69,7 +70,7 @@ export async function NavFooter({ payload, i18n }: Props) {
 
   return (
     <div className="fz-nav-foot">
-      <a href={`${admin}/collections/translations`} className="fz-health">
+      <Link href={`${admin}/collections/translations`} className="fz-health">
         <span className="fz-health__head">
           <span>{text.health}</span>
           <strong className={empty ? "is-warn" : undefined}>
@@ -85,7 +86,7 @@ export async function NavFooter({ payload, i18n }: Props) {
             <span className="fz-health__value">{stats.coverage[locale]}%</span>
           </span>
         ))}
-      </a>
+      </Link>
       <PanelStylePicker
         label={text.style}
         language={i18n.language}

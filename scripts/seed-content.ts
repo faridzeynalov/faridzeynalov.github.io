@@ -17,7 +17,8 @@ import ru from "../messages/ru.json" with { type: "json" };
 
 const locales: Locale[] = ["en", "az", "ru"];
 const messages: Record<Locale, Record<string, unknown>> = { en, az, ru };
-// Seeding writes outside a Next.js request: nothing to revalidate.
+// Seeding writes outside a Next.js request: nothing to revalidate. Every call gets its own copy:
+// the storage plugin marks the context after an upload, and a shared one would skip the rest.
 const context = { disableRevalidate: true };
 const payload = await getPayload({ config });
 const lines = (items: string[]) => items.join("\n");
@@ -45,7 +46,7 @@ async function seedCollection<T>(
     const doc = await payload.create({
       collection,
       locale: first,
-      context,
+      context: { ...context },
       data: data(item, first) as never,
     });
     for (const locale of rest) {
@@ -53,7 +54,7 @@ async function seedCollection<T>(
         collection,
         id: doc.id,
         locale,
-        context,
+        context: { ...context },
         data: data(byLocale[locale][index], locale) as never,
       });
     }
@@ -180,7 +181,7 @@ async function seedTranslations() {
     const doc = await payload.create({
       collection: "translations",
       locale: "en",
-      context,
+      context: { ...context },
       data: { key, section: key.split(".")[0], value: texts.en[key] },
     });
     for (const locale of locales.slice(1)) {
@@ -188,7 +189,7 @@ async function seedTranslations() {
         collection: "translations",
         id: doc.id,
         locale,
-        context,
+        context: { ...context },
         data: { value: texts[locale][key] ?? "" },
       });
     }
@@ -224,7 +225,7 @@ async function seedGlobal(
     const doc = (await payload.updateGlobal({
       slug,
       locale,
-      context,
+      context: { ...context },
       data: data as never,
     })) as unknown as Record<string, { id: string }[]>;
     ids ??= Object.fromEntries(
