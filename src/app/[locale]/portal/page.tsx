@@ -46,13 +46,17 @@ export default async function PortalHome({ params }: PageProps<"/[locale]/portal
       {projects.length ? (
         <ul className="grid gap-4 md:grid-cols-2">
           {projects.map((project) => (
-            <li key={project.id}>
+            // min-w-0 and wrapping anywhere: a title that is one long word (a domain, say) would
+            // otherwise widen the card past the screen, in the wide 8-bit font especially.
+            <li key={project.id} className="min-w-0">
               <Link
                 href={`/portal/projects/${project.id}`}
                 className="group flex h-full flex-col gap-5 rounded-3xl border border-border bg-bg-elevated p-6 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-border-strong hover:shadow-float md:p-7"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <h2 className="text-xl font-semibold tracking-tight text-fg">{project.title}</h2>
+                  <h2 className="min-w-0 text-xl font-semibold tracking-tight wrap-anywhere text-fg">
+                    {project.title}
+                  </h2>
                   <StatusPill kind="project" status={project.status} />
                 </div>
                 {project.summary && (
