@@ -1090,11 +1090,12 @@ html[data-theme="dark"] .fz-switch:not(.is-on) {
     inset 0 0 0 1px var(--fz-border);
 }
 
-/* Array rows and groups as cards. */
+/* Array rows and groups as cards. Not overflow: hidden, which would cut off a date picker opened
+   in a row; the header rounds its own corners instead. */
 .collapsible {
-  overflow: hidden;
+  --fz-collapsible-radius: 16px;
   border: 1px solid var(--fz-border);
-  border-radius: 16px;
+  border-radius: var(--fz-collapsible-radius);
   background: var(--fz-card);
   transition: border-color 150ms;
 }
@@ -1105,7 +1106,13 @@ html[data-theme="dark"] .fz-switch:not(.is-on) {
 
 .collapsible__toggle-wrap,
 .collapsible__header-wrap {
-  border-radius: 0;
+  border-radius: calc(var(--fz-collapsible-radius) - 1px) calc(var(--fz-collapsible-radius) - 1px)
+    0 0;
+}
+
+.collapsible--collapsed .collapsible__toggle-wrap,
+.collapsible--collapsed .collapsible__header-wrap {
+  border-radius: calc(var(--fz-collapsible-radius) - 1px);
 }
 
 .array-field__header-content,
@@ -2402,7 +2409,7 @@ body {
   }
 
   .collapsible {
-    border-radius: 14px;
+    --fz-collapsible-radius: 14px;
   }
 
   .document-fields__sidebar-wrap {

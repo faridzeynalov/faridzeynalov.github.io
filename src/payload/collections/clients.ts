@@ -21,16 +21,28 @@ const placeholderPassword: CollectionBeforeValidateHook = ({ data, operation }) 
   return { ...data, password: crypto.randomBytes(24).toString("base64url") };
 };
 
-/** Sends the invitation (a set-password link) when a client is added. */
+/**
+ * Sends the invitation (a set-password link) when a client is added. The token comes from
+ * forgotPassword with its email off: with the email on, Payload looks the account up outside this
+ * transaction, doesn't find the client being created and silently sends nothing.
+ */
 const sendInvitation: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   if (operation !== "create" || req.context?.skipInvite) return doc;
-  await req.payload.forgotPassword({
+  const token = await req.payload.forgotPassword({
     collection: "clients",
     data: { email: doc.email },
+    disableEmail: true,
     expiration: INVITE_EXPIRATION,
-    context: { invite: true },
     req,
   });
+  if (!token) return doc;
+  const { subject, html } = passwordEmail({
+    locale: (doc.language ?? "az") as Locale,
+    name: doc.name,
+    token: String(token),
+    invite: true,
+  });
+  await req.payload.sendEmail({ to: doc.email, subject, html });
   return doc;
 };
 

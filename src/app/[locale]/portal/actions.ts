@@ -5,15 +5,13 @@ import { redirect } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
 import { localizedPath } from "@/lib/i18n-metadata";
-import { getPortalClient, portalPayload } from "@/lib/portal";
+import { getPortalClient, PORTAL_COOKIE, portalPayload } from "@/lib/portal";
 
 /**
  * The portal's form actions. Each returns a status the form shows ("error", "sent", …) or
- * redirects. The session is Payload's own login token, kept in its usual httpOnly cookie.
+ * redirects. The session is the client's Payload login token, in the portal's own httpOnly cookie.
  */
 export type ActionState = { status: "idle" | "error" | "invalid" | "sent" | "locked" };
-
-const COOKIE = "payload-token";
 
 function localeOf(form: FormData): Locale {
   const locale = String(form.get("locale") ?? "");
@@ -23,7 +21,7 @@ function localeOf(form: FormData): Locale {
 const portal = (locale: Locale, path = "") => localizedPath(locale, `/portal${path}`);
 
 async function startSession(token: string, exp?: number) {
-  (await cookies()).set(COOKIE, token, {
+  (await cookies()).set(PORTAL_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -50,7 +48,7 @@ export async function login(_: ActionState, form: FormData): Promise<ActionState
 }
 
 export async function logout(form: FormData) {
-  (await cookies()).delete(COOKIE);
+  (await cookies()).delete(PORTAL_COOKIE);
   redirect(portal(localeOf(form), "/login"));
 }
 
