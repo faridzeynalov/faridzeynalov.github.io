@@ -27,15 +27,15 @@ const deleteComments: CollectionBeforeDeleteHook = async ({ id, req }) => {
 export const ProjectScreens: CollectionConfig = {
   slug: "project-screens",
   labels: {
-    singular: l("Ekran", "Screen", "Экран"),
-    plural: l("Ekranlar", "Screens", "Экраны"),
+    singular: l("Skrinşot", "Screenshot", "Скриншот"),
+    plural: l("Skrinşotlar", "Screenshots", "Скриншоты"),
   },
   admin: {
     group: portalGroup,
     useAsTitle: "title",
     defaultColumns: ["filename", "title", "project", "createdAt"],
     description: l(
-      "Layihənin dizayn və ekran şəkilləri. Müştəri onları portalda görür və şərh yazır.",
+      "Layihənin dizayn və ekran skrinşotları. Müştəri onları portalda görür və şərh yazır.",
       "The project's designs and screenshots. The client sees them in the portal and comments.",
       "Дизайны и скриншоты проекта. Клиент видит их на портале и комментирует.",
     ),

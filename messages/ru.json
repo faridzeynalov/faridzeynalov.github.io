@@ -502,12 +502,12 @@
     "replyLabel": "Ваш ответ",
     "replyPlaceholder": "Напишите ответ…",
     "cancel": "Отмена",
-    "screens": "Экраны",
+    "screens": "Скриншоты",
     "screensText": "Дизайны и скриншоты. Откройте любой, чтобы рассмотреть и оставить отзыв.",
     "backToProject": "Назад к проекту",
     "openFull": "Открыть в полном размере",
-    "screenComments": "Об этом экране",
-    "noScreenComments": "Комментариев к этому экрану пока нет.",
-    "screenPlaceholder": "Что вы думаете об этом экране?"
+    "screenComments": "Об этом скриншоте",
+    "noScreenComments": "Комментариев к этому скриншоту пока нет.",
+    "screenPlaceholder": "Что вы думаете об этом скриншоте?"
   }
 }

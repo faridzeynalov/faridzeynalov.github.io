@@ -15,7 +15,11 @@ export type Comment = {
   createdAt: string;
   project: Ref<{ title?: string; client?: Ref<{ name?: string }> }>;
   parent?: Ref<object>;
-  screen?: Ref<{ title?: string }>;
+  screen?: Ref<{
+    title?: string;
+    url?: string | null;
+    sizes?: { thumb?: { url?: string | null } };
+  }>;
   author?: { relationTo: "users" | "clients"; value: Ref<{ name?: string | null }> } | null;
 };
 
@@ -25,7 +29,7 @@ const copy = {
   az: {
     comments: "Şərhlər",
     conversation: "Söhbət",
-    screen: "Ekran",
+    screen: "Skrinşot",
     unsaved: "Layihəni yadda saxlayandan sonra söhbət burada görünəcək.",
     empty: "Hələ şərh yoxdur.",
     waiting: "Cavab gözləyir",
@@ -50,7 +54,7 @@ const copy = {
   en: {
     comments: "Comments",
     conversation: "Conversation",
-    screen: "Screen",
+    screen: "Screenshot",
     unsaved: "The conversation shows here once the project is saved.",
     empty: "No comments yet.",
     waiting: "Awaiting reply",
@@ -75,7 +79,7 @@ const copy = {
   ru: {
     comments: "Комментарии",
     conversation: "Переписка",
-    screen: "Экран",
+    screen: "Скриншот",
     unsaved: "Переписка появится здесь после сохранения проекта.",
     empty: "Комментариев пока нет.",
     waiting: "Ждёт ответа",
@@ -235,7 +239,7 @@ function Message({
     ? (typeof author === "object" && author?.name) || text.client
     : text.me;
   return (
-    <div className={`fz-msg${fromClient(comment) ? "" : "fz-msg--me"}`}>
+    <div className="fz-msg" data-me={fromClient(comment) ? undefined : ""}>
       <span className="fz-msg__avatar" aria-hidden>
         {name.trim().charAt(0).toUpperCase()}
       </span>
@@ -278,19 +282,33 @@ export function ThreadCard({
   onDelete: (comment: Comment) => void;
 }) {
   const waiting = fromClient(thread.last);
-  const screen = thread.first.screen;
+  const screen = typeof thread.first.screen === "object" ? thread.first.screen : null;
+  const preview = screen?.sizes?.thumb?.url || screen?.url;
   return (
-    <article className={`fz-card${waiting ? "fz-card--waiting" : ""}`}>
-      {(header || waiting || screen) && (
+    <article className="fz-card" data-waiting={waiting ? "" : undefined}>
+      {(header || waiting) && (
         <header className="fz-card__header">
           {header}
-          {screen && (
-            <span className="fz-card__screen">
-              {text.screen}: {(typeof screen === "object" && screen.title) || `#${screen}`}
-            </span>
-          )}
           {waiting && <span className="fz-card__badge">{text.waiting}</span>}
         </header>
+      )}
+      {screen && (
+        // The screenshot the thread is about; opens full size.
+        <a
+          className="fz-card__screen"
+          href={screen.url ?? undefined}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {preview && (
+            // eslint-disable-next-line @next/next/no-img-element -- a private file, served by Payload
+            <img src={preview} alt="" loading="lazy" />
+          )}
+          <span>
+            <small>{text.screen}</small>
+            {screen.title}
+          </span>
+        </a>
       )}
       <Message comment={thread.first} text={text} language={language} onDelete={onDelete} />
       {thread.replies.length > 0 && (

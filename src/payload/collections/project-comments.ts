@@ -175,16 +175,16 @@ export const ProjectComments: CollectionConfig = {
     },
     {
       name: "screen",
-      label: l("Ekran", "Screen", "Экран"),
+      label: l("Skrinşot", "Screenshot", "Скриншот"),
       type: "relationship",
       relationTo: "project-screens",
       index: true,
       admin: {
         position: "sidebar",
         description: l(
-          "Şərh bu ekran haqqındadır. Boş qalsa, layihə haqqında ümumi şərhdir.",
-          "The screen the comment is about. Empty for a comment on the project.",
-          "Экран, к которому относится комментарий. Пусто — комментарий к проекту.",
+          "Şərh bu skrinşot haqqındadır. Boş qalsa, layihə haqqında ümumi şərhdir.",
+          "The screenshot the comment is about. Empty for a comment on the project.",
+          "Скриншот, к которому относится комментарий. Пусто — комментарий к проекту.",
         ),
       },
     },

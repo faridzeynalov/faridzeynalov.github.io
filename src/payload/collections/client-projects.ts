@@ -157,7 +157,7 @@ export const ClientProjects: CollectionConfig = {
     {
       // Added here (or in Screens); the client sees them in the portal and comments on each.
       name: "screens",
-      label: l("Ekranlar", "Screens", "Экраны"),
+      label: l("Skrinşotlar", "Screenshots", "Скриншоты"),
       type: "join",
       collection: "project-screens",
       on: "project",
@@ -166,7 +166,7 @@ export const ClientProjects: CollectionConfig = {
       admin: {
         defaultColumns: ["filename", "title", "createdAt"],
         description: l(
-          "Dizayn və ekran şəkilləri. Müştəri portalda hər birinə şərh yaza bilir.",
+          "Dizayn və ekran skrinşotları. Müştəri portalda hər birinə şərh yaza bilir.",
           "Designs and screenshots. The client can comment on each in the portal.",
           "Дизайны и скриншоты. Клиент может комментировать каждый на портале.",
         ),

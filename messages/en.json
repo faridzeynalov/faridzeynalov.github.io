@@ -502,12 +502,12 @@
     "replyLabel": "Your reply",
     "replyPlaceholder": "Write your reply…",
     "cancel": "Cancel",
-    "screens": "Screens",
+    "screens": "Screenshots",
     "screensText": "Designs and screenshots. Open one to look closer and leave your thoughts.",
     "backToProject": "Back to the project",
     "openFull": "Open full size",
-    "screenComments": "About this screen",
-    "noScreenComments": "No comments on this screen yet.",
-    "screenPlaceholder": "What do you think of this screen?"
+    "screenComments": "About this screenshot",
+    "noScreenComments": "No comments on this screenshot yet.",
+    "screenPlaceholder": "What do you think of this screenshot?"
   }
 }

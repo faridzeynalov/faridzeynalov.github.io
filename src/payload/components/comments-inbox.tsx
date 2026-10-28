@@ -114,7 +114,8 @@ export function CommentsInbox() {
               <Link
                 key={project.id}
                 href={`${pathname}?project=${project.id}`}
-                className={`fz-project${unread ? "fz-project--new" : ""}`}
+                className="fz-project"
+                data-new={unread ? "" : undefined}
               >
                 <span className="fz-project__head">
                   <strong>{project.title}</strong>
