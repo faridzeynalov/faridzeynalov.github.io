@@ -29,8 +29,8 @@ export async function getAdminStats(payload: Payload) {
       LOCALES.map(async (locale) => {
         const { totalDocs } = await payload.count({
           collection: "translations",
-          locale,
-          where: { or: [{ value: { exists: false } }, { value: { equals: "" } }] },
+          // Each language is its own column.
+          where: { or: [{ [locale]: { exists: false } }, { [locale]: { equals: "" } }] },
         });
         return [locale, totalDocs] as const;
       }),

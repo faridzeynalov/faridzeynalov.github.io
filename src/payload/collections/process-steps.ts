@@ -1,5 +1,12 @@
 import type { CollectionConfig } from "payload";
-import { activeField, groups, l } from "@/payload/fields";
+import {
+  activeField,
+  adminTitleField,
+  groups,
+  i18nField,
+  l,
+  setAdminTitle,
+} from "@/payload/fields";
 import { revalidateAfterChange, revalidateAfterDelete } from "@/payload/hooks/revalidate-site";
 
 /** How a project runs, step by step, on the Services page. */
@@ -12,25 +19,19 @@ export const ProcessSteps: CollectionConfig = {
   orderable: true,
   admin: {
     group: groups.content,
-    useAsTitle: "title",
-    defaultColumns: ["title", "description", "active"],
+    useAsTitle: "adminTitle",
+    defaultColumns: ["adminTitle", "active"],
   },
   access: { read: () => true },
-  hooks: { afterChange: [revalidateAfterChange], afterDelete: [revalidateAfterDelete] },
+  hooks: {
+    beforeChange: [setAdminTitle("title")],
+    afterChange: [revalidateAfterChange],
+    afterDelete: [revalidateAfterDelete],
+  },
   fields: [
-    {
-      name: "title",
-      label: l("Ad", "Name", "Название"),
-      type: "text",
-      localized: true,
-      required: true,
-    },
-    {
-      name: "description",
-      label: l("Təsvir", "Description", "Описание"),
-      type: "textarea",
-      localized: true,
-    },
+    i18nField("title", l("Ad", "Name", "Название"), { required: true }),
+    i18nField("description", l("Təsvir", "Description", "Описание"), { long: true }),
     activeField(),
+    { ...adminTitleField, label: l("Ad", "Name", "Название") },
   ],
 };

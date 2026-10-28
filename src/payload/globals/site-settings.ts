@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { groups, l } from "@/payload/fields";
+import { groups, i18nField, l } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
 const emptyKeepsBuiltIn = l(
@@ -16,19 +16,9 @@ export const SiteSettings: GlobalConfig = {
   access: { read: () => true },
   hooks: { afterChange: [revalidateSite] },
   fields: [
-    {
-      type: "row",
-      fields: [
-        { name: "name", label: l("Ad Soyad", "Full name", "Имя и фамилия"), type: "text" },
-        {
-          name: "role",
-          label: l("Vəzifə", "Job title", "Должность"),
-          type: "text",
-          localized: true,
-        },
-      ],
-    },
-    { name: "location", label: l("Şəhər", "City", "Город"), type: "text", localized: true },
+    { name: "name", label: l("Ad Soyad", "Full name", "Имя и фамилия"), type: "text" },
+    i18nField("role", l("Vəzifə", "Job title", "Должность")),
+    i18nField("location", l("Şəhər", "City", "Город")),
     {
       type: "row",
       fields: [

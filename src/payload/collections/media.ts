@@ -57,7 +57,6 @@ export const Media: CollectionConfig = {
       name: "alt",
       label: l("Alternativ mətn", "Alt text", "Альтернативный текст"),
       type: "text",
-      localized: true,
     },
     {
       name: "blurDataURL",

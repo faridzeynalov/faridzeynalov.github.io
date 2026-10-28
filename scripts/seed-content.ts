@@ -1,7 +1,7 @@
 /**
  * Copies the built-in content (src/content, src/data, messages/*.json) into the admin panel, so
- * it starts out filled in rather than empty. Anything that already has content in the admin is
- * left alone. Usage: npm run seed
+ * it starts out filled in rather than empty: every text in all three languages ({ az, en, ru }).
+ * Anything that already has content in the admin is left alone. Usage: npm run seed
  */
 import { getPayload, type CollectionSlug } from "payload";
 import config from "../src/payload.config";
@@ -15,143 +15,89 @@ import en from "../messages/en.json" with { type: "json" };
 import az from "../messages/az.json" with { type: "json" };
 import ru from "../messages/ru.json" with { type: "json" };
 
-const locales: Locale[] = ["en", "az", "ru"];
+const locales: Locale[] = ["az", "en", "ru"];
 const messages: Record<Locale, Record<string, unknown>> = { en, az, ru };
 // Seeding writes outside a Next.js request: nothing to revalidate. Every call gets its own copy:
 // the storage plugin marks the context after an upload, and a shared one would skip the rest.
-const context = { disableRevalidate: true };
+const context = () => ({ disableRevalidate: true });
 const payload = await getPayload({ config });
 const lines = (items: string[]) => items.join("\n");
+
+/** { az, en, ru } from a function of the language. */
+function i18n(text: (locale: Locale) => string | undefined) {
+  return Object.fromEntries(locales.map((locale) => [locale, text(locale) ?? null]));
+}
 
 async function isEmpty(collection: CollectionSlug) {
   return (await payload.count({ collection })).totalDocs === 0;
 }
 
-/**
- * Creates one document per item: in the first language, then the other languages' text on the
- * same document.
- */
+/** Creates one document per built-in item, its texts in every language. */
 async function seedCollection<T>(
   collection: CollectionSlug,
   items: (locale: Locale) => T[],
-  data: (item: T, locale: Locale) => Record<string, unknown>,
+  data: (item: (locale: Locale) => T) => Record<string, unknown>,
 ) {
   if (!(await isEmpty(collection))) {
     payload.logger.info(`${collection}: already filled in, skipped`);
     return;
   }
-  const [first, ...rest] = locales;
-  const byLocale = Object.fromEntries(locales.map((locale) => [locale, items(locale)]));
-  for (const [index, item] of byLocale[first].entries()) {
-    const doc = await payload.create({
+  const byLocale = Object.fromEntries(locales.map((locale) => [locale, items(locale)])) as Record<
+    Locale,
+    T[]
+  >;
+  for (const index of byLocale.az.keys()) {
+    await payload.create({
       collection,
-      locale: first,
-      context: { ...context },
-      data: data(item, first) as never,
+      context: context(),
+      data: data((locale) => byLocale[locale][index]) as never,
     });
-    for (const locale of rest) {
-      await payload.update({
-        collection,
-        id: doc.id,
-        locale,
-        context: { ...context },
-        data: data(byLocale[locale][index], locale) as never,
-      });
-    }
   }
-  payload.logger.info(`${collection}: ${byLocale[first].length} copied`);
+  payload.logger.info(`${collection}: ${byLocale.az.length} copied`);
 }
 
 async function seedProjects() {
-  await seedCollection("projects", getProjectList, (project, locale) => ({
-    ...(locale === "en"
-      ? {
-          name: project.name,
-          slug: project.slug,
-          domain: project.domain,
-          url: project.url,
-          industry: project.industry,
-          group: project.group,
-          languages: project.languages,
-          accent: project.accent,
-          stack: lines(project.stack),
-          featured: project.featured ?? false,
-          active: true,
-        }
-      : {}),
-    summary: project.summary,
-    overview: project.overview,
-    liveFeatures: lines(project.liveFeatures),
-    note: project.note,
-    unavailableReason: project.unavailableReason,
+  await seedCollection("projects", getProjectList, (project) => ({
+    name: project("en").name,
+    slug: project("en").slug,
+    domain: project("en").domain,
+    url: project("en").url,
+    industry: project("en").industry,
+    group: project("en").group,
+    languages: project("en").languages,
+    accent: project("en").accent,
+    stack: lines(project("en").stack),
+    featured: project("en").featured ?? false,
+    active: true,
+    summary: i18n((locale) => project(locale).summary),
+    overview: i18n((locale) => project(locale).overview),
+    liveFeatures: i18n((locale) => lines(project(locale).liveFeatures)),
+    note: i18n((locale) => project(locale).note),
+    unavailableReason: i18n((locale) => project(locale).unavailableReason),
   }));
-}
-
-type Row = Record<string, string | null | undefined>;
-interface OldServicesPage {
-  services?: Row[];
-  process?: Row[];
-  faq?: Row[];
-}
-
-/**
- * The old "services-page" global (edited in the admin before it became three collections), so
- * those edits carry over. Null once it's gone.
- */
-async function previousServicesPage(): Promise<Record<Locale, OldServicesPage> | null> {
-  const pages = await Promise.all(
-    locales.map((locale) =>
-      (
-        payload.findGlobal({ slug: "services-page" as never, locale }) as Promise<OldServicesPage>
-      ).catch(() => null),
-    ),
-  );
-  if (!pages.every((page) => page?.services?.length)) return null;
-  return Object.fromEntries(locales.map((locale, index) => [locale, pages[index]!])) as Record<
-    Locale,
-    OldServicesPage
-  >;
 }
 
 async function seedServices() {
-  const previous = await previousServicesPage();
-  const services = (locale: Locale) =>
-    previous
-      ? previous[locale].services!.map((row) => ({
-          id: row.key ?? "",
-          icon: row.icon ?? "code",
-          title: row.title ?? "",
-          tagline: row.tagline ?? "",
-          description: row.description ?? "",
-          deliverables: (row.deliverables ?? "").split("\n"),
-        }))
-      : getServices(locale);
-  const process = (locale: Locale) =>
-    previous
-      ? previous[locale].process!.map((row) => ({
-          title: row.title ?? "",
-          description: row.description ?? "",
-        }))
-      : getProcess(locale);
-  const faq = (locale: Locale) =>
-    previous
-      ? previous[locale].faq!.map((row) => ({
-          question: row.question ?? "",
-          answer: row.answer ?? "",
-        }))
-      : getFaq(locale);
-
-  await seedCollection("services", services, (service, locale) => ({
-    ...(locale === "en"
-      ? { key: service.id, icon: service.icon, active: true, showOnHome: true }
-      : {}),
-    title: service.title,
-    tagline: service.tagline,
-    description: service.description,
-    deliverables: lines(service.deliverables),
+  await seedCollection("services", getServices, (service) => ({
+    key: service("en").id,
+    icon: service("en").icon,
+    active: true,
+    showOnHome: true,
+    title: i18n((locale) => service(locale).title),
+    tagline: i18n((locale) => service(locale).tagline),
+    description: i18n((locale) => service(locale).description),
+    deliverables: i18n((locale) => lines(service(locale).deliverables)),
   }));
-  await seedCollection("process-steps", process, (step) => ({ ...step, active: true }));
-  await seedCollection("faq", faq, (item) => ({ ...item, active: true }));
+  await seedCollection("process-steps", getProcess, (step) => ({
+    active: true,
+    title: i18n((locale) => step(locale).title),
+    description: i18n((locale) => step(locale).description),
+  }));
+  await seedCollection("faq", getFaq, (item) => ({
+    active: true,
+    question: i18n((locale) => item(locale).question),
+    answer: i18n((locale) => item(locale).answer),
+  }));
 }
 
 /** One row per message key ("Nav.home"), with each language's text. */
@@ -166,7 +112,7 @@ function flatten(tree: Record<string, unknown>, prefix = ""): [string, string][]
 async function seedTranslations() {
   const texts = Object.fromEntries(
     locales.map((locale) => [locale, Object.fromEntries(flatten(messages[locale]))]),
-  );
+  ) as Record<Locale, Record<string, string>>;
   // Keys are unique, so this also completes a run that stopped halfway, and adds keys that
   // appear in messages/*.json later.
   const existing = await payload.find({
@@ -178,125 +124,127 @@ async function seedTranslations() {
   const have = new Set(existing.docs.map((doc) => doc.key));
   const missing = Object.keys(texts.en).filter((key) => !have.has(key));
   for (const key of missing) {
-    const doc = await payload.create({
+    await payload.create({
       collection: "translations",
-      locale: "en",
-      context: { ...context },
-      data: { key, section: key.split(".")[0], value: texts.en[key] },
+      context: context(),
+      data: {
+        key,
+        section: key.split(".")[0],
+        az: texts.az[key] ?? null,
+        en: texts.en[key] ?? null,
+        ru: texts.ru[key] ?? null,
+      },
     });
-    for (const locale of locales.slice(1)) {
-      await payload.update({
-        collection: "translations",
-        id: doc.id,
-        locale,
-        context: { ...context },
-        data: { value: texts[locale][key] ?? "" },
-      });
-    }
   }
   payload.logger.info(`translations: ${missing.length} added`);
 }
 
-/** Fills a global's arrays in every language, reusing the first language's row ids. */
-async function seedGlobal(
-  slug: "profile" | "ai",
-  build: (locale: Locale) => Record<string, unknown>,
-  arrays: string[],
-) {
-  const current = (await payload.findGlobal({ slug, locale: "en" })) as unknown as Record<
-    string,
-    unknown
-  >;
-  if (arrays.some((name) => (current[name] as unknown[] | undefined)?.length)) {
-    payload.logger.info(`${slug}: already filled in, skipped`);
+async function seedProfile() {
+  const current = await payload.findGlobal({ slug: "profile" });
+  if (current.about?.length || current.skills?.length) {
+    payload.logger.info("profile: already filled in, skipped");
     return;
   }
-  let ids: Record<string, string[]> | null = null;
-  for (const locale of locales) {
-    const data = build(locale);
-    if (ids) {
-      for (const name of arrays) {
-        data[name] = (data[name] as Record<string, unknown>[]).map((row, index) => ({
-          ...row,
-          id: ids![name][index],
-        }));
-      }
-    }
-    const doc = (await payload.updateGlobal({
-      slug,
-      locale,
-      context: { ...context },
-      data: data as never,
-    })) as unknown as Record<string, { id: string }[]>;
-    ids ??= Object.fromEntries(
-      arrays.map((name) => [name, (doc[name] ?? []).map((row) => row.id)]),
-    );
-  }
-  payload.logger.info(`${slug}: copied`);
-}
-
-async function seedProfile() {
-  await seedGlobal(
-    "profile",
-    (locale) => {
-      const profile = getProfile(locale);
-      const text = content[locale];
-      return {
-        summary: profile.summary,
-        cvTitle: profile.cv.title,
-        cvSummary: profile.cv.summary,
-        present: text.profile.present,
-        industries: lines(profile.industries),
-        about: profile.about.map((paragraph) => ({ text: paragraph, active: true })),
-        principles: text.principles.map((item) => ({ ...item, active: true })),
-        skills: profile.skills.map((group) => ({
-          title: group.title,
-          description: group.description,
-          items: lines(group.items),
-          active: true,
-        })),
-        experience: profile.experience.map((job, index) => ({
-          role: job.role,
-          company: job.company,
-          companyUrl: job.companyUrl,
-          location: job.location,
-          start: job.start,
+  const profile = Object.fromEntries(
+    locales.map((locale) => [locale, getProfile(locale)]),
+  ) as Record<Locale, ReturnType<typeof getProfile>>;
+  const rows = <T>(list: (locale: Locale) => T[], row: (item: (locale: Locale) => T) => object) =>
+    list("az").map((_, index) => ({ ...row((locale) => list(locale)[index]), active: true }));
+  await payload.updateGlobal({
+    slug: "profile",
+    context: context(),
+    data: {
+      summary: i18n((locale) => profile[locale].summary),
+      cvTitle: i18n((locale) => profile[locale].cv.title),
+      cvSummary: i18n((locale) => profile[locale].cv.summary),
+      present: i18n((locale) => content[locale].profile.present),
+      industries: i18n((locale) => lines(profile[locale].industries)),
+      about: rows(
+        (locale) => profile[locale].about,
+        (text) => ({ text: i18n(text) }),
+      ),
+      principles: rows(
+        (locale) => content[locale].principles,
+        (item) => ({ title: i18n((l) => item(l).title), text: i18n((l) => item(l).text) }),
+      ),
+      skills: rows(
+        (locale) => profile[locale].skills,
+        (group) => ({
+          title: i18n((l) => group(l).title),
+          description: i18n((l) => group(l).description),
+          items: i18n((l) => lines(group(l).items)),
+        }),
+      ),
+      experience: rows(
+        (locale) => profile[locale].experience,
+        (job) => ({
+          role: i18n((l) => job(l).role),
+          company: job("en").company,
+          companyUrl: job("en").companyUrl,
+          location: i18n((l) => job(l).location),
+          start: job("en").start,
           // The current job keeps an empty end, shown as "present" in each language.
-          end: index === 0 && job.end === text.profile.present ? "" : job.end,
-          highlights: lines(job.highlights),
-          active: true,
-        })),
-        education: profile.education.map((entry) => ({ ...entry, active: true })),
-        languages: profile.languages.map((entry) => ({ ...entry, active: true })),
-        certificates: profile.certificates.map((entry) => ({ ...entry, active: true })),
-        industryNames: {
-          hospitality: text.industries.hospitality,
-          realEstate: text.industries["real-estate"],
-          healthcare: text.industries.healthcare,
-          eCommerce: text.industries["e-commerce"],
-          corporate: text.industries.corporate,
-          education: text.industries.education,
-        },
-      };
-    },
-    ["about", "principles", "skills", "experience", "education", "languages", "certificates"],
-  );
+          end: job("en").end === content.en.profile.present ? "" : job("en").end,
+          highlights: i18n((l) => lines(job(l).highlights)),
+        }),
+      ),
+      education: rows(
+        (locale) => profile[locale].education,
+        (entry) => ({
+          degree: i18n((l) => entry(l).degree),
+          field: i18n((l) => entry(l).field),
+          institution: i18n((l) => entry(l).institution),
+          start: entry("en").start,
+          end: entry("en").end,
+        }),
+      ),
+      languages: rows(
+        (locale) => profile[locale].languages,
+        (entry) => ({ name: i18n((l) => entry(l).name), level: i18n((l) => entry(l).level) }),
+      ),
+      certificates: rows(
+        (locale) => profile[locale].certificates,
+        (entry) => ({ name: i18n((l) => entry(l).name), period: i18n((l) => entry(l).period) }),
+      ),
+      industryNames: {
+        hospitality: i18n((l) => content[l].industries.hospitality),
+        realEstate: i18n((l) => content[l].industries["real-estate"]),
+        healthcare: i18n((l) => content[l].industries.healthcare),
+        eCommerce: i18n((l) => content[l].industries["e-commerce"]),
+        corporate: i18n((l) => content[l].industries.corporate),
+        education: i18n((l) => content[l].industries.education),
+      },
+    } as never,
+  });
+  payload.logger.info("profile: copied");
 }
 
 async function seedAi() {
-  await seedGlobal(
-    "ai",
-    (locale) => {
-      const ai = getAi(locale);
-      return {
-        intro: ai.intro,
-        capabilities: ai.capabilities.map((item) => ({ ...item, active: true })),
-        tools: lines(ai.tools),
-        skills: lines(ai.skills),
-      };
-    },
-    ["capabilities"],
-  );
+  const current = await payload.findGlobal({ slug: "ai" });
+  if (current.capabilities?.length) {
+    payload.logger.info("ai: already filled in, skipped");
+    return;
+  }
+  const ai = Object.fromEntries(locales.map((locale) => [locale, getAi(locale)])) as Record<
+    Locale,
+    ReturnType<typeof getAi>
+  >;
+  await payload.updateGlobal({
+    slug: "ai",
+    context: context(),
+    data: {
+      intro: i18n((l) => ai[l].intro),
+      capabilities: ai.az.capabilities.map((capability, index) => ({
+        icon: capability.icon,
+        title: i18n((l) => ai[l].capabilities[index].title),
+        description: i18n((l) => ai[l].capabilities[index].description),
+        active: true,
+      })),
+      tools: lines(ai.en.tools),
+      skills: i18n((l) => lines(ai[l].skills)),
+    } as never,
+  });
+  payload.logger.info("ai: copied");
 }
 
 await seedProjects();

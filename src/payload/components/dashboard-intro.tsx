@@ -108,11 +108,12 @@ const text = {
 const tracked = ["projects", "services", "process-steps", "faq", "translations"] as const;
 type Tracked = (typeof tracked)[number];
 
+/** The field naming an item in lists (adminTitle: the first language its title is in). */
 const titleField: Record<Tracked, string> = {
   projects: "name",
-  services: "title",
-  "process-steps": "title",
-  faq: "question",
+  services: "adminTitle",
+  "process-steps": "adminTitle",
+  faq: "adminTitle",
   translations: "key",
 };
 
@@ -132,13 +133,12 @@ const DAYS = 14;
 const dayKey = (date: Date) => date.toISOString().slice(0, 10);
 
 /** Saves per day over the last two weeks, and the latest saved documents, across the content. */
-async function getActivity(payload: Payload, locale: string) {
+async function getActivity(payload: Payload) {
   const since = new Date(Date.now() - DAYS * 86_400_000);
   const results = await Promise.all(
     tracked.map(async (collection) => {
       const { docs } = await payload.find({
         collection: collection as CollectionSlug,
-        locale: locale as never,
         depth: 0,
         pagination: false,
         sort: "-updatedAt",
@@ -167,10 +167,9 @@ async function getActivity(payload: Payload, locale: string) {
   return { days, recent: all.slice(0, 8) };
 }
 
-async function getIndustries(payload: Payload, locale: string) {
+async function getIndustries(payload: Payload) {
   const { docs } = await payload.find({
     collection: "projects",
-    locale: locale as never,
     depth: 0,
     pagination: false,
     select: { industry: true },
@@ -196,7 +195,6 @@ export async function DashboardIntro({
 }) {
   const language = i18n.language as keyof typeof text;
   const copy = text[language] ?? text.en;
-  const contentLocale = LOCALES.includes(language as never) ? language : "az";
   const admin = payload.config.routes.admin;
   const fullName = (user as { name?: string | null } | null | undefined)?.name?.trim();
   const name = fullName?.split(" ")[0];
@@ -210,8 +208,8 @@ export async function DashboardIntro({
       .join("") || "?";
   const [stats, activity, industries, photo] = await Promise.all([
     getAdminStats(payload),
-    getActivity(payload, contentLocale),
-    getIndustries(payload, contentLocale),
+    getActivity(payload),
+    getIndustries(payload),
     avatarUrl(payload, user),
   ]);
   const empty = Object.values(stats.emptyTranslations).reduce((sum, count) => sum + count, 0);

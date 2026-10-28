@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { groups, l, linesField, rowActiveField } from "@/payload/fields";
+import { groups, i18nField, i18nLinesField, l, linesField, rowActiveField } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
 /** The AI section on the home page and the CV. A list left empty keeps the built-in content. */
@@ -17,12 +17,7 @@ export const Ai: GlobalConfig = {
   access: { read: () => true },
   hooks: { afterChange: [revalidateSite] },
   fields: [
-    {
-      name: "intro",
-      label: l("Giriş mətni", "Intro", "Вступление"),
-      type: "textarea",
-      localized: true,
-    },
+    i18nField("intro", l("Giriş mətni", "Intro", "Вступление"), { long: true }),
     {
       name: "capabilities",
       label: l("Bacarıqlar", "Capabilities", "Возможности"),
@@ -36,34 +31,24 @@ export const Ai: GlobalConfig = {
         components: { RowLabel: "/payload/components/row-label#RowLabel" },
       },
       fields: [
+        i18nField("title", l("Ad", "Name", "Название")),
+        i18nField("description", l("Təsvir", "Description", "Описание"), { long: true }),
         {
-          type: "row",
-          fields: [
-            { name: "title", label: l("Ad", "Name", "Название"), type: "text", localized: true },
-            {
-              name: "icon",
-              label: l("İkon", "Icon", "Иконка"),
-              type: "select",
-              defaultValue: "bot",
-              options: [
-                { label: l("Bot", "Bot", "Бот"), value: "bot" },
-                { label: l("İnteqrasiya", "Integration", "Интеграция"), value: "plug" },
-                { label: l("Söhbət", "Chat", "Чат"), value: "messages" },
-                { label: l("Kod", "Code", "Код"), value: "braces" },
-              ],
-            },
+          name: "icon",
+          label: l("İkon", "Icon", "Иконка"),
+          type: "select",
+          defaultValue: "bot",
+          options: [
+            { label: l("Bot", "Bot", "Бот"), value: "bot" },
+            { label: l("İnteqrasiya", "Integration", "Интеграция"), value: "plug" },
+            { label: l("Söhbət", "Chat", "Чат"), value: "messages" },
+            { label: l("Kod", "Code", "Код"), value: "braces" },
           ],
-        },
-        {
-          name: "description",
-          label: l("Təsvir", "Description", "Описание"),
-          type: "textarea",
-          localized: true,
         },
         rowActiveField,
       ],
     },
-    linesField("tools", l("Alətlər", "Tools", "Инструменты"), { localized: false }),
-    linesField("skills", l("Bacarıqlar siyahısı", "Skills list", "Список навыков")),
+    linesField("tools", l("Alətlər", "Tools", "Инструменты")),
+    i18nLinesField("skills", l("Bacarıqlar siyahısı", "Skills list", "Список навыков")),
   ],
 };

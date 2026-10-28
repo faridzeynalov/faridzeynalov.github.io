@@ -96,7 +96,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('az' | 'en' | 'ru') | ('az' | 'en' | 'ru')[];
+  fallbackLocale: null;
   globals: {
     profile: Profile;
     ai: Ai;
@@ -111,7 +111,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     seo: SeoSelect<false> | SeoSelect<true>;
   };
-  locale: 'az' | 'en' | 'ru';
+  locale: null;
   widgets: {
     collections: CollectionsWidget;
   };
@@ -166,14 +166,34 @@ export interface Project {
    * One item per line.
    */
   stack?: string | null;
-  summary?: string | null;
-  overview?: string | null;
+  summary?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  overview?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   /**
    * One item per line.
    */
-  liveFeatures?: string | null;
-  note?: string | null;
-  unavailableReason?: string | null;
+  liveFeatures?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  note?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  unavailableReason?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   images?: {
     cover?: (number | null) | Media;
     thumb?: (number | null) | Media;
@@ -215,20 +235,37 @@ export interface Media {
 export interface Service {
   id: number;
   _order?: string | null;
-  title: string;
+  title: {
+    az: string;
+    en?: string | null;
+    ru?: string | null;
+  };
+  tagline?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  description?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  /**
+   * One item per line.
+   */
+  deliverables?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   /**
    * Latin letters; used in the address as #key, e.g. frontend.
    */
   key: string;
-  tagline?: string | null;
-  description?: string | null;
-  /**
-   * One item per line.
-   */
-  deliverables?: string | null;
   icon: 'code' | 'palette' | 'gauge' | 'sparkles' | 'plug' | 'wrench';
   active?: boolean | null;
   showOnHome?: boolean | null;
+  adminTitle?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -239,9 +276,18 @@ export interface Service {
 export interface ProcessStep {
   id: number;
   _order?: string | null;
-  title: string;
-  description?: string | null;
+  title: {
+    az: string;
+    en?: string | null;
+    ru?: string | null;
+  };
+  description?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   active?: boolean | null;
+  adminTitle?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -252,9 +298,18 @@ export interface ProcessStep {
 export interface Faq {
   id: number;
   _order?: string | null;
-  question: string;
-  answer?: string | null;
+  question: {
+    az: string;
+    en?: string | null;
+    ru?: string | null;
+  };
+  answer?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   active?: boolean | null;
+  adminTitle?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -268,7 +323,9 @@ export interface Translation {
   id: number;
   key: string;
   section?: string | null;
-  value?: string | null;
+  az?: string | null;
+  en?: string | null;
+  ru?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -412,11 +469,41 @@ export interface ProjectsSelect<T extends boolean = true> {
   languages?: T;
   accent?: T;
   stack?: T;
-  summary?: T;
-  overview?: T;
-  liveFeatures?: T;
-  note?: T;
-  unavailableReason?: T;
+  summary?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  overview?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  liveFeatures?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  note?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  unavailableReason?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   images?:
     | T
     | {
@@ -436,14 +523,39 @@ export interface ProjectsSelect<T extends boolean = true> {
  */
 export interface ServicesSelect<T extends boolean = true> {
   _order?: T;
-  title?: T;
+  title?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  tagline?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  description?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  deliverables?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   key?: T;
-  tagline?: T;
-  description?: T;
-  deliverables?: T;
   icon?: T;
   active?: T;
   showOnHome?: T;
+  adminTitle?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -453,9 +565,22 @@ export interface ServicesSelect<T extends boolean = true> {
  */
 export interface ProcessStepsSelect<T extends boolean = true> {
   _order?: T;
-  title?: T;
-  description?: T;
+  title?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  description?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   active?: T;
+  adminTitle?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -465,9 +590,22 @@ export interface ProcessStepsSelect<T extends boolean = true> {
  */
 export interface FaqSelect<T extends boolean = true> {
   _order?: T;
-  question?: T;
-  answer?: T;
+  question?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  answer?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   active?: T;
+  adminTitle?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -478,7 +616,9 @@ export interface FaqSelect<T extends boolean = true> {
 export interface TranslationsSelect<T extends boolean = true> {
   key?: T;
   section?: T;
-  value?: T;
+  az?: T;
+  en?: T;
+  ru?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -575,62 +715,130 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Profile {
   id: number;
-  summary?: string | null;
-  cvTitle?: string | null;
-  present?: string | null;
-  cvSummary?: string | null;
+  summary?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  cvTitle?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  cvSummary?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  present?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   /**
    * One item per line.
    */
-  industries?: string | null;
+  industries?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   about?:
     | {
-        text?: string | null;
+        text?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         active?: boolean | null;
         id?: string | null;
       }[]
     | null;
   principles?:
     | {
-        title?: string | null;
-        text?: string | null;
+        title?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        text?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         active?: boolean | null;
         id?: string | null;
       }[]
     | null;
   skills?:
     | {
-        title?: string | null;
-        description?: string | null;
+        title?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        description?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         /**
          * One item per line.
          */
-        items?: string | null;
+        items?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         active?: boolean | null;
         id?: string | null;
       }[]
     | null;
   experience?:
     | {
-        role?: string | null;
+        role?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         company?: string | null;
         companyUrl?: string | null;
-        location?: string | null;
+        location?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         start?: string | null;
         end?: string | null;
         /**
          * One item per line.
          */
-        highlights?: string | null;
+        highlights?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         active?: boolean | null;
         id?: string | null;
       }[]
     | null;
   education?:
     | {
-        degree?: string | null;
-        field?: string | null;
-        institution?: string | null;
+        degree?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        field?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        institution?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         start?: string | null;
         end?: string | null;
         active?: boolean | null;
@@ -639,30 +847,67 @@ export interface Profile {
     | null;
   languages?:
     | {
-        name?: string | null;
-        level?: string | null;
+        name?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        level?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         active?: boolean | null;
         id?: string | null;
       }[]
     | null;
   certificates?:
     | {
-        name?: string | null;
-        period?: string | null;
+        name?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        period?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         active?: boolean | null;
         id?: string | null;
       }[]
     | null;
-  /**
-   * Names shown in the portfolio filters and on project cards.
-   */
   industryNames?: {
-    hospitality?: string | null;
-    realEstate?: string | null;
-    healthcare?: string | null;
-    eCommerce?: string | null;
-    corporate?: string | null;
-    education?: string | null;
+    hospitality?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    realEstate?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    healthcare?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    eCommerce?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    corporate?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    education?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -675,12 +920,24 @@ export interface Profile {
  */
 export interface Ai {
   id: number;
-  intro?: string | null;
+  intro?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   capabilities?:
     | {
-        title?: string | null;
+        title?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        description?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
         icon?: ('bot' | 'plug' | 'messages' | 'braces') | null;
-        description?: string | null;
         active?: boolean | null;
         id?: string | null;
       }[]
@@ -692,7 +949,11 @@ export interface Ai {
   /**
    * One item per line.
    */
-  skills?: string | null;
+  skills?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -705,8 +966,16 @@ export interface Ai {
 export interface SiteSetting {
   id: number;
   name?: string | null;
-  role?: string | null;
-  location?: string | null;
+  role?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  location?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   email?: string | null;
   phone?: string | null;
   yearsOfExperience?: string | null;
@@ -769,67 +1038,119 @@ export interface Seo {
   /**
    * Separate with commas: website development, web design, …
    */
-  keywords?: string | null;
+  keywords?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
   ogImage?: (number | null) | Media;
   home?: {
     /**
      * The title shown in Google. About 60 characters.
      */
-    title?: string | null;
+    title?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
     /**
      * The text under the title in search results. About 160 characters.
      */
-    description?: string | null;
+    description?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
   };
   portfolio?: {
     /**
      * The title shown in Google. About 60 characters.
      */
-    title?: string | null;
+    title?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
     /**
      * The text under the title in search results. About 160 characters.
      */
-    description?: string | null;
+    description?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
   };
   services?: {
     /**
      * The title shown in Google. About 60 characters.
      */
-    title?: string | null;
+    title?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
     /**
      * The text under the title in search results. About 160 characters.
      */
-    description?: string | null;
+    description?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
   };
   about?: {
     /**
      * The title shown in Google. About 60 characters.
      */
-    title?: string | null;
+    title?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
     /**
      * The text under the title in search results. About 160 characters.
      */
-    description?: string | null;
+    description?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
   };
   contact?: {
     /**
      * The title shown in Google. About 60 characters.
      */
-    title?: string | null;
+    title?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
     /**
      * The text under the title in search results. About 160 characters.
      */
-    description?: string | null;
+    description?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
   };
   cv?: {
     /**
      * The title shown in Google. About 60 characters.
      */
-    title?: string | null;
+    title?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
     /**
      * The text under the title in search results. About 160 characters.
      */
-    description?: string | null;
+    description?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -839,54 +1160,156 @@ export interface Seo {
  * via the `definition` "profile_select".
  */
 export interface ProfileSelect<T extends boolean = true> {
-  summary?: T;
-  cvTitle?: T;
-  present?: T;
-  cvSummary?: T;
-  industries?: T;
+  summary?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  cvTitle?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  cvSummary?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  present?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  industries?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   about?:
     | T
     | {
-        text?: T;
+        text?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         active?: T;
         id?: T;
       };
   principles?:
     | T
     | {
-        title?: T;
-        text?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        text?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         active?: T;
         id?: T;
       };
   skills?:
     | T
     | {
-        title?: T;
-        description?: T;
-        items?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        items?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         active?: T;
         id?: T;
       };
   experience?:
     | T
     | {
-        role?: T;
+        role?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         company?: T;
         companyUrl?: T;
-        location?: T;
+        location?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         start?: T;
         end?: T;
-        highlights?: T;
+        highlights?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         active?: T;
         id?: T;
       };
   education?:
     | T
     | {
-        degree?: T;
-        field?: T;
-        institution?: T;
+        degree?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        field?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        institution?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         start?: T;
         end?: T;
         active?: T;
@@ -895,28 +1318,88 @@ export interface ProfileSelect<T extends boolean = true> {
   languages?:
     | T
     | {
-        name?: T;
-        level?: T;
+        name?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        level?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         active?: T;
         id?: T;
       };
   certificates?:
     | T
     | {
-        name?: T;
-        period?: T;
+        name?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        period?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         active?: T;
         id?: T;
       };
   industryNames?:
     | T
     | {
-        hospitality?: T;
-        realEstate?: T;
-        healthcare?: T;
-        eCommerce?: T;
-        corporate?: T;
-        education?: T;
+        hospitality?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        realEstate?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        healthcare?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        eCommerce?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        corporate?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        education?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
@@ -927,18 +1410,42 @@ export interface ProfileSelect<T extends boolean = true> {
  * via the `definition` "ai_select".
  */
 export interface AiSelect<T extends boolean = true> {
-  intro?: T;
+  intro?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   capabilities?:
     | T
     | {
-        title?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
         icon?: T;
-        description?: T;
         active?: T;
         id?: T;
       };
   tools?: T;
-  skills?: T;
+  skills?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -949,8 +1456,20 @@ export interface AiSelect<T extends boolean = true> {
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
   name?: T;
-  role?: T;
-  location?: T;
+  role?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  location?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   email?: T;
   phone?: T;
   yearsOfExperience?: T;
@@ -1008,43 +1527,121 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "seo_select".
  */
 export interface SeoSelect<T extends boolean = true> {
-  keywords?: T;
+  keywords?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
   ogImage?: T;
   home?:
     | T
     | {
-        title?: T;
-        description?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
       };
   portfolio?:
     | T
     | {
-        title?: T;
-        description?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
       };
   services?:
     | T
     | {
-        title?: T;
-        description?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
       };
   about?:
     | T
     | {
-        title?: T;
-        description?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
       };
   contact?:
     | T
     | {
-        title?: T;
-        description?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
       };
   cv?:
     | T
     | {
-        title?: T;
-        description?: T;
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        description?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;

@@ -5,6 +5,7 @@ import * as migration_20261028_114842_content_collections from './20261028_11484
 import * as migration_20261028_120325_drop_services_page from './20261028_120325_drop_services_page';
 import * as migration_20261028_132615_user_avatar from './20261028_132615_user_avatar';
 import * as migration_20261028_145841_media_and_settings_files from './20261028_145841_media_and_settings_files';
+import * as migration_20261028_160300_three_language_fields from './20261028_160300_three_language_fields';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261028_145841_media_and_settings_files.up,
     down: migration_20261028_145841_media_and_settings_files.down,
-    name: '20261028_145841_media_and_settings_files'
+    name: '20261028_145841_media_and_settings_files',
+  },
+  {
+    up: migration_20261028_160300_three_language_fields.up,
+    down: migration_20261028_160300_three_language_fields.down,
+    name: '20261028_160300_three_language_fields'
   },
 ];

@@ -1,5 +1,14 @@
 import type { CollectionConfig } from "payload";
-import { activeField, groups, l, linesField, toggleField } from "@/payload/fields";
+import {
+  activeField,
+  adminTitleField,
+  groups,
+  i18nField,
+  i18nLinesField,
+  l,
+  setAdminTitle,
+  toggleField,
+} from "@/payload/fields";
 import { revalidateAfterChange, revalidateAfterDelete } from "@/payload/hooks/revalidate-site";
 
 /** What I offer: the Services page, the home page's services and the mobile menu. */
@@ -12,8 +21,8 @@ export const Services: CollectionConfig = {
   orderable: true,
   admin: {
     group: groups.content,
-    useAsTitle: "title",
-    defaultColumns: ["title", "tagline", "active", "showOnHome"],
+    useAsTitle: "adminTitle",
+    defaultColumns: ["adminTitle", "key", "active", "showOnHome"],
     description: l(
       "Sıranı dəyişmək üçün sətirləri sürüşdürün.",
       "Drag the rows to change the order.",
@@ -21,47 +30,31 @@ export const Services: CollectionConfig = {
     ),
   },
   access: { read: () => true },
-  hooks: { afterChange: [revalidateAfterChange], afterDelete: [revalidateAfterDelete] },
+  hooks: {
+    beforeChange: [setAdminTitle("title")],
+    afterChange: [revalidateAfterChange],
+    afterDelete: [revalidateAfterDelete],
+  },
   fields: [
+    i18nField("title", l("Ad", "Name", "Название"), { required: true }),
+    i18nField("tagline", l("Qısa sətir", "Tagline", "Краткая строка")),
+    i18nField("description", l("Təsvir", "Description", "Описание"), { long: true }),
+    i18nLinesField("deliverables", l("Nə daxildir", "What's included", "Что входит")),
     {
-      type: "row",
-      fields: [
-        {
-          name: "title",
-          label: l("Ad", "Name", "Название"),
-          type: "text",
-          localized: true,
-          required: true,
-        },
-        {
-          name: "key",
-          label: l("Açar", "Key", "Ключ"),
-          type: "text",
-          required: true,
-          unique: true,
-          admin: {
-            description: l(
-              "Latın hərfləri; ünvanda #açar kimi görünür, məsələn frontend.",
-              "Latin letters; used in the address as #key, e.g. frontend.",
-              "Латинские буквы; в адресе как #ключ, например frontend.",
-            ),
-          },
-        },
-      ],
-    },
-    {
-      name: "tagline",
-      label: l("Qısa sətir", "Tagline", "Краткая строка"),
+      name: "key",
+      label: l("Açar", "Key", "Ключ"),
       type: "text",
-      localized: true,
+      required: true,
+      unique: true,
+      admin: {
+        position: "sidebar",
+        description: l(
+          "Latın hərfləri; ünvanda #açar kimi görünür, məsələn frontend.",
+          "Latin letters; used in the address as #key, e.g. frontend.",
+          "Латинские буквы; в адресе как #ключ, например frontend.",
+        ),
+      },
     },
-    {
-      name: "description",
-      label: l("Təsvir", "Description", "Описание"),
-      type: "textarea",
-      localized: true,
-    },
-    linesField("deliverables", l("Nə daxildir", "What's included", "Что входит")),
     {
       name: "icon",
       label: l("İkon", "Icon", "Иконка"),
@@ -83,5 +76,6 @@ export const Services: CollectionConfig = {
       "showOnHome",
       l("Ana səhifədə göstər", "Show on the home page", "Показывать на главной"),
     ),
+    { ...adminTitleField, label: l("Ad", "Name", "Название") },
   ],
 };

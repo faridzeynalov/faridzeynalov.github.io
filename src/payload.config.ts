@@ -26,8 +26,8 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * The admin panel at /admin (Payload CMS): content lives in Neon Postgres, uploads in Vercel
- * Blob. Every text field can be filled in per language, and a field left empty in a language
- * keeps the text built into the site for that language (so there is no cross-language fallback).
+ * Blob. Every text is a group of three inputs (AZ, EN, RU) edited in one form, without Payload's
+ * localization; a language left empty keeps the text built into the site for that language.
  */
 export default buildConfig({
   admin: {
@@ -53,15 +53,6 @@ export default buildConfig({
     avatar: { Component: "/payload/components/avatar#Avatar" },
   },
   i18n: { supportedLanguages: { az, en, ru }, fallbackLanguage: "az" },
-  localization: {
-    locales: [
-      { code: "az", label: "Azərbaycanca" },
-      { code: "en", label: "English" },
-      { code: "ru", label: "Русский" },
-    ],
-    defaultLocale: "az",
-    fallback: false,
-  },
   collections: [Projects, Services, ProcessSteps, Faq, Translations, Media, Users],
   globals: [Profile, Ai, SiteSettings, Pages, Seo],
   editor: lexicalEditor(),

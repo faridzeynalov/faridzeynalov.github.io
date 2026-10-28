@@ -1,5 +1,5 @@
 import type { Field, GlobalConfig } from "payload";
-import { groups, l, type Label } from "@/payload/fields";
+import { groups, i18nField, l, type Label } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
 /** Pages whose search-engine title and description can be set from the admin panel. */
@@ -16,32 +16,25 @@ export const pageLabels: Record<SeoPage, Label> = {
 };
 
 const titleAndDescription: Field[] = [
-  {
-    name: "title",
-    label: l("Başlıq (title)", "Title", "Заголовок (title)"),
-    type: "text",
-    localized: true,
-    admin: {
-      description: l(
-        "Google-da göstərilən başlıq. Təxminən 60 simvol.",
-        "The title shown in Google. About 60 characters.",
-        "Заголовок в Google. Около 60 символов.",
-      ),
-    },
-  },
-  {
-    name: "description",
-    label: l("Təsvir (meta description)", "Meta description", "Описание (meta description)"),
-    type: "textarea",
-    localized: true,
-    admin: {
+  i18nField("title", l("Başlıq (title)", "Title", "Заголовок (title)"), {
+    description: l(
+      "Google-da göstərilən başlıq. Təxminən 60 simvol.",
+      "The title shown in Google. About 60 characters.",
+      "Заголовок в Google. Около 60 символов.",
+    ),
+  }),
+  i18nField(
+    "description",
+    l("Təsvir (meta description)", "Meta description", "Описание (meta description)"),
+    {
+      long: true,
       description: l(
         "Axtarış nəticəsində başlığın altındakı mətn. Təxminən 160 simvol.",
         "The text under the title in search results. About 160 characters.",
         "Текст под заголовком в результатах поиска. Около 160 символов.",
       ),
     },
-  },
+  ),
 ];
 
 /**
@@ -68,19 +61,14 @@ export const Seo: GlobalConfig = {
         {
           label: l("Ümumi", "General", "Общее"),
           fields: [
-            {
-              name: "keywords",
-              label: l("Açar sözlər", "Keywords", "Ключевые слова"),
-              type: "textarea",
-              localized: true,
-              admin: {
-                description: l(
-                  "Vergüllə ayırın: sayt hazırlanması, sayt düzəltmək, …",
-                  "Separate with commas: website development, web design, …",
-                  "Через запятую: создание сайтов, веб-дизайн, …",
-                ),
-              },
-            },
+            i18nField("keywords", l("Açar sözlər", "Keywords", "Ключевые слова"), {
+              long: true,
+              description: l(
+                "Vergüllə ayırın: sayt hazırlanması, sayt düzəltmək, …",
+                "Separate with commas: website development, web design, …",
+                "Через запятую: создание сайтов, веб-дизайн, …",
+              ),
+            }),
             {
               name: "ogImage",
               label: l(

@@ -1,5 +1,5 @@
 import type { ArrayField, GlobalConfig } from "payload";
-import { groups, l, linesField, rowActiveField, type Label } from "@/payload/fields";
+import { groups, i18nField, i18nLinesField, l, rowActiveField, type Label } from "@/payload/fields";
 import { revalidateSite } from "@/payload/hooks/revalidate-site";
 
 const rowLabel = { RowLabel: "/payload/components/row-label#RowLabel" };
@@ -20,23 +20,13 @@ function list(
   };
 }
 
-const text = (name: string, label: Label) => ({
-  name,
-  label,
-  type: "text" as const,
-  localized: true,
-});
-const textarea = (name: string, label: Label) => ({
-  name,
-  label,
-  type: "textarea" as const,
-  localized: true,
-});
+/** A short text the same in every language (dates, a company name, a link). */
+const plain = (name: string, label: Label) => ({ name, label, type: "text" as const });
 
 /**
  * Everything about me: the summary and About text, skills, experience, education, languages,
- * certificates and the names of the industries I've worked in. A list left empty keeps the
- * built-in content.
+ * certificates and the names of the industries I've worked in, each text in all three
+ * languages. A list left empty keeps the built-in content.
  */
 export const Profile: GlobalConfig = {
   slug: "profile",
@@ -58,19 +48,16 @@ export const Profile: GlobalConfig = {
         {
           label: l("Ümumi", "General", "Общее"),
           fields: [
-            textarea("summary", l("Qısa xülasə", "Summary", "Краткое резюме")),
-            {
-              type: "row",
-              fields: [
-                text("cvTitle", l("CV başlığı", "CV title", "Заголовок резюме")),
-                text(
-                  "present",
-                  l("“İndiyədək” sözü", "Word for “present”", "Слово «по настоящее время»"),
-                ),
-              ],
-            },
-            textarea("cvSummary", l("CV xülasəsi", "CV summary", "Описание в резюме")),
-            linesField(
+            i18nField("summary", l("Qısa xülasə", "Summary", "Краткое резюме"), { long: true }),
+            i18nField("cvTitle", l("CV başlığı", "CV title", "Заголовок резюме")),
+            i18nField("cvSummary", l("CV xülasəsi", "CV summary", "Описание в резюме"), {
+              long: true,
+            }),
+            i18nField(
+              "present",
+              l("“İndiyədək” sözü", "Word for “present”", "Слово «по настоящее время»"),
+            ),
+            i18nLinesField(
               "industries",
               l("CV-dəki sahələr", "Industries in the CV", "Отрасли в резюме"),
             ),
@@ -83,15 +70,15 @@ export const Profile: GlobalConfig = {
               "about",
               l("Haqqımda mətni", "About text", "Текст «Обо мне»"),
               l("Abzas", "Paragraph", "Абзац"),
-              [textarea("text", l("Mətn", "Text", "Текст"))],
+              [i18nField("text", l("Mətn", "Text", "Текст"), { long: true })],
             ),
             list(
               "principles",
               l("Prinsiplər", "Principles", "Принципы"),
               l("Prinsip", "Principle", "Принцип"),
               [
-                text("title", l("Başlıq", "Title", "Заголовок")),
-                textarea("text", l("Mətn", "Text", "Текст")),
+                i18nField("title", l("Başlıq", "Title", "Заголовок")),
+                i18nField("text", l("Mətn", "Text", "Текст"), { long: true }),
               ],
             ),
           ],
@@ -100,9 +87,9 @@ export const Profile: GlobalConfig = {
           label: l("Bacarıqlar", "Skills", "Навыки"),
           fields: [
             list("skills", l("Bacarıqlar", "Skills", "Навыки"), l("Qrup", "Group", "Группа"), [
-              text("title", l("Ad", "Name", "Название")),
-              textarea("description", l("Təsvir", "Description", "Описание")),
-              linesField("items", l("Bacarıqlar", "Skills", "Навыки")),
+              i18nField("title", l("Ad", "Name", "Название")),
+              i18nField("description", l("Təsvir", "Description", "Описание"), { long: true }),
+              i18nLinesField("items", l("Bacarıqlar", "Skills", "Навыки")),
             ]),
           ],
         },
@@ -114,43 +101,26 @@ export const Profile: GlobalConfig = {
               l("İş təcrübəsi", "Work experience", "Опыт работы"),
               l("İş", "Job", "Работа"),
               [
+                i18nField("role", l("Vəzifə", "Role", "Должность")),
                 {
                   type: "row",
                   fields: [
-                    text("role", l("Vəzifə", "Role", "Должность")),
-                    {
-                      name: "company",
-                      label: l("Şirkət", "Company", "Компания"),
-                      type: "text",
-                    },
-                    {
-                      name: "companyUrl",
-                      label: l("Şirkətin saytı", "Company website", "Сайт компании"),
-                      type: "text",
-                    },
+                    plain("company", l("Şirkət", "Company", "Компания")),
+                    plain("companyUrl", l("Şirkətin saytı", "Company website", "Сайт компании")),
                   ],
                 },
+                i18nField("location", l("Yer", "Location", "Место")),
                 {
                   type: "row",
                   fields: [
-                    text("location", l("Yer", "Location", "Место")),
-                    {
-                      name: "start",
-                      label: l("Başlanğıc (AA/İİİİ)", "Start (MM/YYYY)", "Начало (ММ/ГГГГ)"),
-                      type: "text",
-                    },
-                    {
-                      name: "end",
-                      label: l(
-                        "Son (boş = indiyədək)",
-                        "End (empty = present)",
-                        "Конец (пусто = сейчас)",
-                      ),
-                      type: "text",
-                    },
+                    plain("start", l("Başlanğıc (AA/İİİİ)", "Start (MM/YYYY)", "Начало (ММ/ГГГГ)")),
+                    plain(
+                      "end",
+                      l("Son (boş = indiyədək)", "End (empty = present)", "Конец (пусто = сейчас)"),
+                    ),
                   ],
                 },
-                linesField("highlights", l("Nailiyyətlər", "Highlights", "Достижения")),
+                i18nLinesField("highlights", l("Nailiyyətlər", "Highlights", "Достижения")),
               ],
             ),
           ],
@@ -163,82 +133,58 @@ export const Profile: GlobalConfig = {
               l("Təhsil", "Education", "Образование"),
               l("Təhsil", "Education", "Образование"),
               [
+                i18nField("degree", l("Dərəcə", "Degree", "Степень")),
+                i18nField("field", l("İxtisas", "Field", "Специальность")),
+                i18nField(
+                  "institution",
+                  l("Təhsil müəssisəsi", "Institution", "Учебное заведение"),
+                ),
                 {
                   type: "row",
                   fields: [
-                    text("degree", l("Dərəcə", "Degree", "Степень")),
-                    text("field", l("İxtisas", "Field", "Специальность")),
-                  ],
-                },
-                text("institution", l("Təhsil müəssisəsi", "Institution", "Учебное заведение")),
-                {
-                  type: "row",
-                  fields: [
-                    { name: "start", label: l("Başlanğıc", "Start", "Начало"), type: "text" },
-                    { name: "end", label: l("Son", "End", "Конец"), type: "text" },
+                    plain("start", l("Başlanğıc", "Start", "Начало")),
+                    plain("end", l("Son", "End", "Конец")),
                   ],
                 },
               ],
             ),
             list("languages", l("Dillər", "Languages", "Языки"), l("Dil", "Language", "Язык"), [
-              {
-                type: "row",
-                fields: [
-                  text("name", l("Dil", "Language", "Язык")),
-                  text("level", l("Səviyyə", "Level", "Уровень")),
-                ],
-              },
+              i18nField("name", l("Dil", "Language", "Язык")),
+              i18nField("level", l("Səviyyə", "Level", "Уровень")),
             ]),
             list(
               "certificates",
               l("Sertifikatlar", "Certificates", "Сертификаты"),
               l("Sertifikat", "Certificate", "Сертификат"),
               [
-                {
-                  type: "row",
-                  fields: [
-                    text("name", l("Ad", "Name", "Название")),
-                    text("period", l("Dövr", "Period", "Период")),
-                  ],
-                },
+                i18nField("name", l("Ad", "Name", "Название")),
+                i18nField("period", l("Dövr", "Period", "Период")),
               ],
             ),
           ],
         },
         {
           label: l("Sahə adları", "Industry names", "Названия отраслей"),
+          description: l(
+            "Portfolio filtrlərində və layihə kartlarında görünən adlar.",
+            "Names shown in the portfolio filters and on project cards.",
+            "Названия в фильтрах портфолио и на карточках проектов.",
+          ),
           fields: [
             {
               name: "industryNames",
               type: "group",
               label: false,
-              admin: {
-                description: l(
-                  "Portfolio filtrlərində və layihə kartlarında görünən adlar.",
-                  "Names shown in the portfolio filters and on project cards.",
-                  "Названия в фильтрах портфолио и на карточках проектов.",
-                ),
-              },
               fields: [
-                {
-                  type: "row",
-                  fields: [
-                    text(
-                      "hospitality",
-                      l("Otel və kurortlar", "Hotels & resorts", "Отели и курорты"),
-                    ),
-                    text("realEstate", l("Daşınmaz əmlak", "Real estate", "Недвижимость")),
-                    text("healthcare", l("Səhiyyə", "Healthcare", "Медицина")),
-                  ],
-                },
-                {
-                  type: "row",
-                  fields: [
-                    text("eCommerce", l("E-ticarət", "E-commerce", "Электронная коммерция")),
-                    text("corporate", l("Korporativ", "Corporate", "Корпоративный")),
-                    text("education", l("Təhsil", "Education", "Образование")),
-                  ],
-                },
+                i18nField(
+                  "hospitality",
+                  l("Otel və kurortlar", "Hotels & resorts", "Отели и курорты"),
+                ),
+                i18nField("realEstate", l("Daşınmaz əmlak", "Real estate", "Недвижимость")),
+                i18nField("healthcare", l("Səhiyyə", "Healthcare", "Медицина")),
+                i18nField("eCommerce", l("E-ticarət", "E-commerce", "Электронная коммерция")),
+                i18nField("corporate", l("Korporativ", "Corporate", "Корпоративный")),
+                i18nField("education", l("Təhsil", "Education", "Образование")),
               ],
             },
           ],

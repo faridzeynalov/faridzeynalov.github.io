@@ -2476,3 +2476,106 @@ body {
     height: 56px;
   }
 }
+
+/* ================================================================ Three-language fields */
+
+/*
+ * Each text is a group of three inputs (fields.ts → i18nField): AZ, EN and RU side by side on
+ * wide screens, under the field's own label, so every language is edited in one form. Long texts
+ * sit side by side only on very wide screens; everything stacks on phones.
+ */
+/* Payload's own side padding (the page gutter for top-level groups) stays. */
+.fz-i18n.group-field {
+  margin-bottom: 22px;
+  padding-block: 0;
+  border: 0;
+  background: transparent;
+}
+
+.fz-i18n .group-field__header {
+  margin-bottom: 8px;
+  padding: 0;
+  border: 0;
+}
+
+.fz-i18n .group-field__title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--theme-text);
+}
+
+.fz-i18n .group-field__header .field-description {
+  margin-top: 2px;
+}
+
+.fz-i18n .row__fields,
+.fz-i18n-row .row__fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.fz-i18n .row__fields > *,
+.fz-i18n-row .row__fields > * {
+  width: auto !important;
+  min-width: 0;
+  margin: 0;
+}
+
+/* The language of each input as a small tag above it. */
+.fz-i18n .row__fields .field-label,
+.fz-i18n-row .row__fields .field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-bottom: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--fz-hover);
+  color: var(--fz-muted);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+
+.fz-i18n .row__fields > :first-child .field-label,
+.fz-i18n-row .row__fields > :first-child .field-label {
+  background: var(--fz-accent-soft);
+  color: var(--fz-accent);
+}
+
+/* An empty language is easy to spot. */
+.fz-i18n input:placeholder-shown,
+.fz-i18n textarea:placeholder-shown,
+.fz-i18n-row textarea:placeholder-shown {
+  border-style: dashed;
+}
+
+.fz-i18n textarea,
+.fz-i18n-row textarea {
+  min-height: 96px;
+}
+
+/* Long texts: side by side only where each column still has room to read. */
+@media (max-width: 1399px) {
+  .fz-i18n--long .row__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 899px) {
+  .fz-i18n .row__fields,
+  .fz-i18n-row .row__fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+}
+
+/* Inside array rows (skills, experience, …) the groups sit a little tighter. */
+.array-field .fz-i18n.group-field {
+  margin-bottom: 16px;
+}

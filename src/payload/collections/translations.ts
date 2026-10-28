@@ -1,10 +1,10 @@
-import type { CollectionConfig } from "payload";
-import { groups, l } from "@/payload/fields";
+import type { CollectionConfig, TextareaField } from "payload";
+import { groups, l, LANGS } from "@/payload/fields";
 import { revalidateAfterChange, revalidateAfterDelete } from "@/payload/hooks/revalidate-site";
 
 /**
  * Every interface text on the site (buttons, menus, headings, labels), one row per message key
- * from messages/*.json. An empty value keeps the built-in text for that language.
+ * from messages/*.json, with a column per language. An empty language keeps the built-in text.
  */
 export const Translations: CollectionConfig = {
   slug: "translations",
@@ -15,8 +15,8 @@ export const Translations: CollectionConfig = {
   admin: {
     group: groups.settings,
     useAsTitle: "key",
-    defaultColumns: ["key", "value", "section"],
-    listSearchableFields: ["key", "value"],
+    defaultColumns: ["key", "az", "en", "ru"],
+    listSearchableFields: ["key", "az", "en", "ru"],
     pagination: { defaultLimit: 50 },
     description: l(
       "Saytdakı düymələr, menyu, başlıqlar və digər mətnlər. {name} kimi fiqurlu mötərizədəki sözləri olduğu kimi saxlayın: onların yerinə sayt özü dəyər qoyur.",
@@ -30,21 +30,34 @@ export const Translations: CollectionConfig = {
   hooks: { afterChange: [revalidateAfterChange], afterDelete: [revalidateAfterDelete] },
   fields: [
     {
-      name: "key",
-      label: l("Açar", "Key", "Ключ"),
-      type: "text",
-      required: true,
-      unique: true,
-      index: true,
-      admin: { readOnly: true },
+      type: "row",
+      fields: [
+        {
+          name: "key",
+          label: l("Açar", "Key", "Ключ"),
+          type: "text",
+          required: true,
+          unique: true,
+          index: true,
+          admin: { readOnly: true },
+        },
+        {
+          name: "section",
+          label: l("Bölmə", "Section", "Раздел"),
+          type: "text",
+          index: true,
+          admin: { readOnly: true },
+        },
+      ],
     },
     {
-      name: "section",
-      label: l("Bölmə", "Section", "Раздел"),
-      type: "text",
-      index: true,
-      admin: { readOnly: true, position: "sidebar" },
+      type: "row",
+      admin: { className: "fz-i18n-row" },
+      fields: LANGS.map((lang): TextareaField => ({
+        name: lang,
+        label: lang.toUpperCase(),
+        type: "textarea",
+      })),
     },
-    { name: "value", label: l("Mətn", "Text", "Текст"), type: "textarea", localized: true },
   ],
 };

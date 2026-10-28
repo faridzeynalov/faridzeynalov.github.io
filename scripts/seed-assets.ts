@@ -1,8 +1,8 @@
 /**
  * Moves what was still built into the site into the admin panel: the project screenshots, the
  * CV, the "buy me a coffee" QR code and the share image go to Media; the site settings and every
- * page's SEO title and description are filled in with what the site shows now. Anything already
- * set in the admin is left alone.
+ * page's SEO title and description are filled in, in all three languages, with what the site
+ * shows now. Anything already set in the admin is left alone.
  *
  * Usage: npm run build (for the current titles), then npm run seed:assets
  */
@@ -16,42 +16,39 @@ import en from "../messages/en.json" with { type: "json" };
 import az from "../messages/az.json" with { type: "json" };
 import ru from "../messages/ru.json" with { type: "json" };
 
-const locales: Locale[] = ["en", "az", "ru"];
+const locales: Locale[] = ["az", "en", "ru"];
 const messages = { en, az, ru };
 const root = process.cwd();
 // Seeding writes outside a Next.js request: nothing to revalidate. Every call gets its own copy:
 // the storage plugin marks the context after an upload, and a shared one would skip the rest.
-const context = { disableRevalidate: true };
+const context = () => ({ disableRevalidate: true });
 const payload = await getPayload({ config });
 
-/** Uploads a file to Media with its alt text in every language, and returns its id. */
-async function upload(file: string, alt?: Record<Locale, string>) {
+type I18n = Partial<Record<Locale, string | null>> | null | undefined;
+
+/** Keeps what the admin already has in each language, else the given text. */
+function fill(current: I18n, next: (locale: Locale) => string | undefined) {
+  return Object.fromEntries(
+    locales.map((locale) => [locale, current?.[locale]?.trim() || next(locale) || null]),
+  );
+}
+
+/** Uploads a file to Media and returns its id. */
+async function upload(file: string, alt: string) {
   const doc = await payload.create({
     collection: "media",
-    locale: "en",
-    context: { ...context },
+    context: context(),
     filePath: file,
-    data: { alt: alt?.en },
+    data: { alt },
   });
-  if (alt) {
-    for (const locale of ["az", "ru"] as const) {
-      await payload.update({
-        collection: "media",
-        id: doc.id,
-        locale,
-        context: { ...context },
-        data: { alt: alt[locale] },
-      });
-    }
-  }
   return doc.id;
 }
 
 const shotNames = {
-  cover: { en: "desktop screenshot", az: "kompüter görünüşü", ru: "скриншот для компьютера" },
-  thumb: { en: "screenshot", az: "ekran görüntüsü", ru: "скриншот" },
-  mobile: { en: "mobile screenshot", az: "mobil görünüş", ru: "мобильный скриншот" },
-  section: { en: "section screenshot", az: "bölmənin görüntüsü", ru: "скриншот раздела" },
+  cover: "kompüter görünüşü",
+  thumb: "ekran görüntüsü",
+  mobile: "mobil görünüş",
+  section: "bölmənin görüntüsü",
 } as const;
 
 async function seedProjectScreenshots() {
@@ -64,18 +61,14 @@ async function seedProjectScreenshots() {
     for (const kind of ["cover", "thumb", "mobile", "section"] as const) {
       const file = path.join(dir, `${kind}.webp`);
       if (project.images?.[kind] || !fs.existsSync(file)) continue;
-      images[kind] = await upload(file, {
-        en: `${project.name} — ${shotNames[kind].en}`,
-        az: `${project.name}: ${shotNames[kind].az}`,
-        ru: `${project.name} — ${shotNames[kind].ru}`,
-      });
+      images[kind] = await upload(file, `${project.name}: ${shotNames[kind]}`);
       uploaded++;
     }
     if (Object.keys(images).length) {
       await payload.update({
         collection: "projects",
         id: project.id,
-        context: { ...context },
+        context: context(),
         data: { images: { ...project.images, ...images } } as never,
       });
     }
@@ -84,48 +77,46 @@ async function seedProjectScreenshots() {
 }
 
 async function seedSiteSettings() {
-  const current = await payload.findGlobal({ slug: "site-settings", locale: "en", depth: 0 });
-  const data: Record<string, unknown> = {};
-  if (!current.cv) {
-    data.cv = await upload(path.join(root, "public/farid-zeynalov-cv.pdf"), {
-      en: "CV of Farid Zeynalov",
-      az: "Farid Zeynalovun CV-si",
-      ru: "Резюме Farid Zeynalov",
-    });
-  }
-  if (!current.support?.qr) {
-    data.support = {
-      url: current.support?.url || "https://kofe.al/@faridzeynalov",
-      qr: await upload(path.join(root, "src/assets/kofe-qr.png"), {
-        en: "QR code for kofe.al/@faridzeynalov",
-        az: "kofe.al/@faridzeynalov üçün QR kod",
-        ru: "QR-код для kofe.al/@faridzeynalov",
-      }),
-    };
-  }
-  for (const locale of locales) {
-    const profile = getProfile(locale);
-    const linkedIn = profile.social.find((link) => link.label === "LinkedIn")?.href;
-    const existing = await payload.findGlobal({ slug: "site-settings", locale, depth: 0 });
-    const fill = (value: string | null | undefined, fallback: string | undefined) =>
-      value?.trim() ? value : fallback;
-    await payload.updateGlobal({
-      slug: "site-settings",
-      locale,
-      context: { ...context },
-      data: {
-        ...(locale === "en" ? data : {}),
-        name: fill(existing.name, profile.name),
-        role: fill(existing.role, profile.role),
-        location: fill(existing.location, profile.location),
-        email: fill(existing.email, profile.email),
-        phone: fill(existing.phone, profile.phone),
-        yearsOfExperience: fill(existing.yearsOfExperience, profile.yearsOfExperience),
-        sitesShipped: fill(existing.sitesShipped, profile.sitesShipped),
-        links: { ...existing.links, linkedIn: fill(existing.links?.linkedIn, linkedIn) },
-      } as never,
-    });
-  }
+  const current = await payload.findGlobal({ slug: "site-settings", depth: 0 });
+  const profile = Object.fromEntries(
+    locales.map((locale) => [locale, getProfile(locale)]),
+  ) as Record<Locale, ReturnType<typeof getProfile>>;
+  const linkedIn = profile.en.social.find((link) => link.label === "LinkedIn")?.href;
+  const keep = (value: string | null | undefined, next: string | undefined) =>
+    value?.trim() ? value : next;
+  await payload.updateGlobal({
+    slug: "site-settings",
+    context: context(),
+    data: {
+      ...(current.cv
+        ? {}
+        : {
+            cv: await upload(
+              path.join(root, "public/farid-zeynalov-cv.pdf"),
+              "Farid Zeynalovun CV-si",
+            ),
+          }),
+      ...(current.support?.qr
+        ? {}
+        : {
+            support: {
+              url: current.support?.url || "https://kofe.al/@faridzeynalov",
+              qr: await upload(
+                path.join(root, "src/assets/kofe-qr.png"),
+                "kofe.al/@faridzeynalov üçün QR kod",
+              ),
+            },
+          }),
+      name: keep(current.name, profile.en.name),
+      role: fill(current.role, (locale) => profile[locale].role),
+      location: fill(current.location, (locale) => profile[locale].location),
+      email: keep(current.email, profile.en.email),
+      phone: keep(current.phone, profile.en.phone),
+      yearsOfExperience: keep(current.yearsOfExperience, profile.en.yearsOfExperience),
+      sitesShipped: keep(current.sitesShipped, profile.en.sitesShipped),
+      links: { ...current.links, linkedIn: keep(current.links?.linkedIn, linkedIn) },
+    } as never,
+  });
   payload.logger.info("Site settings: filled in");
 }
 
@@ -150,93 +141,33 @@ function builtMeta(locale: Locale, page: string) {
 
 async function seedSeo() {
   const pages = ["home", "portfolio", "services", "about", "contact", "cv"] as const;
-  const current = await payload.findGlobal({ slug: "seo", locale: "en", depth: 0 });
+  const current = (await payload.findGlobal({ slug: "seo", depth: 0 })) as unknown as Record<
+    string,
+    unknown
+  >;
   let ogImage = current.ogImage;
   if (!ogImage) {
-    const og = path.join(root, ".next/server/app/og.png.body");
     const file = path.join(root, ".next/og-image.png");
-    fs.copyFileSync(og, file);
-    ogImage = await upload(file, {
-      en: "Farid Zeynalov — Front-End Developer",
-      az: "Farid Zeynalov — Front-End Developer",
-      ru: "Farid Zeynalov — Front-End разработчик",
-    });
+    fs.copyFileSync(path.join(root, ".next/server/app/og.png.body"), file);
+    ogImage = await upload(file, "Farid Zeynalov — Front-End Developer");
     fs.rmSync(file);
   }
-  for (const locale of locales) {
-    const existing = (await payload.findGlobal({
-      slug: "seo",
-      locale,
-      depth: 0,
-    })) as unknown as Record<
-      string,
-      { title?: string | null; description?: string | null } | string | null | undefined
-    >;
-    const data: Record<string, unknown> = {
-      keywords:
-        (typeof existing.keywords === "string" && existing.keywords.trim()) ||
-        messages[locale].Metadata.keywords,
-    };
-    for (const page of pages) {
-      const before = existing[page];
-      const now = builtMeta(locale, page);
-      const fields = typeof before === "object" && before ? before : {};
-      data[page] = {
-        title: fields.title?.trim() || now.title,
-        description: fields.description?.trim() || now.description,
-      };
-    }
-    if (locale === "en") data.ogImage = ogImage;
-    await payload.updateGlobal({
-      slug: "seo",
-      locale,
-      context: { ...context },
-      data: data as never,
-    });
-  }
-  payload.logger.info("SEO: filled in");
-}
-
-/** Interface texts changed in messages/*.json since they were copied, where still untouched. */
-async function updateChangedTexts() {
-  const changed: Record<string, Record<Locale, { from: string; to: string }>> = {
-    "Footer.builtWith": {
-      en: {
-        from: "Built with Next.js & Tailwind CSS · statically exported",
-        to: en.Footer.builtWith,
-      },
-      az: { from: "Next.js və Tailwind CSS ilə hazırlanıb · statik sayt", to: az.Footer.builtWith },
-      ru: {
-        from: "Сделано на Next.js и Tailwind CSS · статический экспорт",
-        to: ru.Footer.builtWith,
-      },
-    },
+  const data: Record<string, unknown> = {
+    ogImage,
+    keywords: fill(current.keywords as I18n, (locale) => messages[locale].Metadata.keywords),
   };
-  for (const [key, perLocale] of Object.entries(changed)) {
-    const { docs } = await payload.find({
-      collection: "translations",
-      where: { key: { equals: key } },
-      depth: 0,
-    });
-    if (!docs[0]) continue;
-    for (const locale of locales) {
-      const row = await payload.findByID({ collection: "translations", id: docs[0].id, locale });
-      if (row.value === perLocale[locale].from) {
-        await payload.update({
-          collection: "translations",
-          id: docs[0].id,
-          locale,
-          context: { ...context },
-          data: { value: perLocale[locale].to },
-        });
-      }
-    }
+  for (const page of pages) {
+    const before = (current[page] ?? {}) as { title?: I18n; description?: I18n };
+    data[page] = {
+      title: fill(before.title, (locale) => builtMeta(locale, page).title),
+      description: fill(before.description, (locale) => builtMeta(locale, page).description),
+    };
   }
-  payload.logger.info("Translations: updated");
+  await payload.updateGlobal({ slug: "seo", context: context(), data: data as never });
+  payload.logger.info("SEO: filled in");
 }
 
 await seedSiteSettings();
 await seedSeo();
-await updateChangedTexts();
 await seedProjectScreenshots();
 process.exit(0);

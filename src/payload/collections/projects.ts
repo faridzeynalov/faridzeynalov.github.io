@@ -1,5 +1,13 @@
 import type { CollectionConfig } from "payload";
-import { activeField, groups, l, linesField, toggleField } from "@/payload/fields";
+import {
+  activeField,
+  groups,
+  i18nField,
+  i18nLinesField,
+  l,
+  linesField,
+  toggleField,
+} from "@/payload/fields";
 import { revalidateAfterChange, revalidateAfterDelete } from "@/payload/hooks/revalidate-site";
 
 /**
@@ -127,42 +135,28 @@ export const Projects: CollectionConfig = {
                 },
               ],
             },
-            linesField("stack", l("Texnologiyalar", "Technologies", "Технологии"), {
-              localized: false,
-            }),
+            linesField("stack", l("Texnologiyalar", "Technologies", "Технологии")),
           ],
         },
         {
           label: l("Mətn", "Text", "Текст"),
           fields: [
-            {
-              name: "summary",
-              label: l("Qısa təsvir", "Summary", "Краткое описание"),
-              type: "textarea",
-              localized: true,
-            },
-            {
-              name: "overview",
-              label: l("Ətraflı təsvir", "Overview", "Подробное описание"),
-              type: "textarea",
-              localized: true,
-            },
-            linesField(
+            i18nField("summary", l("Qısa təsvir", "Summary", "Краткое описание"), {
+              long: true,
+            }),
+            i18nField("overview", l("Ətraflı təsvir", "Overview", "Подробное описание"), {
+              long: true,
+            }),
+            i18nLinesField(
               "liveFeatures",
               l("Saytdakı funksiyalar", "Features on the live site", "Функции на сайте"),
             ),
-            {
-              name: "note",
-              label: l("Qeyd", "Note", "Примечание"),
-              type: "textarea",
-              localized: true,
-            },
-            {
-              name: "unavailableReason",
-              label: l("Önizləmə niyə yoxdur", "Why there is no preview", "Почему нет превью"),
-              type: "textarea",
-              localized: true,
-            },
+            i18nField("note", l("Qeyd", "Note", "Примечание"), { long: true }),
+            i18nField(
+              "unavailableReason",
+              l("Önizləmə niyə yoxdur", "Why there is no preview", "Почему нет превью"),
+              { long: true },
+            ),
           ],
         },
         {
