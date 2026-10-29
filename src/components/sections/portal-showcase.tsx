@@ -14,7 +14,7 @@ import { Accent, SectionHeading } from "@/components/sections/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import type { PortalFeatureIcon, PortalShowcase as Showcase } from "@/data/portal-showcase";
 import { Link } from "@/i18n/navigation";
-import { cn, toFileName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const icons: Record<PortalFeatureIcon, LucideIcon> = {
   stages: ListChecks,
@@ -84,8 +84,9 @@ export async function PortalShowcase({ content }: { content: Showcase }) {
           </Reveal>
         </div>
 
-        {/* The sample panel, framed like a browser window. */}
-        <Reveal file={toFileName("portal", "tsx")} className="min-w-0 lg:col-span-7">
+        {/* The sample panel, framed like a browser window. No data-file (unlike other cards): it has
+            its own window frame, and the styles that decorate file cards would draw over it. */}
+        <Reveal className="min-w-0 lg:col-span-7">
           <figure
             aria-label={`${demo.badge}: ${demo.project}`}
             className="relative overflow-hidden rounded-3xl border border-border bg-bg-elevated shadow-float"
