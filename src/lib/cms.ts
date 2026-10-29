@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { getContent } from "@/content";
 import { getAi } from "@/data/ai";
+import { getPortalShowcase as builtInShowcase, type PortalShowcase } from "@/data/portal-showcase";
 import { getProfile } from "@/data/profile";
 import { projectImages } from "@/data/project-images";
 import { getProjectList } from "@/data/projects";
@@ -13,6 +14,7 @@ import type {
   Ai as AiDoc,
   Media,
   Page as PagesDoc,
+  PortalShowcase as PortalShowcaseDoc,
   Profile as ProfileDoc,
   Project as ProjectDoc,
   Seo,
@@ -34,7 +36,7 @@ import type { Industry, Project, ProjectImages, SiteLanguage } from "@/types/pro
  * Part of the cache key below. The cache outlives deploys (Vercel keeps it), so bump this when
  * what loadCms returns changes shape or form (new fields, other file URLs), or old entries stay.
  */
-const CMS_CACHE_VERSION = "3";
+const CMS_CACHE_VERSION = "4";
 
 /**
  * Everything edited in the admin panel, every text in all three languages ({ az, en, ru }; the
@@ -52,29 +54,42 @@ const loadCms = unstable_cache(
       ]);
       const payload = await getPayload({ config });
       const all = { depth: 0, pagination: false, sort: "_order" } as const;
-      const [settings, seo, profile, ai, pages, projects, services, process, faq, translations] =
-        await Promise.all([
-          payload.findGlobal({ slug: "site-settings", depth: 1 }),
-          payload.findGlobal({ slug: "seo", depth: 1 }),
-          payload.findGlobal({ slug: "profile", depth: 0 }),
-          payload.findGlobal({ slug: "ai", depth: 0 }),
-          payload.findGlobal({ slug: "pages", depth: 0 }),
-          payload.find({ collection: "projects", ...all, depth: 1 }),
-          payload.find({ collection: "services", ...all }),
-          payload.find({ collection: "process-steps", ...all }),
-          payload.find({ collection: "faq", ...all }),
-          payload.find({
-            collection: "translations",
-            depth: 0,
-            pagination: false,
-            select: { key: true, az: true, en: true, ru: true },
-          }),
-        ]);
+      const [
+        settings,
+        seo,
+        profile,
+        ai,
+        portalShowcase,
+        pages,
+        projects,
+        services,
+        process,
+        faq,
+        translations,
+      ] = await Promise.all([
+        payload.findGlobal({ slug: "site-settings", depth: 1 }),
+        payload.findGlobal({ slug: "seo", depth: 1 }),
+        payload.findGlobal({ slug: "profile", depth: 0 }),
+        payload.findGlobal({ slug: "ai", depth: 0 }),
+        payload.findGlobal({ slug: "portal-showcase", depth: 0 }),
+        payload.findGlobal({ slug: "pages", depth: 0 }),
+        payload.find({ collection: "projects", ...all, depth: 1 }),
+        payload.find({ collection: "services", ...all }),
+        payload.find({ collection: "process-steps", ...all }),
+        payload.find({ collection: "faq", ...all }),
+        payload.find({
+          collection: "translations",
+          depth: 0,
+          pagination: false,
+          select: { key: true, az: true, en: true, ru: true },
+        }),
+      ]);
       return {
         settings,
         seo,
         profile,
         ai,
+        portalShowcase,
         pages,
         projects: projects.docs,
         services: services.docs,
@@ -426,4 +441,52 @@ export async function getProjects(locale: Locale): Promise<Project[]> {
     unavailableReason: pick(doc.unavailableReason, locale) || undefined,
     images: projectImagesOf(doc),
   }));
+}
+
+/* ------------------------------------------------------------------ Client portal section */
+
+/** The home page's client portal section from the admin; empty fields keep the built-in text. */
+export function toPortalShowcase(
+  locale: Locale,
+  doc: PortalShowcaseDoc | null | undefined,
+): PortalShowcase {
+  const builtIn = builtInShowcase(locale);
+  if (!doc) return builtIn;
+  const t = (value: I18nValue) => pick(value, locale);
+  const demo = doc.demo ?? {};
+  const features = active(doc.features)
+    .map((row) => ({ icon: row.icon ?? "stages", title: t(row.title), text: t(row.text) }))
+    .filter((feature) => feature.title);
+  const stages = (demo.stages ?? [])
+    .map((row) => ({
+      name: t(row.name),
+      status: row.status ?? "todo",
+      note: t(row.note) || undefined,
+    }))
+    .filter((stage) => stage.name);
+  const comments = (demo.comments ?? [])
+    .map((row) => ({ from: row.from ?? "client", author: t(row.author), body: t(row.text) }))
+    .filter((comment) => comment.body);
+  return {
+    eyebrow: t(doc.eyebrow) || builtIn.eyebrow,
+    title: t(doc.title) || builtIn.title,
+    accent: t(doc.accent) || builtIn.accent,
+    description: t(doc.description) || builtIn.description,
+    features: features.length ? features : builtIn.features,
+    cta: t(doc.cta) || builtIn.cta,
+    note: t(doc.note) || builtIn.note,
+    demo: {
+      badge: t(demo.badge) || builtIn.demo.badge,
+      project: t(demo.project) || builtIn.demo.project,
+      client: t(demo.client) || builtIn.demo.client,
+      status: demo.status ?? builtIn.demo.status,
+      due: demo.due ?? builtIn.demo.due,
+      stages: stages.length ? stages : builtIn.demo.stages,
+      comments: comments.length ? comments : builtIn.demo.comments,
+    },
+  };
+}
+
+export async function getPortalShowcase(locale: Locale) {
+  return toPortalShowcase(locale, (await getCms(locale))?.portalShowcase);
 }

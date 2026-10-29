@@ -22,6 +22,7 @@ import { Services } from "@/payload/collections/services";
 import { Translations } from "@/payload/collections/translations";
 import { Users } from "@/payload/collections/users";
 import { Ai } from "@/payload/globals/ai";
+import { PortalShowcase } from "@/payload/globals/portal-showcase";
 import { Pages } from "@/payload/globals/pages";
 import { Profile } from "@/payload/globals/profile";
 import { Seo } from "@/payload/globals/seo";
@@ -71,7 +72,7 @@ export default buildConfig({
     Media,
     Users,
   ],
-  globals: [Profile, Ai, SiteSettings, Pages, Seo],
+  globals: [Profile, Ai, PortalShowcase, SiteSettings, Pages, Seo],
   editor: lexicalEditor(),
   // Invitations, password resets and comment notifications go out through Resend (without a key,
   // e.g. locally, Payload prints them to the console instead).

@@ -9,6 +9,7 @@ import * as migration_20261028_160300_three_language_fields from './20261028_160
 import * as migration_20261028_165258_client_portal from './20261028_165258_client_portal';
 import * as migration_20261028_191605_comment_replies from './20261028_191605_comment_replies';
 import * as migration_20261028_205237_project_screens from './20261028_205237_project_screens';
+import * as migration_20261029_095958_portal_showcase from './20261029_095958_portal_showcase';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261028_205237_project_screens.up,
     down: migration_20261028_205237_project_screens.down,
-    name: '20261028_205237_project_screens'
+    name: '20261028_205237_project_screens',
+  },
+  {
+    up: migration_20261029_095958_portal_showcase.up,
+    down: migration_20261029_095958_portal_showcase.down,
+    name: '20261029_095958_portal_showcase'
   },
 ];

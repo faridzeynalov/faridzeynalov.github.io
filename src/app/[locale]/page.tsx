@@ -7,11 +7,12 @@ import { ContactCta } from "@/components/sections/contact-cta";
 import { DomainMarquee } from "@/components/sections/domain-marquee";
 import { Experience } from "@/components/sections/experience";
 import { Hero } from "@/components/sections/hero";
+import { PortalShowcase } from "@/components/sections/portal-showcase";
 import { SelectedWork } from "@/components/sections/selected-work";
 import { Services } from "@/components/sections/services";
 import { Skills } from "@/components/sections/skills";
 import type { Locale } from "@/i18n/routing";
-import { getPageSwitches, getProjects, getServicesContent } from "@/lib/cms";
+import { getPageSwitches, getPortalShowcase, getProjects, getServicesContent } from "@/lib/cms";
 import { localizedAlternates } from "@/lib/i18n-metadata";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]">): Promise<Metadata> {
@@ -22,10 +23,11 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
-  const [projects, { home: services }, { home: show }] = await Promise.all([
+  const [projects, { home: services }, { home: show }, portal] = await Promise.all([
     getProjects(locale),
     getServicesContent(locale),
     getPageSwitches(locale),
+    getPortalShowcase(locale),
   ]);
 
   // On the home page, scroll animations play every time a section scrolls in and reverse
@@ -41,6 +43,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {show.ai && <AiSection />}
       {show.experience && <Experience />}
       {show.about && <About />}
+      {show.portal && <PortalShowcase content={portal} />}
       {show.contact && <ContactCta />}
     </RevealReplay>
   );

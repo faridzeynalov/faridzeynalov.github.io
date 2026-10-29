@@ -39,7 +39,7 @@ export function ContactCta({ compact = false, title }: ContactCtaProps) {
 
           <div className="relative mx-auto max-w-3xl text-center">
             {!compact && (
-              <SectionEyebrow index="07" className="mx-auto mb-6 justify-center">
+              <SectionEyebrow index="08" className="mx-auto mb-6 justify-center">
                 {t("eyebrow")}
               </SectionEyebrow>
             )}

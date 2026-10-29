@@ -17,6 +17,7 @@ export const homeSections = [
   "ai",
   "experience",
   "about",
+  "portal",
   "contact",
 ] as const;
 export type HomeSection = (typeof homeSections)[number];
@@ -29,6 +30,7 @@ const sectionLabels: Record<HomeSection, Label> = {
   ai: l("Süni intellekt", "AI", "ИИ"),
   experience: l("Təcrübə", "Experience", "Опыт"),
   about: l("Haqqımda", "About", "Обо мне"),
+  portal: l("Müştəri paneli", "Client panel", "Клиентская панель"),
   contact: l("Əlaqə çağırışı", "Contact call-to-action", "Призыв связаться"),
 };
 

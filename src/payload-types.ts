@@ -113,6 +113,7 @@ export interface Config {
   globals: {
     profile: Profile;
     ai: Ai;
+    'portal-showcase': PortalShowcase;
     'site-settings': SiteSetting;
     pages: Page;
     seo: Seo;
@@ -120,6 +121,7 @@ export interface Config {
   globalsSelect: {
     profile: ProfileSelect<false> | ProfileSelect<true>;
     ai: AiSelect<false> | AiSelect<true>;
+    'portal-showcase': PortalShowcaseSelect<false> | PortalShowcaseSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     seo: SeoSelect<false> | SeoSelect<true>;
@@ -472,7 +474,7 @@ export interface ProjectComment {
    */
   parent?: (number | null) | ProjectComment;
   /**
-   * The screen the comment is about. Empty for a comment on the project.
+   * The screenshot the comment is about. Empty for a comment on the project.
    */
   screen?: (number | null) | ProjectScreen;
   body: string;
@@ -1264,6 +1266,118 @@ export interface Ai {
   createdAt?: string | null;
 }
 /**
+ * The client portal section on the home page and its sample panel. It can be hidden under Pages.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "portal-showcase".
+ */
+export interface PortalShowcase {
+  id: number;
+  eyebrow?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  title?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  accent?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  description?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  features?:
+    | {
+        title?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        text?: {
+          az?: string | null;
+          en?: string | null;
+          ru?: string | null;
+        };
+        icon?: ('stages' | 'screens' | 'comments' | 'notify' | 'secure') | null;
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  cta?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  note?: {
+    az?: string | null;
+    en?: string | null;
+    ru?: string | null;
+  };
+  demo?: {
+    /**
+     * For example: Example
+     */
+    badge?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    project?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    client?: {
+      az?: string | null;
+      en?: string | null;
+      ru?: string | null;
+    };
+    status?: ('planned' | 'active' | 'paused' | 'done') | null;
+    due?: string | null;
+    stages?:
+      | {
+          name?: {
+            az?: string | null;
+            en?: string | null;
+            ru?: string | null;
+          };
+          status?: ('todo' | 'in_progress' | 'review' | 'done') | null;
+          note?: {
+            az?: string | null;
+            en?: string | null;
+            ru?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    comments?:
+      | {
+          from?: ('client' | 'me') | null;
+          author?: {
+            az?: string | null;
+            en?: string | null;
+            ru?: string | null;
+          };
+          text?: {
+            az?: string | null;
+            en?: string | null;
+            ru?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Empty fields keep the value currently on the site.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1328,6 +1442,7 @@ export interface Page {
     ai?: boolean | null;
     experience?: boolean | null;
     about?: boolean | null;
+    portal?: boolean | null;
     contact?: boolean | null;
   };
   updatedAt?: string | null;
@@ -1758,6 +1873,145 @@ export interface AiSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "portal-showcase_select".
+ */
+export interface PortalShowcaseSelect<T extends boolean = true> {
+  eyebrow?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  title?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  accent?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  description?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  features?:
+    | T
+    | {
+        title?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        text?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        icon?: T;
+        active?: T;
+        id?: T;
+      };
+  cta?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  note?:
+    | T
+    | {
+        az?: T;
+        en?: T;
+        ru?: T;
+      };
+  demo?:
+    | T
+    | {
+        badge?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        project?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        client?:
+          | T
+          | {
+              az?: T;
+              en?: T;
+              ru?: T;
+            };
+        status?: T;
+        due?: T;
+        stages?:
+          | T
+          | {
+              name?:
+                | T
+                | {
+                    az?: T;
+                    en?: T;
+                    ru?: T;
+                  };
+              status?: T;
+              note?:
+                | T
+                | {
+                    az?: T;
+                    en?: T;
+                    ru?: T;
+                  };
+              id?: T;
+            };
+        comments?:
+          | T
+          | {
+              from?: T;
+              author?:
+                | T
+                | {
+                    az?: T;
+                    en?: T;
+                    ru?: T;
+                  };
+              text?:
+                | T
+                | {
+                    az?: T;
+                    en?: T;
+                    ru?: T;
+                  };
+              id?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -1822,6 +2076,7 @@ export interface PagesSelect<T extends boolean = true> {
         ai?: T;
         experience?: T;
         about?: T;
+        portal?: T;
         contact?: T;
       };
   updatedAt?: T;

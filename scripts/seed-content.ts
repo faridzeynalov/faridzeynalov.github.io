@@ -7,6 +7,7 @@ import { getPayload, type CollectionSlug } from "payload";
 import config from "../src/payload.config";
 import { content } from "../src/content/index";
 import { getAi } from "../src/data/ai";
+import { getPortalShowcase } from "../src/data/portal-showcase";
 import { getProfile } from "../src/data/profile";
 import { getProjectList } from "../src/data/projects";
 import { getFaq, getProcess, getServices } from "../src/data/services";
@@ -247,9 +248,58 @@ async function seedAi() {
   payload.logger.info("ai: copied");
 }
 
+async function seedPortalShowcase() {
+  const current = await payload.findGlobal({ slug: "portal-showcase" });
+  if (current.features?.length || current.demo?.stages?.length) {
+    payload.logger.info("portal-showcase: already filled in, skipped");
+    return;
+  }
+  const show = Object.fromEntries(
+    locales.map((locale) => [locale, getPortalShowcase(locale)]),
+  ) as Record<Locale, ReturnType<typeof getPortalShowcase>>;
+  const demo = (locale: Locale) => show[locale].demo;
+  await payload.updateGlobal({
+    slug: "portal-showcase",
+    context: context(),
+    data: {
+      eyebrow: i18n((l) => show[l].eyebrow),
+      title: i18n((l) => show[l].title),
+      accent: i18n((l) => show[l].accent),
+      description: i18n((l) => show[l].description),
+      features: show.az.features.map((feature, index) => ({
+        icon: feature.icon,
+        title: i18n((l) => show[l].features[index].title),
+        text: i18n((l) => show[l].features[index].text),
+        active: true,
+      })),
+      cta: i18n((l) => show[l].cta),
+      note: i18n((l) => show[l].note),
+      demo: {
+        badge: i18n((l) => demo(l).badge),
+        project: i18n((l) => demo(l).project),
+        client: i18n((l) => demo(l).client),
+        status: demo("az").status,
+        due: demo("az").due,
+        stages: demo("az").stages.map((stage, index) => ({
+          name: i18n((l) => demo(l).stages[index].name),
+          status: stage.status,
+          note: i18n((l) => demo(l).stages[index].note),
+        })),
+        comments: demo("az").comments.map((comment, index) => ({
+          from: comment.from,
+          author: i18n((l) => demo(l).comments[index].author),
+          text: i18n((l) => demo(l).comments[index].body),
+        })),
+      },
+    } as never,
+  });
+  payload.logger.info("portal-showcase: copied");
+}
+
 await seedProjects();
 await seedServices();
 await seedProfile();
 await seedAi();
+await seedPortalShowcase();
 await seedTranslations();
 process.exit(0);
