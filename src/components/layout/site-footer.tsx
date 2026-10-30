@@ -80,7 +80,7 @@ export function SiteFooter() {
         <p>
           © {year} {profile.name}
         </p>
-        <p>{t("builtWith")}</p>
+        {/* <p>{t("builtWith")}</p> */}
       </div>
 
       {/* Oversized outlined wordmark — a quiet sign-off (a JSX tag in the Developer style). */}
