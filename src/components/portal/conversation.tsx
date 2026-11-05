@@ -44,7 +44,9 @@ export async function Conversation({
             })}
           </time>
         </p>
-        <p className="text-sm text-pretty whitespace-pre-line text-fg">{comment.body}</p>
+        <p className="text-sm text-pretty wrap-anywhere whitespace-pre-line text-fg">
+          {comment.body}
+        </p>
       </div>
     );
   };

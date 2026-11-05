@@ -35,10 +35,10 @@ export function PortalPage({
   return (
     <>
       {client && <PortalSessionMark name={client} />}
-      <PageHeader eyebrow={eyebrow} title={title} accent={accent} description={description}>
-        {aside && <div className="mt-8">{aside}</div>}
+      <PageHeader compact eyebrow={eyebrow} title={title} accent={accent} description={description}>
+        {aside && <div className="mt-6 md:mt-8">{aside}</div>}
       </PageHeader>
-      <section className="pb-24 md:pb-32">
+      <section className="pb-16 md:pb-28">
         <div className="container-page">{children}</div>
       </section>
     </>

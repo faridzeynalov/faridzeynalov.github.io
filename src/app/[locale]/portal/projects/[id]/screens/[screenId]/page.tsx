@@ -70,8 +70,8 @@ export default async function PortalScreenPage({ params }: Props) {
         </div>
       }
     >
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-start">
-        <figure className="overflow-hidden rounded-3xl border border-border bg-bg-elevated">
+      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-start">
+        <figure className="min-w-0 overflow-hidden rounded-2xl border border-border bg-bg-elevated md:rounded-3xl">
           <a href={image} target="_blank" rel="noreferrer" className="group relative block">
             {/* eslint-disable-next-line @next/next/no-img-element -- a private file, served by the portal's own route */}
             <img src={image} alt={screen.title} className="block h-auto w-full" />
@@ -84,9 +84,11 @@ export default async function PortalScreenPage({ params }: Props) {
 
         <section
           id="comments"
-          className="scroll-mt-24 rounded-3xl border border-border bg-bg-elevated p-6 lg:sticky lg:top-24"
+          className="min-w-0 scroll-mt-24 rounded-3xl border border-border bg-bg-elevated p-5 md:p-6 lg:sticky lg:top-24"
         >
-          <h2 className="mb-6 text-lg font-semibold tracking-tight">{t("screenComments")}</h2>
+          <h2 className="mb-5 text-lg font-semibold tracking-tight md:mb-6">
+            {t("screenComments")}
+          </h2>
           <Conversation
             comments={comments}
             project={project.id}

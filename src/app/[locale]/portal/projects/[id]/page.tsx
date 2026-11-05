@@ -84,18 +84,23 @@ export default async function PortalProjectPage({
         </div>
       }
     >
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
-        <div className="space-y-6">
+      {/* grid-cols-1 and min-w-0: on phones a long unbroken word (an address in a note or a
+          comment) would otherwise widen the column, and the page, past the screen. */}
+      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+        <div className="min-w-0 space-y-4 md:space-y-6">
           {/* Stages */}
-          <section className="rounded-3xl border border-border bg-bg-elevated p-6 md:p-8">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <section className="rounded-3xl border border-border bg-bg-elevated p-5 md:p-8">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 md:mb-6">
               <h2 className="text-lg font-semibold tracking-tight">{t("stages")}</h2>
               <StatusPill kind="project" status={project.status} />
             </div>
             <Progress value={progressOf(stages)} label={t("progress")} />
-            <ol className="mt-8 space-y-0">
+            <ol className="mt-6 space-y-0 md:mt-8">
               {stages.map((stage, index) => (
-                <li key={stage.id ?? index} className="relative flex gap-4 pb-6 last:pb-0">
+                <li
+                  key={stage.id ?? index}
+                  className="relative flex gap-3 pb-5 last:pb-0 md:gap-4 md:pb-6"
+                >
                   {index < stages.length - 1 && (
                     <span
                       className={cn(
@@ -130,7 +135,7 @@ export default async function PortalProjectPage({
                       )}
                     </div>
                     {stage.note && (
-                      <p className="mt-2 text-sm text-pretty whitespace-pre-line text-fg-muted">
+                      <p className="mt-2 text-sm text-pretty wrap-anywhere whitespace-pre-line text-fg-muted">
                         {stage.note}
                       </p>
                     )}
@@ -142,16 +147,16 @@ export default async function PortalProjectPage({
 
           {/* Screens */}
           {screens.length > 0 && (
-            <section className="rounded-3xl border border-border bg-bg-elevated p-6 md:p-8">
+            <section className="rounded-3xl border border-border bg-bg-elevated p-5 md:p-8">
               <h2 className="text-lg font-semibold tracking-tight">{t("screens")}</h2>
-              <p className="mt-1 mb-6 text-sm text-fg-muted">{t("screensText")}</p>
-              <ul className="grid gap-4 sm:grid-cols-2">
+              <p className="mt-1 mb-5 text-sm text-fg-muted md:mb-6">{t("screensText")}</p>
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4">
                 {screens.map((screen) => {
                   const count = comments.filter(
                     (comment) => screenOf(comment) === screen.id,
                   ).length;
                   return (
-                    <li key={screen.id}>
+                    <li key={screen.id} className="min-w-0">
                       <Link
                         href={`/portal/projects/${project.id}/screens/${screen.id}`}
                         className="group block overflow-hidden rounded-2xl border border-border bg-bg transition-[border-color,box-shadow] hover:border-border-strong hover:shadow-float"
@@ -185,9 +190,9 @@ export default async function PortalProjectPage({
           {/* Comments */}
           <section
             id="comments"
-            className="scroll-mt-24 rounded-3xl border border-border bg-bg-elevated p-6 md:p-8"
+            className="scroll-mt-24 rounded-3xl border border-border bg-bg-elevated p-5 md:p-8"
           >
-            <h2 className="mb-6 text-lg font-semibold tracking-tight">{t("comments")}</h2>
+            <h2 className="mb-5 text-lg font-semibold tracking-tight md:mb-6">{t("comments")}</h2>
             <Conversation
               comments={comments.filter((comment) => !screenOf(comment))}
               project={project.id}
@@ -197,8 +202,8 @@ export default async function PortalProjectPage({
         </div>
 
         {/* Dates and links */}
-        <aside className="space-y-6">
-          <section className="rounded-3xl border border-border bg-bg-elevated p-6">
+        <aside className="min-w-0 space-y-4 md:space-y-6">
+          <section className="rounded-3xl border border-border bg-bg-elevated p-5 md:p-6">
             <dl className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <dt className="font-mono text-xs text-fg-subtle uppercase">{t("start")}</dt>
@@ -211,7 +216,7 @@ export default async function PortalProjectPage({
             </dl>
           </section>
           {project.links?.length ? (
-            <section className="rounded-3xl border border-border bg-bg-elevated p-6">
+            <section className="rounded-3xl border border-border bg-bg-elevated p-5 md:p-6">
               <h2 className="mb-4 font-mono text-xs text-fg-subtle uppercase">{t("links")}</h2>
               <ul className="space-y-2">
                 {project.links.map((link, index) => (
