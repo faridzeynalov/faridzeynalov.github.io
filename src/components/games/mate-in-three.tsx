@@ -372,9 +372,11 @@ export default function MateInThree() {
           <button
             type="button"
             onClick={() => load((index + 1) % PUZZLES.length)}
-            className="inline-flex h-9 items-center gap-1.5 rounded-pill bg-fg px-3.5 text-[13px] font-medium text-bg"
+            aria-label={t("chess.next")}
+            className="inline-flex h-9 items-center gap-1.5 rounded-pill bg-fg px-3 text-[13px] font-medium text-bg sm:px-3.5"
           >
-            {t("chess.next")}
+            {/* Arrow only on phones, like Restart beside it, so the puzzle count keeps its room. */}
+            <span className="max-sm:hidden">{t("chess.next")}</span>
             <ArrowRight className="size-3.5" aria-hidden />
           </button>
         )}

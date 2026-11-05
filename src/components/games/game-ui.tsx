@@ -59,7 +59,8 @@ export function GameBar({
           {status}
         </p>
         {best && (
-          <p className="mt-0.5 inline-flex items-center gap-1.5 text-xs whitespace-nowrap text-fg-subtle">
+          // Wraps rather than running under the buttons on a narrow phone.
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-fg-subtle">
             <Trophy className="size-3" aria-hidden />
             {best}
           </p>
